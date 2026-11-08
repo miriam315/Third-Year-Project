@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מערכת ניהול שנה ג'</title>
+    <style>
+        /* 
+         * חובה 1: שימוש בגופן Arial בלבד
+         */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif !important;
+        }
+
+        body {
+            overflow-x: hidden;
+        }
+
+        /* 
+         * לוח הבקרה הצף בפינה השמאלית התחתונה 
+         */
+        #control-panel {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: #1f2937;
+            color: #ffffff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            z-index: 9999;
+            width: 250px;
+            direction: rtl;
+        }
+
+        #control-panel h3 {
+            font-size: 14px;
+            margin-bottom: 10px;
+            color: #9ca3af;
+            border-bottom: 1px solid #4b5563;
+            padding-bottom: 5px;
+        }
+
+        .cp-group {
+            margin-bottom: 15px;
+        }
+
+        .cp-btn {
+            display: block;
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 5px;
+            background: #374151;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            text-align: right;
+            transition: 0.2s;
+        }
+
+        .cp-btn:hover { background: #4b5563; }
+        .cp-btn.active { background: #3b82f6; font-weight: bold; }
+
+        /* הסתרת התצוגות השונות */
+        .view-section { display: none; }
+        .view-section.active { display: contents; }
+
+        /* 
+         * ==========================================
+         * עיצוב 1: קלאסי (Classic)
+         * Sidebar on the right, top header, strict grid, 
+         * light grey background, sharp blue/grey cards.
+         * ==========================================
+         */
+        .theme-classic {
+            display: flex;
+            height: 100vh;
+            background: #f3f4f6;
+            color: #1f2937;
+        }
+
+        .theme-classic #sidebar {
+            width: 250px;
+            background: #ffffff;
+            border-left: 1px solid #d1d5db;
+            display: flex;
+            flex-direction: column;
+            padding: 20px 0;
+        }
+
+        .theme-classic .logo-area {
+            padding: 0 20px 20px 20px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #1e3a8a;
+            border-bottom: 1px solid #e5e7eb;
+            margin-bottom: 20px;
+        }
+
+        .theme-classic .nav-item {
+            padding: 12px 20px;
+            color: #4b5563;
+            text-decoration: none;
+            display: block;
+            transition: background 0.2s;
+        }
+
+        .theme-classic .nav-item:hover, .theme-classic .nav-item.active {
+            background: #eff6ff;
+            color: #1d4ed8;
+            border-right: 4px solid #2563eb;
+        }
+
+        .theme-classic #main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        .theme-classic #topbar {
+            height: 60px;
+            background: #ffffff;
+            border-bottom: 1px solid #d1d5db;
+            display: flex;
+            align-items: center;
+            padding: 0 30px;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .theme-classic .dashboard-grid {
+            padding: 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .theme-classic .card {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-top: 4px solid #3b82f6;
+            border-radius: 4px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .theme-classic .card-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #374151;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #f3f4f6;
+            padding-bottom: 10px;
+        }
+
+        .theme-classic .btn-action {
+            display: inline-block;
+            background: #2563eb;
+            color: white;
+            padding: 8px 16px;
+            text-decoration: none;
+            border-radius: 4px;
+            margin-top: 15px;
+            font-size: 0.9rem;
+        }
+
+        /* 
+         * ==========================================
+         * עיצוב 2: חמים (Warm)
+         * Top horizontal navigation, centered main content, 
+         * rounded borders, soft orange/beige colors.
+         * ==========================================
+         */
+        .theme-warm {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background: #fdfbf7;
+            color: #5c4033;
+        }
+
+        .theme-warm #sidebar {
+            width: 100%;
+            background: #fff5eb;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            padding: 15px;
+            border-bottom: 2px solid #fde68a;
+        }
+
+        .theme-warm .logo-area {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #b45309;
+            margin-left: 30px;
+        }
+
+        .theme-warm .nav-item {
+            padding: 8px 20px;
+            background: #fef3c7;
+            color: #92400e;
+            text-decoration: none;
+            border-radius: 20px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .theme-warm .nav-item:hover {
+            background: #fde68a;
+        }
+
+        .theme-warm #main-content {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .theme-warm #topbar {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .theme-warm #topbar span {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #92400e;
+        }
+
+        .theme-warm .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 30px;
+        }
+
+        .theme-warm .card {
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(217, 119, 6, 0.1);
+            border: 2px solid transparent;
+            transition: 0.3s;
+        }
+        
+        .theme-warm .card:hover {
+            border-color: #fde68a;
+            transform: translateY(-5px);
+        }
+
+        .theme-warm .card-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #d97706;
+            margin-bottom: 20px;
+        }
+
+        .theme-warm .btn-action {
+            display: inline-block;
+            background: #d97706;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 20px;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        /* 
+         * ==========================================
+         * עיצוב 3: מודרני (Modern)
+         * Dark mode, floating pill-shaped sidebar and header, 
+         * separated from edges, glassmorphism.
+         * ==========================================
+         */
+        .theme-modern {
+            display: flex;
+            min-height: 100vh;
+            background: #0f172a; /* Slate 900 */
+            color: #e2e8f0;
+            padding: 20px;
+            gap: 20px;
+        }
+
+        .theme-modern #sidebar {
+            width: 280px;
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .theme-modern .logo-area {
+            font-size: 1.6rem;
+            font-weight: bold;
+            color: #22d3ee; /* Cyan */
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .theme-modern .nav-item {
+            padding: 12px 20px;
+            margin-bottom: 10px;
+            border-radius: 15px;
+            text-decoration: none;
+            color: #94a3b8;
+            transition: all 0.3s;
+        }
+
+        .theme-modern .nav-item:hover, .theme-modern .nav-item.active {
+            background: rgba(255, 255, 255, 0.1);
+            color: #22d3ee;
+            padding-right: 25px; /* Slight indent effect */
+        }
+
+        .theme-modern #main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .theme-modern #topbar {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 20px 40px;
+            display: flex;
+            align-items: center;
+            font-size: 1.4rem;
+            color: #f8fafc;
+        }
+        
+        .theme-modern #topbar span {
+            color: #a855f7; /* Purple */
+            font-weight: bold;
+        }
+
+        .theme-modern .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .theme-modern .card {
+            background: rgba(30, 41, 59, 0.5);
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .theme-modern .card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 4px;
+            background: linear-gradient(90deg, #22d3ee, #a855f7);
+            opacity: 0.5;
+        }
+
+        .theme-modern .card-title {
+            color: #a855f7;
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .theme-modern .btn-action {
+            display: inline-block;
+            background: transparent;
+            color: #22d3ee;
+            border: 1px solid #22d3ee;
+            padding: 8px 20px;
+            text-decoration: none;
+            border-radius: 30px;
+            margin-top: 15px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .theme-modern .btn-action:hover {
+            background: #22d3ee;
+            color: #0f172a;
+        }
+
+        /* 
+         * אלמנטים פנימיים משותפים (טקסטים, Progress) 
+         */
+        .data-row { margin-bottom: 10px; line-height: 1.5; }
+        .data-label { font-weight: bold; }
+        .data-value { display: block; opacity: 0.8; font-size: 0.9em; }
+
+        .progress-container {
+            width: 100%;
+            background: rgba(150, 150, 150, 0.2);
+            height: 8px;
+            border-radius: 4px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: #10b981; /* Default green */
+            border-radius: 4px;
+        }
+        
+        .theme-modern .progress-fill { background: #22d3ee; }
+        .theme-warm .progress-fill { background: #d97706; }
+        .theme-classic .progress-fill { background: #3b82f6; }
+        
+        .kpi-number {
+            font-size: 3rem;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Container הראשי - המחלקה קובעת את מבנה ה-CSS כולו -->
+    <div id="app-wrapper" class="theme-classic">
+        
+        <!-- סרגל צד (בנושא קלאסי ומודרני) או סרגל עליון (בנושא חמים) -->
+        <nav id="sidebar">
+            <div class="logo-area">מערכת שנה ג'</div>
+            <a href="#" class="nav-item active">לוח בקרה</a>
+            <a href="#" class="nav-item">לימודים ונוכחות</a>
+            <a href="#" class="nav-item">פרקטיקום</a>
+            <a href="#" class="nav-item">פרויקט גמר</a>
+            <a href="#" class="nav-item">הגדרות</a>
+        </nav>
+
+        <div id="main-content">
+            <!-- כותרת ראשית של העמוד -->
+            <header id="topbar">
+                <span>ברוכה הבאה, <span id="user-name-display">רבקה (תלמידה)</span></span>
+            </header>
+
+            <main class="dashboard-grid">
+                
+                <!-- ==============================================
+                     תצוגת תלמידה (Student View)
+                     ============================================== -->
+                <div id="view-student" class="view-section active">
+                    
+                    <div class="card">
+                        <div class="card-title">הפעולה הבאה</div>
+                        <div class="data-row">
+                            <span class="data-label">הגשת מסמך אפיון פרויקט</span>
+                            <span class="data-value">מועד אחרון: יום חמישי, 23:59</span>
+                        </div>
+                        <a href="#" class="btn-action">למעבר להגשה</a>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">קרוב ביומן</div>
+                        <div class="data-row">
+                            <span class="data-label">מחר 10:00 - פגישת ליווי</span>
+                            <span class="data-value">מיקום: חדר 102 / זום</span>
+                        </div>
+                        <div class="data-row" style="margin-top:15px; border-top: 1px solid rgba(150,150,150,0.2); padding-top: 10px;">
+                            <span class="data-label">יום רביעי 14:00 - שיעור השלמה</span>
+                            <span class="data-value">קורס: ניתוח מערכות</span>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">חובות</div>
+                        <div class="data-row">
+                            <span class="data-label">2 חובות פתוחים להשלמה:</span>
+                            <ul style="list-style-type: none; margin-top: 10px;">
+                                <li style="margin-bottom: 5px;">• נוכחות: קורס עיצוב ממשקים (חסר 10%)</li>
+                                <li>• מטלת אמצע: סביבות פיתוח</li>
+                            </ul>
+                        </div>
+                        <a href="#" class="btn-action">פירוט והשלמה</a>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">פרקטיקום</div>
+                        <div class="data-row">
+                            <span class="data-label">התקדמות שעות אושרו</span>
+                            <span class="data-value">45 שעות מתוך 100</span>
+                        </div>
+                        <div class="progress-container">
+                            <div class="progress-fill" style="width: 45%;"></div>
+                        </div>
+                        <div class="data-value" style="margin-top: 10px;">12 שעות בדיווח ממתינות לאישור.</div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">פרויקט</div>
+                        <div class="data-row">
+                            <span class="data-label">שלב נוכחי: מחקר משתמשים (שלב 2/5)</span>
+                            <span class="data-value">סטטוס: ממתין לאישור מלווה</span>
+                        </div>
+                        <div class="data-row" style="margin-top: 10px;">
+                            <span class="data-label">חברות הצוות:</span>
+                            <span class="data-value">רבקה, שרה, רחל</span>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">פניות</div>
+                        <div class="data-row">
+                            <span class="data-label">פנייה #4012 (סטטוס: בטיפול)</span>
+                            <span class="data-value">נושא: בקשה לאישור לימודים</span>
+                        </div>
+                        <div class="data-row" style="margin-top:15px; border-top: 1px solid rgba(150,150,150,0.2); padding-top: 10px;">
+                            <span class="data-label">הודעה מהמזכירות:</span>
+                            <span class="data-value">שעות קבלת קהל עודכנו ל-10:00 עד 13:00.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ==============================================
+                     תצוגת מנהלת (Manager View)
+                     ============================================== -->
+                <div id="view-manager" class="view-section">
+                    
+                    <div class="card">
+                        <div class="card-title">תלמידות עם חובות פתוחים</div>
+                        <div class="kpi-number">15</div>
+                        <div class="data-value">מתוך 84 תלמידות במחזור הנוכחי</div>
+                        <a href="#" class="btn-action">דוח חובות מלא</a>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">דיווחי פרקטיקום לבדיקה</div>
+                        <div class="kpi-number">8</div>
+                        <div class="data-value">דיווחים הממתינים לאישור מלווה</div>
+                        <a href="#" class="btn-action">לרשימת הדיווחים</a>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">הגשות פרויקט חדשות</div>
+                        <div class="kpi-number">5</div>
+                        <div class="data-value">הגשות בשלבים שונים הממתינות למשוב</div>
+                        <a href="#" class="btn-action">בדיקת פרויקטים</a>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">פניות ממתינות</div>
+                        <div class="kpi-number">12</div>
+                        <div class="data-value">פניות תלמידות שטרם שובצו למטפלת</div>
+                        <a href="#" class="btn-action">ניהול פניות</a>
+                    </div>
+
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- ==============================================
+         לוח בקרה צף (Control Panel) - להחלפת התצוגות
+         ============================================== -->
+    <div id="control-panel">
+        <div class="cp-group">
+            <h3>בחר/י תפקיד (Role)</h3>
+            <button class="cp-btn active" id="btn-role-student" onclick="setRole('student')">תצוגת תלמידה</button>
+            <button class="cp-btn" id="btn-role-manager" onclick="setRole('manager')">תצוגת מנהלת צוות</button>
+        </div>
+        <div class="cp-group">
+            <h3>בחר/י עיצוב (Layout Theme)</h3>
+            <button class="cp-btn active" id="btn-theme-classic" onclick="setTheme('theme-classic')">קלאסי (Classic)</button>
+            <button class="cp-btn" id="btn-theme-warm" onclick="setTheme('theme-warm')">חמים (Warm)</button>
+            <button class="cp-btn" id="btn-theme-modern" onclick="setTheme('theme-modern')">מודרני (Modern)</button>
+        </div>
+    </div>
+
+    <script>
+        // פונקציה להחלפת התפקיד הנצפה (Student / Manager)
+        function setRole(role) {
+            // עדכון כפתורי הפאנל
+            document.getElementById('btn-role-student').classList.remove('active');
+            document.getElementById('btn-role-manager').classList.remove('active');
+            document.getElementById('btn-role-' + role).classList.add('active');
+
+            // עדכון ה-Views
+            document.getElementById('view-student').classList.remove('active');
+            document.getElementById('view-manager').classList.remove('active');
+            document.getElementById('view-' + role).classList.add('active');
+
+            // עדכון טקסט הכותרת העליונה
+            const nameDisplay = document.getElementById('user-name-display');
+            if (role === 'student') {
+                nameDisplay.innerText = 'רבקה (תלמידה)';
+            } else {
+                nameDisplay.innerText = 'מנהלת המערכת (מדדי KPI)';
+            }
+        }
+
+        // פונקציה להחלפת מבנה העיצוב הראשי (Theme)
+        function setTheme(themeClass) {
+            // עדכון כפתורי הפאנל
+            document.getElementById('btn-theme-classic').classList.remove('active');
+            document.getElementById('btn-theme-warm').classList.remove('active');
+            document.getElementById('btn-theme-modern').classList.remove('active');
+            document.getElementById('btn-' + themeClass).classList.add('active');
+
+            // החלפת המחלקה על עטיפת האפליקציה משנה את כל חוקי ה-CSS החלים עליה
+            const appWrapper = document.getElementById('app-wrapper');
+            appWrapper.className = themeClass;
+        }
+    </script>
+</body>
+</html>

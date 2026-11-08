@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מערכת ניהול שנה ג' - מוקד אישי</title>
+    <style>
+        :root {
+            --primary: #4338ca; /* כחול-אינדיגו מרגיע */
+            --urgent-bg: #fff1f2;
+            --urgent-border: #fecdd3;
+            --urgent-text: #9f1239;
+            --card-bg: #f8fafc;
+            --card-hover: #f1f5f9;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --bg-body: #eff6ff; /* רקע תכלכל-אפור רך ונעים */
+            --sidebar-bg: rgba(255, 255, 255, 0.65);
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* --- תפריט צד מודרני (Glassmorphism) --- */
+        .sidebar {
+            width: 240px;
+            background: var(--sidebar-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-left: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: -4px 0 20px rgba(0,0,0,0.03);
+            display: flex;
+            flex-direction: column;
+            padding: 30px 20px;
+            z-index: 10;
+        }
+
+        .sidebar-logo {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .nav-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            flex: 1;
+        }
+
+        .nav-item {
+            margin-bottom: 8px;
+        }
+
+        .nav-link {
+            display: block;
+            padding: 12px 16px;
+            color: var(--text-main);
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background-color: rgba(67, 56, 202, 0.08);
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        .logout-btn {
+            margin-top: auto;
+            padding: 12px 16px;
+            color: #b91c1c;
+            background-color: rgba(185, 28, 28, 0.05);
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 15px;
+            text-align: center;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .logout-btn:hover {
+            background-color: rgba(185, 28, 28, 0.1);
+        }
+
+        /* --- אזור התוכן המרכזי (כמו בתמונה) --- */
+        .main-content {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 60px 20px;
+            overflow-y: auto;
+        }
+
+        .focus-container {
+            width: 100%;
+            max-width: 650px;
+            text-align: center;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .greeting {
+            color: var(--primary);
+            font-size: 38px;
+            font-weight: bold;
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 18px;
+            margin-bottom: 45px;
+        }
+
+        /* --- כרטיסיות פעולה --- */
+        .action-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 22px 28px;
+            border-radius: 14px; /* פינות מעוגלות ועדינות */
+            margin-bottom: 16px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            background: rgba(255, 255, 255, 0.85);
+            border: 1px solid rgba(255,255,255,0.9);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+        }
+
+        .action-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+            background: #ffffff;
+        }
+
+        .action-card.urgent {
+            background: var(--urgent-bg);
+            border: 1px solid var(--urgent-border);
+        }
+
+        .action-card.urgent:hover {
+            box-shadow: 0 8px 20px rgba(159, 18, 57, 0.08);
+        }
+
+        .card-title {
+            font-size: 19px;
+            font-weight: bold;
+            color: var(--text-main);
+        }
+
+        .action-card.urgent .card-title {
+            color: var(--urgent-text);
+        }
+
+        .card-status {
+            font-size: 15px;
+            color: var(--text-muted);
+        }
+
+        /* --- לוח זמנים --- */
+        .timeline-container {
+            text-align: right;
+            margin-top: 50px;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 25px;
+        }
+
+        .timeline-title {
+            font-weight: bold;
+            color: var(--text-muted);
+            margin-bottom: 25px;
+            font-size: 16px;
+        }
+
+        .timeline-item {
+            padding: 18px 0;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .timeline-item:last-child {
+            border-bottom: none;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .dot.blue { background: var(--primary); }
+        .dot.gray { background: #cbd5e1; }
+
+        .timeline-text {
+            font-size: 15px;
+            color: var(--text-main);
+        }
+
+        /* --- קישור החלפת מצבים --- */
+        .toggle-link {
+            display: inline-block;
+            margin-top: 50px;
+            color: var(--text-muted);
+            text-decoration: underline;
+            cursor: pointer;
+            font-size: 14px;
+            transition: color 0.2s;
+        }
+
+        .toggle-link:hover {
+            color: var(--primary);
+        }
+
+        /* --- מודל (חלון הודעה) --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(4px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+        .modal-box {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 350px;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+        .modal-overlay.active .modal-box {
+            transform: scale(1);
+        }
+        .modal-btn {
+            margin-top: 20px;
+            padding: 10px 24px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: Arial, sans-serif;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- תפריט צד (נוסף על המסך הראשי) -->
+    <aside class="sidebar">
+        <div class="sidebar-logo">ניהול שנה ג'</div>
+        <ul class="nav-menu">
+            <li class="nav-item"><a class="nav-link active" onclick="showModal('דף הבית', 'פעולה זו תרענן את הנתונים בדף.')">דף הבית</a></li>
+            <li class="nav-item"><a class="nav-link" onclick="showModal('מערכת שעות', 'מעבר ללוח הזמנים המלא ולרישום נוכחות.')">מערכת שעות</a></li>
+            <li class="nav-item"><a class="nav-link" onclick="showModal('פרקטיקום ופרויקט', 'מעבר ליומן המקצועי ולהעלאת תוצרים.')">פרקטיקום ופרויקט</a></li>
+            <li class="nav-item"><a class="nav-link" onclick="showModal('השלמות ותשלומים', 'מעבר לפירוט החובות ודרכי ההשלמה.')">השלמות ותשלומים</a></li>
+            <li class="nav-item"><a class="nav-link" onclick="showModal('פניות למזכירות', 'מעבר להיסטוריית הפניות שלך.')">פניות למזכירות</a></li>
+        </ul>
+        <a class="logout-btn" onclick="showModal('התנתקות', 'האם את בטוחה שברצונך לצאת מהמערכת?')">התנתקות מהמערכת</a>
+    </aside>
+
+    <!-- אזור תוכן מרכזי -->
+    <main class="main-content">
+        <div class="focus-container" id="content-container">
+            
+            <div class="greeting" id="greeting-text">שלום רבקה.</div>
+            <div class="subtitle" id="subtitle-text">יש לך מטלה אחת דחופה. מה תרצי לעשות כעת?</div>
+
+            <!-- כרטיסיות -->
+            <div class="action-card urgent" onclick="showModal('הגשת אפיון פרויקט', 'מעבר למסך העלאת תוצרים')">
+                <div class="card-status" id="urgent-status">מחר ב-23:59</div>
+                <div class="card-title" id="urgent-title">הגשת אפיון פרויקט</div>
+            </div>
+
+            <div class="action-card" onclick="showModal('דיווח שעות פרקטיקום', 'מעבר למסך הזנת יומן עבודה')">
+                <div class="card-status" id="normal1-status">דווחו השבוע 0 שעות</div>
+                <div class="card-title" id="normal1-title">דיווח שעות פרקטיקום</div>
+            </div>
+
+            <div class="action-card" onclick="showModal('פתיחת קריאה', 'מעבר למסך יצירת פנייה חדשה')">
+                <div class="card-status" id="normal2-status">לבירורים או אישורים</div>
+                <div class="card-title" id="normal2-title">פתיחת קריאה למזכירות</div>
+            </div>
+
+            <!-- ציר זמן (Timeline) -->
+            <div class="timeline-container">
+                <div class="timeline-title">לוח זמנים ועדכונים קרובים:</div>
+                
+                <div class="timeline-item">
+                    <div class="dot blue"></div>
+                    <div class="timeline-text" id="tl-1">היום, 14:00 - פגישת ליווי אישית (חדר 102)</div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="dot gray"></div>
+                    <div class="timeline-text" id="tl-2">מחר, 09:30 - שיעור הנדסת תוכנה</div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="dot gray"></div>
+                    <div class="timeline-text" id="tl-3">התראה: חסרה נוכחות בקורס עיצוב, נדרש תשלום להשלמה.</div>
+                </div>
+            </div>
+
+            <a class="toggle-link" onclick="toggleRole()">מעבר למצב מנהלת / תלמידה</a>
+
+        </div>
+    </main>
+
+    <!-- חלון קופץ להודעות (Modal) -->
+    <div class="modal-overlay" id="custom-modal">
+        <div class="modal-box">
+            <h3 id="modal-title" style="color: var(--primary); margin-top: 0;"></h3>
+            <p id="modal-desc" style="color: var(--text-muted);"></p>
+            <button class="modal-btn" onclick="closeModal()">סגירה</button>
+        </div>
+    </div>
+
+    <!-- לוגיקה (JavaScript) -->
+    <script>
+        const contentData = {
+            student: {
+                greeting: "שלום רבקה.",
+                subtitle: "יש לך מטלה אחת דחופה. מה תרצי לעשות כעת?",
+                urgentTitle: "הגשת אפיון פרויקט",
+                urgentStatus: "מחר ב-23:59",
+                normal1Title: "דיווח שעות פרקטיקום",
+                normal1Status: "דווחו השבוע 0 שעות",
+                normal2Title: "פתיחת קריאה למזכירות",
+                normal2Status: "לבירורים או אישורים",
+                tl1: "היום, 14:00 - פגישת ליווי אישית (חדר 102)",
+                tl2: "מחר, 09:30 - שיעור הנדסת תוכנה",
+                tl3: "התראה: חסרה נוכחות בקורס עיצוב, נדרש תשלום להשלמה."
+            },
+            manager: {
+                greeting: "שלום מנהלת.",
+                subtitle: "יש 5 משימות הממתינות לאישורך המקצועי.",
+                urgentTitle: "בדיקת דיווחי פרקטיקום",
+                urgentStatus: "3 דיווחים ממתינים לטיפול",
+                normal1Title: "אימות תשלומי השלמות",
+                normal1Status: "2 תשלומים מחכים לאימות",
+                normal2Title: "פניות פתוחות לצוות",
+                normal2Status: "4 פניות חדשות בתור",
+                tl1: "היום, 14:00 - פגישת ליווי אישית (חדר 102)",
+                tl2: "היום, 16:00 - ישיבת צוות הנהלה",
+                tl3: "התראה: חסר דיווח נוכחות למחזור ב', שיעור אלגוריתמים."
+            }
+        };
+
+        let currentRole = 'student';
+
+        function toggleRole() {
+            const container = document.getElementById('content-container');
+            
+            // אפקט שקיפות במעבר
+            container.style.opacity = '0';
+            
+            setTimeout(() => {
+                currentRole = currentRole === 'student' ? 'manager' : 'student';
+                const data = contentData[currentRole];
+
+                document.getElementById('greeting-text').innerText = data.greeting;
+                document.getElementById('subtitle-text').innerText = data.subtitle;
+                document.getElementById('urgent-title').innerText = data.urgentTitle;
+                document.getElementById('urgent-status').innerText = data.urgentStatus;
+                document.getElementById('normal1-title').innerText = data.normal1Title;
+                document.getElementById('normal1-status').innerText = data.normal1Status;
+                document.getElementById('normal2-title').innerText = data.normal2Title;
+                document.getElementById('normal2-status').innerText = data.normal2Status;
+                document.getElementById('tl-1').innerText = data.tl1;
+                document.getElementById('tl-2').innerText = data.tl2;
+                document.getElementById('tl-3').innerText = data.tl3;
+
+                container.style.opacity = '1';
+            }, 250);
+        }
+
+        // ניהול חלון ההודעות (Modal)
+        function showModal(title, desc) {
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-desc').innerText = desc;
+            document.getElementById('custom-modal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('custom-modal').classList.remove('active');
+        }
+    </script>
+</body>
+</html>

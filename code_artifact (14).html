@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מערכת ניהול - מרכז מיקוד (Focus Hub)</title>
+    <style>
+        /* תפיסה מינימליסטית - אין תפריטים שמסיחים את הדעת. שאלות ישירות ואקשן מהיר */
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif !important; }
+        
+        body {
+            background-color: #ffffff;
+            color: #111827;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        /* התוכן יושב בטור מרכזי אחד צר יחסית, כמו באפליקציות מובייל אבל מותאם למחשב */
+        .hub-container {
+            width: 100%;
+            max-width: 600px;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .hub-header { text-align: center; margin-bottom: 40px; }
+        .greeting { font-size: 2.5rem; font-weight: bold; color: #4338ca; margin-bottom: 10px; }
+        .question { font-size: 1.2rem; color: #6b7280; }
+
+        /* כפתורי פעולה ענקיים */
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 40px;
+        }
+        
+        .btn-massive {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #f3f4f6;
+            border: 2px solid transparent;
+            padding: 20px 25px;
+            border-radius: 16px;
+            text-decoration: none;
+            color: #111827;
+            font-size: 1.2rem;
+            font-weight: bold;
+            transition: all 0.2s;
+            cursor: pointer;
+            width: 100%;
+        }
+        .btn-massive:hover {
+            background: #eef2ff;
+            border-color: #4338ca;
+            color: #4338ca;
+            transform: scale(1.02);
+        }
+        .btn-massive .meta { font-size: 0.9rem; color: #6b7280; font-weight: normal; }
+
+        .btn-urgent { background: #fef2f2; border-color: #fca5a5; color: #991b1b; }
+        .btn-urgent:hover { background: #fee2e2; border-color: #ef4444; color: #991b1b; }
+
+        /* רשימת עדכונים עדינה למטה */
+        .updates-section { border-top: 1px solid #e5e7eb; padding-top: 20px; }
+        .updates-title { font-size: 1rem; color: #9ca3af; margin-bottom: 15px; }
+        
+        .update-item {
+            padding: 12px 0;
+            border-bottom: 1px solid #f3f4f6;
+            display: flex;
+            align-items: center;
+        }
+        .update-dot { width: 8px; height: 8px; background: #d1d5db; border-radius: 50%; margin-left: 15px; }
+        .update-dot.active { background: #4338ca; }
+        .update-text { font-size: 0.95rem; color: #374151; }
+
+        /* כפתור החלפת תצוגה בתחתית */
+        .bottom-toggle {
+            margin-top: auto;
+            text-align: center;
+            padding-top: 40px;
+        }
+        .bottom-toggle button {
+            background: none;
+            border: none;
+            color: #9ca3af;
+            text-decoration: underline;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .view-block { display: none; }
+        .view-block.active { display: block; }
+    </style>
+</head>
+<body>
+
+    <div class="hub-container">
+        
+        <!-- Student Hub -->
+        <div id="student-hub" class="view-block active">
+            <header class="hub-header">
+                <h1 class="greeting">שלום רבקה.</h1>
+                <p class="question">יש לך מטלה אחת דחופה. מה תרצי לעשות כעת?</p>
+            </header>
+
+            <div class="action-buttons">
+                <!-- הפעולה הבאה / חובות בולטים -->
+                <button class="btn-massive btn-urgent">
+                    <span>הגשת אפיון פרויקט</span>
+                    <span class="meta">מחר ב-23:59</span>
+                </button>
+                
+                <button class="btn-massive">
+                    <span>דיווח שעות פרקטיקום</span>
+                    <span class="meta">דווחו השבוע 0 שעות</span>
+                </button>
+                
+                <button class="btn-massive">
+                    <span>פתיחת קריאה למזכירות</span>
+                    <span class="meta">לבירורים או אישורים</span>
+                </button>
+            </div>
+
+            <div class="updates-section">
+                <h3 class="updates-title">לוח זמנים ועדכונים קרובים:</h3>
+                <div class="update-item">
+                    <div class="update-dot active"></div>
+                    <div class="update-text">היום, 14:00 - פגישת ליווי אישית (חדר 102)</div>
+                </div>
+                <div class="update-item">
+                    <div class="update-dot"></div>
+                    <div class="update-text">מחר, 09:30 - שיעור הנדסת תוכנה</div>
+                </div>
+                <div class="update-item">
+                    <div class="update-dot"></div>
+                    <div class="update-text">התראה: חסרה נוכחות בקורס עיצוב, נדרש תשלום להשלמה.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Manager Hub -->
+        <div id="manager-hub" class="view-block">
+            <header class="hub-header">
+                <h1 class="greeting" style="color: #111827;">מוקד ניהול.</h1>
+                <p class="question">3 משימות צוות דורשות התערבות היום.</p>
+            </header>
+
+            <div class="action-buttons">
+                <button class="btn-massive btn-urgent">
+                    <span>2 פניות תלמידות ממתינות</span>
+                    <span class="meta">מעל 48 שעות</span>
+                </button>
+                
+                <button class="btn-massive">
+                    <span>אישור דיווחי פרקטיקום</span>
+                    <span class="meta">14 ממתינים לבדיקה</span>
+                </button>
+                
+                <button class="btn-massive">
+                    <span>בדיקת הגשות פרויקט</span>
+                    <span class="meta">3 הגשות חדשות הלילה</span>
+                </button>
+            </div>
+
+            <div class="updates-section">
+                <h3 class="updates-title">מבט מהיר ליומן ולאירועים:</h3>
+                <div class="update-item">
+                    <div class="update-dot active"></div>
+                    <div class="update-text">היום 10:00 - פגישת הכנה למצגת (שרה / המאמנת דבורה)</div>
+                </div>
+                <div class="update-item">
+                    <div class="update-dot active"></div>
+                    <div class="update-text">היום 13:30 - אימון אישי (מרים / המאמנת רבקה)</div>
+                </div>
+                <div class="update-item">
+                    <div class="update-dot"></div>
+                    <div class="update-text">התראה: 8 חיובי תשלום ממתינים לאימות ופתיחת הרשאות.</div>
+                </div>
+                <div class="update-item">
+                    <div class="update-dot"></div>
+                    <div class="update-text">התראה: 24 תלמידות עם חובות לימודיים פתוחים.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toggle Mechanism -->
+        <div class="bottom-toggle">
+            <button onclick="toggleHub()">מעבר למצב מנהלת / תלמידה</button>
+        </div>
+
+    </div>
+
+    <script>
+        let isStudent = true;
+        
+        function toggleHub() {
+            const studentHub = document.getElementById('student-hub');
+            const managerHub = document.getElementById('manager-hub');
+
+            if (isStudent) {
+                studentHub.classList.remove('active');
+                managerHub.classList.add('active');
+            } else {
+                managerHub.classList.remove('active');
+                studentHub.classList.add('active');
+            }
+            isStudent = !isStudent;
+        }
+    </script>
+</body>
+</html>

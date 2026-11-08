@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מערכת ניהול - תפיסת לוח העבודה (Kanban)</title>
+    <style>
+        /* תפיסה חזותית - הכל מסודר כלוח עבודה אופקי (בלי תפריט צד) */
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif !important; }
+        
+        body {
+            background-color: #e5e7eb; /* אפור חמים */
+            color: #1f2937;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* סרגל עליון בלבד */
+        .top-nav {
+            background-color: #ffffff;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #d1d5db;
+        }
+
+        .nav-logo { font-size: 1.3rem; font-weight: bold; color: #047857; }
+        
+        .role-toggle {
+            background: #047857;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        /* אזור הקנבן - גלילה אופקית */
+        .board-container {
+            flex-grow: 1;
+            padding: 20px;
+            display: flex;
+            gap: 20px;
+            overflow-x: auto;
+            align-items: flex-start;
+        }
+
+        /* עמודת לוח */
+        .column {
+            background: #f3f4f6;
+            min-width: 320px;
+            max-width: 320px;
+            border-radius: 8px;
+            padding: 15px;
+            border: 1px solid #d1d5db;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            max-height: 100%;
+            overflow-y: auto;
+        }
+
+        .column-header {
+            font-weight: bold;
+            color: #374151;
+            font-size: 1.1rem;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #9ca3af;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .item-count { background: #d1d5db; padding: 2px 8px; border-radius: 12px; font-size: 0.8rem; }
+
+        /* כרטיס משימה/פריט */
+        .task-card {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border-right: 4px solid #047857;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+        .task-card:hover { transform: translateY(-2px); box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        
+        .task-title { font-weight: bold; margin-bottom: 8px; font-size: 1rem; color: #111827; }
+        .task-desc { font-size: 0.85rem; color: #4b5563; line-height: 1.4; }
+        .task-meta { margin-top: 10px; font-size: 0.8rem; color: #6b7280; font-weight: bold; }
+        
+        .tag { display: inline-block; padding: 3px 8px; border-radius: 4px; font-size: 0.75rem; background: #fee2e2; color: #991b1b; margin-top: 8px; }
+
+        /* ניהול תצוגות */
+        .view-wrapper { display: none; height: 100%; width: 100%; }
+        .view-wrapper.active { display: flex; }
+    </style>
+</head>
+<body>
+
+    <nav class="top-nav">
+        <div class="nav-logo">מרחב עבודה | <span id="board-title">לוח אישי: רבקה</span></div>
+        <button class="role-toggle" onclick="toggleBoard()">מעבר ללוח מנהלת</button>
+    </nav>
+
+    <!-- Student Board -->
+    <div id="student-board" class="view-wrapper active">
+        <div class="board-container">
+            
+            <div class="column">
+                <div class="column-header">פעולה נדרשת (לביצוע) <span class="item-count">2</span></div>
+                
+                <div class="task-card" style="border-color: #ef4444;">
+                    <div class="task-title">הגשת מסמך אפיון פרויקט</div>
+                    <div class="task-desc">עליך להגיש את המסמך המסכם של שלב 2.</div>
+                    <div class="tag">מועד אחרון: מחר!</div>
+                </div>
+
+                <div class="task-card">
+                    <div class="task-title">הסדרת נוכחות - קורס עיצוב</div>
+                    <div class="task-desc">יש חוסר של 10% מעבר למותר. נדרשת השלמה.</div>
+                    <div class="task-meta">סטטוס: ממתין לתשלום</div>
+                </div>
+            </div>
+
+            <div class="column">
+                <div class="column-header">פרקטיקום ופרויקט (בתהליך) <span class="item-count">2</span></div>
+                
+                <div class="task-card" style="border-color: #3b82f6;">
+                    <div class="task-title">דיווח שעות פרקטיקום</div>
+                    <div class="task-desc">הזנת שעות עבודה עבור השבוע האחרון במוסד החינוכי.</div>
+                    <div class="task-meta">45/100 שעות אושרו עד כה</div>
+                </div>
+
+                <div class="task-card" style="border-color: #3b82f6;">
+                    <div class="task-title">פרויקט גמר - שלב 3</div>
+                    <div class="task-desc">עיצוב ממשקים והכנת מצגת לקראת אישור המנחה.</div>
+                    <div class="task-meta">שותפות: שרה, רחל</div>
+                </div>
+            </div>
+
+            <div class="column">
+                <div class="column-header">לוח זמנים (היום ומחר) <span class="item-count">2</span></div>
+                
+                <div class="task-card" style="border-color: #8b5cf6;">
+                    <div class="task-title">פגישת ליווי אישית</div>
+                    <div class="task-desc">שיחה עם המלווה לגבי התקדמות הפרקטיקום. חדר 102.</div>
+                    <div class="task-meta">היום, 14:00</div>
+                </div>
+
+                <div class="task-card" style="border-color: #8b5cf6;">
+                    <div class="task-title">שיעור: הנדסת תוכנה</div>
+                    <div class="task-desc">נוכחות חובה. מרצה: תמר כהן.</div>
+                    <div class="task-meta">מחר, 09:30</div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Manager Board -->
+    <div id="manager-board" class="view-wrapper">
+        <div class="board-container">
+            
+            <div class="column">
+                <div class="column-header">דחוף לטיפול <span class="item-count">3</span></div>
+                
+                <div class="task-card" style="border-color: #ef4444;">
+                    <div class="task-title">אימות תשלומי השלמה</div>
+                    <div class="task-desc">8 חיובים חדשים שהתקבלו דרך נדרים פלוס דורשים שיוך.</div>
+                    <div class="tag">ממתין לאישור כספים</div>
+                </div>
+
+                <div class="task-card" style="border-color: #ef4444;">
+                    <div class="task-title">פניות למזכירות - ללא מענה</div>
+                    <div class="task-desc">פנייה #1024 (לאה) ופנייה #1025 (רחל) טרם טופלו.</div>
+                    <div class="task-meta">זמן המתנה: יומיים</div>
+                </div>
+                
+                <div class="task-card" style="border-color: #ef4444;">
+                    <div class="task-title">תלמידות בסיכון אקדמי</div>
+                    <div class="task-desc">24 תלמידות צברו חובות המונעים זכאות לתעודה.</div>
+                </div>
+            </div>
+
+            <div class="column">
+                <div class="column-header">בדיקה ומשוב (Review) <span class="item-count">2</span></div>
+                
+                <div class="task-card" style="border-color: #f59e0b;">
+                    <div class="task-title">הגשות פרויקט חדשות</div>
+                    <div class="task-desc">3 קבוצות הגישו את שלב 2 בפרויקט וממתינות לבדיקה.</div>
+                    <div class="task-meta">ממתין למרכזת פרויקטים</div>
+                </div>
+
+                <div class="task-card" style="border-color: #f59e0b;">
+                    <div class="task-title">אישורי שעות פרקטיקום</div>
+                    <div class="task-desc">14 יומני עבודה ממתינים לאישור תקופתי.</div>
+                </div>
+            </div>
+
+            <div class="column">
+                <div class="column-header">לוח פגישות צוות (היום) <span class="item-count">2</span></div>
+                
+                <div class="task-card" style="border-color: #10b981;">
+                    <div class="task-title">הכנה למצגת (דבורה)</div>
+                    <div class="task-desc">פגישה עם התלמידה שרה.</div>
+                    <div class="task-meta">10:00</div>
+                </div>
+
+                <div class="task-card" style="border-color: #10b981;">
+                    <div class="task-title">אימון אישי (רבקה)</div>
+                    <div class="task-desc">פגישה עם התלמידה מרים.</div>
+                    <div class="task-meta">13:30</div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        let currentMode = 'student';
+        
+        function toggleBoard() {
+            const studentBoard = document.getElementById('student-board');
+            const managerBoard = document.getElementById('manager-board');
+            const boardTitle = document.getElementById('board-title');
+            const btn = document.querySelector('.role-toggle');
+
+            if (currentMode === 'student') {
+                studentBoard.classList.remove('active');
+                managerBoard.classList.add('active');
+                boardTitle.innerText = 'לוח תפעולי מנהלת';
+                btn.innerText = 'מעבר ללוח אישי';
+                currentMode = 'manager';
+            } else {
+                managerBoard.classList.remove('active');
+                studentBoard.classList.add('active');
+                boardTitle.innerText = 'לוח אישי: רבקה';
+                btn.innerText = 'מעבר ללוח מנהלת';
+                currentMode = 'student';
+            }
+        }
+    </script>
+</body>
+</html>
