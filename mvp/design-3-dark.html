@@ -1,0 +1,2103 @@
+<!doctype html>
+<html lang="he" dir="rtl" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>מערכת שנה ג׳ · מודרני כהה</title>
+<script>
+  /* קביעת ערכת צבעים לפני הציור כדי למנוע הבהוב */
+  (function () {
+    var t = "dark";
+    try { t = localStorage.getItem("y3-d3-theme") || "dark"; } catch (e) {}
+    document.documentElement.setAttribute("data-theme", t === "light" ? "light" : "dark");
+  })();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Hebrew:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ================= TOKENS ================= */
+:root {
+  --bg: #0b0f17; --bg-2: #0d121b; --panel: #111823; --panel-2: #151d2a; --hover: #1a2332;
+  --border: #212b3a; --border-2: #2c3849;
+  --text: #e6eaf2; --muted: #93a0b5; --faint: #75829a;
+  --accent: #2dd4bf; --accent-2: #5eead4; --accent-ink: #032a25; --accent-soft: rgba(45, 212, 191, .12);
+  --ok: #4ade80; --ok-soft: rgba(74, 222, 128, .11);
+  --warn: #fbbf24; --warn-soft: rgba(251, 191, 36, .11);
+  --danger: #f87171; --danger-soft: rgba(248, 113, 113, .12);
+  --info: #60a5fa; --info-soft: rgba(96, 165, 250, .12);
+  --violet: #c4b5fd; --violet-soft: rgba(167, 139, 250, .13);
+  --shadow: 0 18px 50px rgba(0, 0, 0, .55);
+  --radius: 10px; --radius-sm: 6px;
+  --font: "IBM Plex Sans Hebrew", "Heebo", system-ui, sans-serif;
+  --mono: "JetBrains Mono", "IBM Plex Mono", ui-monospace, Consolas, monospace;
+  color-scheme: dark;
+}
+:root[data-theme="light"] {
+  --bg: #f4f6f9; --bg-2: #eceff4; --panel: #ffffff; --panel-2: #f7f8fa; --hover: #eef1f5;
+  --border: #dfe3ea; --border-2: #c9d0db;
+  --text: #0f1623; --muted: #4f5a6b; --faint: #626d7f;
+  --accent: #0f766e; --accent-2: #0d9488; --accent-ink: #ffffff; --accent-soft: rgba(13, 148, 136, .10);
+  --ok: #15803d; --ok-soft: rgba(21, 128, 61, .09);
+  --warn: #a15c07; --warn-soft: rgba(217, 119, 6, .11);
+  --danger: #b91c1c; --danger-soft: rgba(220, 38, 38, .08);
+  --info: #1d4ed8; --info-soft: rgba(37, 99, 235, .08);
+  --violet: #6d28d9; --violet-soft: rgba(124, 58, 237, .08);
+  --shadow: 0 18px 50px rgba(15, 22, 35, .16);
+  color-scheme: light;
+}
+.t-accent { --c: var(--accent); --cs: var(--accent-soft); }
+.t-ok { --c: var(--ok); --cs: var(--ok-soft); }
+.t-warn { --c: var(--warn); --cs: var(--warn-soft); }
+.t-danger { --c: var(--danger); --cs: var(--danger-soft); }
+.t-info { --c: var(--info); --cs: var(--info-soft); }
+.t-violet { --c: var(--violet); --cs: var(--violet-soft); }
+.t-muted { --c: var(--muted); --cs: var(--panel-2); }
+
+/* ================= BASE ================= */
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 14px/1.55 var(--font); overflow-x: hidden; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1, h2, h3, h4 { margin: 0; font-weight: 600; letter-spacing: -.005em; }
+h1 { font-size: 22px; }
+h2 { font-size: 15px; }
+h3 { font-size: 14px; }
+p { margin: 0; }
+ul, ol { margin: 0; padding: 0; list-style: none; }
+button, input, select, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+[tabindex="-1"]:focus { outline: none; }
+.mono { font-family: var(--mono); font-feature-settings: "tnum"; font-size: .93em; unicode-bidi: isolate; letter-spacing: -.01em; }
+.muted { color: var(--muted); }
+.small { font-size: 12.5px; }
+.xs { font-size: 11.5px; }
+.strike { text-decoration: line-through; text-decoration-thickness: 1.5px; }
+.skip:focus { position: fixed !important; top: 8px; inset-inline-start: 8px; width: auto !important; height: auto !important; clip: auto !important; margin: 0 !important; padding: 8px 12px !important; background: var(--accent); color: var(--accent-ink); z-index: 300; border-radius: 6px; }
+[hidden] { display: none !important; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.ico { width: 16px; height: 16px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.between { justify-content: space-between; }
+.grow { flex: 1; min-width: 0; }
+.stack-sm > * + * { margin-top: 6px; }
+.stack > * + * { margin-top: 12px; }
+.eyebrow { font-size: 11px; font-weight: 600; letter-spacing: .06em; color: var(--muted); }
+hr.sep { border: 0; border-top: 1px solid var(--border); margin: 14px 0; }
+
+/* ================= SHELL ================= */
+.app { display: grid; grid-template-columns: 64px minmax(0, 1fr); min-height: 100vh; }
+.rail {
+  position: sticky; top: 0; height: 100vh; z-index: 30;
+  display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 12px 0;
+  background: var(--bg-2); border-inline-end: 1px solid var(--border);
+}
+.rail-logo { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 9px; margin-bottom: 10px;
+  background: linear-gradient(135deg, var(--accent), var(--info)); color: #041014; font: 700 13px var(--mono); position: relative; }
+.rail-logo:hover { text-decoration: none; }
+.rail-list { display: flex; flex-direction: column; gap: 4px; align-items: center; }
+.rail-foot { margin-top: auto; display: flex; flex-direction: column; gap: 4px; }
+.rail-btn {
+  position: relative; display: grid; place-items: center; width: 42px; height: 42px; border-radius: 9px;
+  color: var(--muted); border: 1px solid transparent; background: none; cursor: pointer;
+}
+.rail-btn .ico { width: 19px; height: 19px; }
+.rail-btn:hover { background: var(--hover); color: var(--text); text-decoration: none; }
+.rail-btn.active { background: var(--accent-soft); color: var(--accent); border-color: color-mix(in srgb, var(--accent) 30%, transparent); }
+.rail-btn.active::before { content: ""; position: absolute; inset-inline-start: -12px; top: 10px; bottom: 10px; width: 3px; border-radius: 3px; background: var(--accent); }
+.rail-lbl { display: none; }
+[data-tip]::after {
+  content: attr(data-tip); position: absolute; inset-inline-start: calc(100% + 12px); top: 50%; transform: translateY(-50%);
+  white-space: nowrap; background: var(--text); color: var(--bg); font: 500 12px var(--font); padding: 4px 9px; border-radius: 6px;
+  opacity: 0; pointer-events: none; transition: opacity .12s; z-index: 40;
+}
+[data-tip]:hover::after, [data-tip]:focus-visible::after { opacity: 1; }
+.rail-badge { position: absolute; top: 3px; inset-inline-end: 3px; min-width: 16px; height: 16px; padding: 0 4px; border-radius: 8px;
+  background: var(--warn); color: var(--bg); font: 600 10px/16px var(--mono); text-align: center; }
+
+.main { min-width: 0; display: flex; flex-direction: column; }
+.topbar {
+  position: sticky; top: 0; z-index: 20; display: flex; align-items: center; gap: 12px; padding: 10px 24px;
+  background: color-mix(in srgb, var(--bg) 86%, transparent); backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border); min-height: 56px;
+}
+.crumbs { display: flex; align-items: center; gap: 8px; font-size: 13px; min-width: 0; white-space: nowrap; }
+.crumb-role { color: var(--muted); }
+.crumb-sep { color: var(--border-2); }
+.crumb-cur { font-weight: 600; overflow: hidden; text-overflow: ellipsis; }
+.seg { display: inline-flex; padding: 2px; border: 1px solid var(--border); border-radius: 8px; background: var(--panel); }
+.seg a { padding: 3px 12px; border-radius: 6px; color: var(--muted); font-size: 12.5px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; }
+.seg a:hover { text-decoration: none; color: var(--text); }
+.seg a[aria-current="true"] { background: var(--panel-2); color: var(--text); box-shadow: inset 0 0 0 1px var(--border-2); }
+.seg a[aria-current="true"] .ico { color: var(--accent); }
+.cmdk {
+  margin-inline-start: auto; display: flex; align-items: center; gap: 8px; width: min(340px, 34vw); height: 34px; padding: 0 10px;
+  background: var(--panel); border: 1px solid var(--border); border-radius: 8px; color: var(--muted); cursor: pointer; text-align: start;
+}
+.cmdk:hover { border-color: var(--border-2); color: var(--text); }
+.cmdk-txt { flex: 1; font-size: 13px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+kbd { font: 500 11px var(--mono); padding: 1px 6px; border: 1px solid var(--border-2); border-bottom-width: 2px; border-radius: 5px; color: var(--muted); background: var(--panel-2); }
+.top-actions { display: flex; align-items: center; gap: 6px; }
+.avatar { width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; font: 600 12px var(--font);
+  background: var(--panel-2); border: 1px solid var(--border-2); color: var(--accent); }
+.content { padding: 22px 24px 48px; max-width: 1440px; width: 100%; margin: 0 auto; }
+
+/* ================= PRIMITIVES ================= */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 7px; height: 32px; padding: 0 12px; border-radius: 7px;
+  border: 1px solid var(--border-2); background: var(--panel-2); color: var(--text); font-size: 13px; font-weight: 500; cursor: pointer; white-space: nowrap;
+}
+.btn:hover { background: var(--hover); text-decoration: none; }
+.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: transparent; font-weight: 600; }
+.btn.primary:hover { background: var(--accent-2); }
+.btn.danger { color: var(--danger); border-color: color-mix(in srgb, var(--danger) 40%, transparent); background: var(--danger-soft); }
+.btn.ok { color: var(--ok); border-color: color-mix(in srgb, var(--ok) 40%, transparent); background: var(--ok-soft); }
+.btn.warn { color: var(--warn); border-color: color-mix(in srgb, var(--warn) 40%, transparent); background: var(--warn-soft); }
+.btn.ghost { background: transparent; border-color: transparent; color: var(--muted); }
+.btn.ghost:hover { color: var(--text); background: var(--hover); }
+.btn.sm { height: 28px; padding: 0 9px; font-size: 12.5px; }
+.btn[disabled], .btn[aria-disabled="true"] { opacity: .45; cursor: not-allowed; pointer-events: none; }
+.icon-btn { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 7px; border: 1px solid var(--border); background: var(--panel); color: var(--muted); cursor: pointer; }
+.icon-btn:hover { color: var(--text); background: var(--hover); }
+.icon-btn.sm { width: 26px; height: 26px; }
+
+.pill {
+  display: inline-flex; align-items: center; gap: 5px; height: 22px; padding: 0 8px; border-radius: 999px; white-space: nowrap;
+  font-size: 12px; font-weight: 500; color: var(--c, var(--muted)); background: var(--cs, var(--panel-2));
+  border: 1px solid color-mix(in srgb, var(--c, var(--muted)) 32%, transparent);
+}
+.pill .ico { width: 12px; height: 12px; stroke-width: 2.2; }
+.pill.dashed { border-style: dashed; background: transparent; }
+.tag { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; color: var(--muted); border: 1px solid var(--border); border-radius: 5px; padding: 1px 7px; background: var(--panel-2); white-space: nowrap; }
+.tag .ico { width: 12px; height: 12px; }
+.chip { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; padding: 2px 9px; border: 1px solid var(--border); border-radius: 999px; background: var(--panel); }
+
+.card { scroll-margin-top: 72px; background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; min-width: 0; position: relative; }
+.card.flush { padding: 0; overflow: hidden; }
+.card-h { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 12px; }
+.card-h h2 { font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 7px; }
+.card-h h2 .ico { color: var(--muted); }
+.card.flush .card-h { padding: 14px 16px 0; }
+a.card-link { display: block; color: inherit; transition: border-color .12s, background .12s; }
+a.card-link:hover { text-decoration: none; border-color: var(--border-2); background: color-mix(in srgb, var(--panel) 70%, var(--hover)); }
+a.card-link .go { position: absolute; top: 14px; inset-inline-end: 14px; color: var(--faint); }
+a.card-link:hover .go { color: var(--accent); }
+.more { font-size: 12.5px; display: inline-flex; align-items: center; gap: 4px; }
+.more .ico { width: 13px; height: 13px; }
+
+.bento { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 12px; }
+.c-2 { grid-column: span 2; } .c-3 { grid-column: span 3; } .c-4 { grid-column: span 4; } .c-5 { grid-column: span 5; }
+.c-6 { grid-column: span 6; } .c-7 { grid-column: span 7; } .c-8 { grid-column: span 8; } .c-9 { grid-column: span 9; } .c-12 { grid-column: span 12; }
+
+.page-h { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 18px; }
+.page-h .sub { color: var(--muted); font-size: 13px; margin-top: 3px; }
+.page-h .row { gap: 6px; }
+
+.big { font: 600 30px/1.1 var(--mono); letter-spacing: -.03em; }
+.big small { font-size: 14px; color: var(--muted); font-weight: 500; letter-spacing: 0; }
+.kpi-lbl { font-size: 12.5px; color: var(--muted); }
+
+.meter { position: relative; height: 6px; border-radius: 4px; background: var(--panel-2); border: 1px solid var(--border); overflow: visible; }
+.meter > span { display: block; height: 100%; border-radius: 4px; background: var(--c, var(--accent)); }
+.meter-mark { position: absolute; top: -4px; bottom: -4px; width: 2px; background: var(--text); opacity: .55; border-radius: 1px; }
+.stackbar { display: flex; height: 12px; border-radius: 6px; overflow: hidden; background: var(--panel-2); border: 1px solid var(--border); }
+.stackbar span { display: block; height: 100%; }
+.seg-ok { background: var(--ok); }
+.seg-pend { background: repeating-linear-gradient(-45deg, var(--warn) 0 3px, transparent 3px 6px); }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12px; color: var(--muted); margin-top: 8px; }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-inline-end: 5px; vertical-align: -1px; border: 1px solid var(--border-2); }
+.spark { display: block; overflow: visible; direction: ltr; }
+.spark-l { fill: none; stroke: var(--c, var(--accent)); stroke-width: 1.6; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+.spark-a { fill: var(--c, var(--accent)); opacity: .12; }
+.spark-d { fill: var(--c, var(--accent)); }
+.ring circle { fill: none; stroke-width: 7; }
+.ring .ring-bg { stroke: var(--panel-2); }
+.ring .ring-fg { stroke: var(--c, var(--accent)); stroke-linecap: round; }
+.ring-wrap { position: relative; display: inline-grid; place-items: center; }
+.ring-wrap .ring-val { position: absolute; font: 600 18px var(--mono); }
+
+/* tables */
+.tbl-wrap { overflow-x: auto; border-top: 1px solid var(--border); }
+.card > .tbl-wrap:first-child { border-top: 0; }
+table.tbl { width: 100%; border-collapse: collapse; font-size: 13px; }
+.tbl th { text-align: start; font-size: 11.5px; font-weight: 600; color: var(--muted); letter-spacing: .02em; padding: 9px 12px; background: var(--panel-2); border-bottom: 1px solid var(--border); white-space: nowrap; }
+.tbl td { padding: 9px 12px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+.tbl tr:last-child td { border-bottom: 0; }
+.tbl tbody tr:hover td { background: color-mix(in srgb, var(--hover) 55%, transparent); }
+.tbl td.nw, .tbl .nw { white-space: nowrap; }
+.tbl tr.clickable { cursor: pointer; }
+.tbl tr.hl td { background: var(--warn-soft); }
+.tbl tr.hl td:first-child { box-shadow: inset -3px 0 0 var(--warn); }
+.tbl .num { font-family: var(--mono); text-align: end; }
+
+/* forms */
+.form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 14px; }
+.form-grid .full { grid-column: 1 / -1; }
+.form-grid.g3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.field { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+.field > label, .field > .lbl { font-size: 12.5px; font-weight: 500; color: var(--muted); }
+.req::after { content: " *"; color: var(--danger); }
+.input, .field input:not([type="checkbox"]):not([type="radio"]), .field select, .field textarea, select.input {
+  width: 100%; min-height: 34px; padding: 6px 10px; border-radius: 7px; border: 1px solid var(--border-2);
+  background: var(--bg-2); color: var(--text); font-size: 13.5px;
+}
+.field textarea { min-height: 72px; resize: vertical; }
+.field input[type="file"] { padding: 5px; font-size: 12.5px; }
+.field input:focus, .field select:focus, .field textarea:focus, .input:focus { outline: 2px solid var(--accent); outline-offset: 0; border-color: transparent; }
+.field.invalid input, .field.invalid select, .field.invalid textarea { border-color: var(--danger); box-shadow: 0 0 0 1px var(--danger); }
+.err { color: var(--danger); font-size: 12px; display: flex; gap: 5px; align-items: center; }
+.err::before { content: "!"; display: inline-grid; place-items: center; width: 14px; height: 14px; border-radius: 50%; background: var(--danger); color: var(--bg); font: 700 10px var(--mono); }
+.hint { font-size: 12px; color: var(--muted); }
+.form-actions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-start; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border); }
+.check { display: inline-flex; align-items: center; gap: 7px; font-size: 13px; cursor: pointer; }
+.check input { accent-color: var(--accent); width: 15px; height: 15px; }
+.filters { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 12px 16px; }
+.filters .input { width: auto; min-width: 140px; height: 32px; min-height: 32px; padding: 4px 8px; font-size: 13px; }
+.filters .search { position: relative; flex: 1; min-width: 180px; }
+.filters .search .input { width: 100%; padding-inline-start: 32px; }
+.filters .search .ico { position: absolute; inset-inline-start: 9px; top: 8px; color: var(--muted); }
+.count { margin-inline-start: auto; font-size: 12px; color: var(--muted); }
+
+/* callouts */
+.callout { display: flex; gap: 10px; padding: 11px 13px; border-radius: 8px; border: 1px solid color-mix(in srgb, var(--c) 35%, transparent); background: var(--cs); font-size: 13px; }
+.callout > .ico { color: var(--c); margin-top: 2px; }
+.callout strong { color: var(--c); }
+.empty { padding: 26px; text-align: center; color: var(--muted); font-size: 13px; }
+
+/* list rows */
+.lrow { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-top: 1px solid var(--border); }
+.lrow:first-child { border-top: 0; padding-top: 2px; }
+a.lrow { color: inherit; }
+a.lrow:hover { text-decoration: none; background: color-mix(in srgb, var(--hover) 40%, transparent); }
+.datebox { flex: none; width: 46px; text-align: center; border: 1px solid var(--border); border-radius: 7px; padding: 3px 0; background: var(--panel-2); line-height: 1.2; }
+.datebox b { display: block; font: 600 13px var(--mono); }
+.datebox span { font-size: 11px; color: var(--muted); }
+
+/* ================= OVERLAYS ================= */
+.overlay { position: fixed; inset: 0; z-index: 100; background: rgba(3, 6, 12, .62); display: flex; align-items: flex-start; justify-content: center; padding: 8vh 16px 16px; }
+:root[data-theme="light"] .overlay { background: rgba(15, 22, 35, .35); }
+.overlay[hidden] { display: none; }
+.modal, .palette, .drawer { background: var(--panel); border: 1px solid var(--border-2); border-radius: 12px; box-shadow: var(--shadow); width: min(560px, 100%); max-height: 84vh; display: flex; flex-direction: column; }
+.modal.wide { width: min(780px, 100%); }
+.overlay.drawer-ov { padding: 0; justify-content: flex-start; align-items: stretch; }
+.drawer { width: min(720px, 100%); max-height: none; height: 100%; border-radius: 0; border-width: 0; border-inline-end: 1px solid var(--border-2); animation: slideIn .18s ease-out; }
+@keyframes slideIn { from { transform: translateX(30px); opacity: .4; } to { transform: none; opacity: 1; } }
+.mdl-h { display: flex; align-items: center; gap: 10px; padding: 14px 16px; border-bottom: 1px solid var(--border); }
+.mdl-h h2 { flex: 1; font-size: 15px; }
+.mdl-b { padding: 16px; overflow-y: auto; }
+.mdl-f { display: flex; gap: 8px; padding: 12px 16px; border-top: 1px solid var(--border); flex-wrap: wrap; }
+.palette { width: min(600px, 100%); overflow: hidden; }
+.pal-in { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-bottom: 1px solid var(--border); }
+.pal-in input { flex: 1; background: none; border: 0; font-size: 15px; outline: none; color: var(--text); }
+.pal-list { overflow-y: auto; padding: 6px; max-height: 56vh; }
+.pal-grp { font-size: 11px; color: var(--muted); padding: 8px 10px 4px; font-weight: 600; letter-spacing: .05em; }
+.pal-item { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 7px; cursor: pointer; font-size: 13.5px; }
+.pal-item .hint { margin-inline-start: auto; }
+.pal-item[aria-selected="true"] { background: var(--accent-soft); color: var(--text); }
+.pal-item[aria-selected="true"] .ico { color: var(--accent); }
+.pal-foot { display: flex; gap: 14px; padding: 8px 14px; border-top: 1px solid var(--border); font-size: 11.5px; color: var(--muted); }
+
+.tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--border); overflow-x: auto; padding: 0 12px; scrollbar-width: thin; }
+.tab { background: none; border: 0; border-bottom: 2px solid transparent; padding: 9px 10px; font-size: 13px; color: var(--muted); cursor: pointer; white-space: nowrap; }
+.tab[aria-selected="true"] { color: var(--text); border-bottom-color: var(--accent); }
+.tab:hover { color: var(--text); }
+dl.kv { display: grid; grid-template-columns: max-content 1fr; gap: 8px 18px; margin: 0; font-size: 13px; }
+dl.kv dt { color: var(--muted); }
+dl.kv dd { margin: 0; }
+
+#toasts { position: fixed; bottom: 18px; inset-inline-end: 18px; z-index: 200; display: flex; flex-direction: column; gap: 8px; width: min(380px, calc(100vw - 32px)); }
+.toast { display: flex; gap: 10px; align-items: flex-start; padding: 11px 12px; background: var(--panel); border: 1px solid var(--border-2); border-inline-start: 3px solid var(--c); border-radius: 9px; box-shadow: var(--shadow); animation: toastIn .18s ease-out; }
+.toast > .ico { color: var(--c); margin-top: 2px; }
+.toast > div { flex: 1; }
+.toast-t { font-weight: 600; font-size: 13.5px; }
+.toast-s { font-size: 12.5px; color: var(--muted); margin-top: 2px; }
+.toast.out { opacity: 0; transform: translateY(6px); transition: .2s; }
+@keyframes toastIn { from { opacity: 0; transform: translateY(8px); } }
+
+/* ================= SCREEN-SPECIFIC ================= */
+.na { border-color: color-mix(in srgb, var(--accent) 45%, var(--border)); background:
+  radial-gradient(120% 140% at 100% 0%, var(--accent-soft), transparent 60%), var(--panel); }
+.na-title { font-size: 19px; margin: 8px 0 4px; }
+.na-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 16px; }
+.me-h { display: flex; align-items: center; gap: 14px; }
+.me-h .avatar { width: 46px; height: 46px; font-size: 15px; }
+
+.sess { display: grid; grid-template-columns: 56px 108px minmax(0, 1fr) auto auto; gap: 14px; align-items: center; padding: 12px 16px; border-top: 1px solid var(--border); }
+.sess:first-child { border-top: 0; }
+.sess.cancelled { background: repeating-linear-gradient(-45deg, transparent 0 8px, color-mix(in srgb, var(--danger) 5%, transparent) 8px 16px); }
+.sess.cancelled .sess-title, .sess.cancelled .sess-time { color: var(--muted); }
+.sess-title { font-weight: 600; }
+.change-note { margin-top: 5px; font-size: 12.5px; display: inline-flex; gap: 6px; align-items: center; color: var(--c); }
+.change-note .ico { width: 13px; height: 13px; }
+.sess-tags { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+.sess-time { font-size: 13px; }
+
+.stepper { display: flex; gap: 0; counter-reset: st; }
+.stepper li { flex: 1; position: relative; padding-top: 4px; text-align: center; min-width: 0; }
+.stepper li::before { content: ""; position: absolute; top: 19px; inset-inline-start: 50%; width: 100%; height: 2px; background: var(--border-2); z-index: 0; }
+.stepper li:last-child::before { display: none; }
+.stepper li.done::before { background: var(--ok); }
+.st-dot { position: relative; z-index: 1; width: 32px; height: 32px; margin: 0 auto 8px; border-radius: 50%; display: grid; place-items: center; background: var(--panel); border: 2px solid var(--border-2); color: var(--muted); font: 600 12px var(--mono); }
+.done .st-dot { border-color: var(--ok); color: var(--ok); background: var(--ok-soft); }
+.current .st-dot { border-color: var(--accent); color: var(--accent-ink); background: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft); }
+.st-name { font-size: 13px; font-weight: 600; }
+.locked .st-name { color: var(--muted); }
+.st-state { font-size: 11.5px; color: var(--muted); }
+
+.timeline > li { position: relative; padding: 0 22px 16px 0; border-inline-start: 0; }
+.timeline > li::before { content: ""; position: absolute; inset-inline-start: 5px; top: 6px; bottom: -6px; width: 1px; background: var(--border-2); }
+.timeline > li:last-child::before { display: none; }
+.timeline > li::after { content: ""; position: absolute; inset-inline-start: 0; top: 5px; width: 11px; height: 11px; border-radius: 50%; background: var(--panel); border: 2px solid var(--c, var(--border-2)); }
+.feedback { margin-top: 8px; padding: 8px 11px; border-radius: 7px; background: var(--panel-2); border: 1px solid var(--border); font-size: 13px; }
+.feedback b { font-size: 11.5px; color: var(--muted); display: block; font-weight: 600; margin-bottom: 2px; }
+
+.opts { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 8px; }
+.opt { display: flex; gap: 10px; align-items: flex-start; padding: 11px 12px; border: 1px solid var(--border); border-radius: 9px; background: var(--panel-2); cursor: pointer; }
+.opt:hover { border-color: var(--border-2); }
+.opt input { accent-color: var(--accent); margin-top: 3px; }
+.opt:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); }
+.opt:has(input:disabled) { opacity: .55; cursor: not-allowed; }
+.opt:has(input:focus-visible) { outline: 2px solid var(--accent); outline-offset: 2px; }
+.cond { display: flex; gap: 9px; align-items: flex-start; padding: 7px 0; font-size: 13px; }
+.cond .mark { flex: none; width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center; background: var(--cs); color: var(--c); }
+.cond .mark .ico { width: 12px; height: 12px; stroke-width: 2.6; }
+.wiz-steps { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+.wiz-steps li { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 6px; padding: 3px 10px 3px 6px; border: 1px solid var(--border); border-radius: 999px; }
+.wiz-steps li b { font: 600 11px var(--mono); width: 18px; height: 18px; border-radius: 50%; display: grid; place-items: center; background: var(--panel-2); }
+.wiz-steps li[aria-current="step"] { color: var(--text); border-color: var(--accent); }
+.wiz-steps li[aria-current="step"] b { background: var(--accent); color: var(--accent-ink); }
+.wiz-steps li.done b { background: var(--ok-soft); color: var(--ok); }
+.confirm-box { text-align: center; padding: 18px 8px; }
+.confirm-box .big-ico { width: 52px; height: 52px; border-radius: 50%; display: grid; place-items: center; margin: 0 auto 10px; background: var(--ok-soft); color: var(--ok); }
+.confirm-box .big-ico .ico { width: 26px; height: 26px; stroke-width: 2.4; }
+
+.split { display: grid; grid-template-columns: minmax(260px, 360px) minmax(0, 1fr); gap: 12px; align-items: start; }
+.req-item { display: block; width: 100%; text-align: start; padding: 11px 14px; border: 0; border-top: 1px solid var(--border); background: none; cursor: pointer; }
+.req-item:first-child { border-top: 0; }
+.req-item:hover { background: var(--hover); }
+.req-item[aria-current="true"] { background: var(--accent-soft); box-shadow: inset -3px 0 0 var(--accent); }
+.req-item .t { font-weight: 600; font-size: 13.5px; margin: 3px 0; }
+.thread { display: flex; flex-direction: column; gap: 10px; padding: 16px; }
+.msg { max-width: 82%; padding: 9px 12px; border-radius: 10px; font-size: 13.5px; border: 1px solid var(--border); background: var(--panel-2); }
+.msg .who { font-size: 11.5px; color: var(--muted); margin-bottom: 3px; display: flex; gap: 8px; }
+.msg.me { align-self: flex-start; background: var(--accent-soft); border-color: color-mix(in srgb, var(--accent) 30%, transparent); }
+.msg.staff { align-self: flex-end; }
+.msg.note { align-self: stretch; max-width: none; background: var(--warn-soft); border: 1px dashed var(--warn); }
+.msg.note .who { color: var(--warn); font-weight: 600; }
+.msg.sys { align-self: center; background: none; border: 0; font-size: 12px; color: var(--muted); padding: 2px; }
+.note-box { border: 1px dashed var(--warn); background: var(--warn-soft); border-radius: 9px; padding: 12px; }
+.note-box .lbl { color: var(--warn); font-weight: 600; display: flex; gap: 6px; align-items: center; font-size: 12.5px; margin-bottom: 6px; }
+.restricted { display: grid; place-items: center; gap: 8px; text-align: center; padding: 40px 20px; color: var(--muted);
+  background: repeating-linear-gradient(-45deg, transparent 0 10px, var(--panel-2) 10px 20px); border-radius: 9px; border: 1px dashed var(--border-2); margin: 16px; }
+.restricted .ico { width: 28px; height: 28px; }
+
+.kpi { display: flex; flex-direction: column; gap: 6px; min-height: 118px; }
+.kpi .big { font-size: 34px; }
+.kpi.alert { border-color: color-mix(in srgb, var(--danger) 50%, var(--border)); background: linear-gradient(var(--danger-soft), transparent), var(--panel); }
+.kpi.alert .big { color: var(--danger); }
+.minibars { display: flex; gap: 3px; align-items: flex-end; height: 22px; margin-top: auto; direction: ltr; }
+.minibars i { flex: 1; background: var(--c, var(--accent)); opacity: .35; border-radius: 2px 2px 0 0; }
+.minibars i:last-child { opacity: 1; }
+.flash { animation: flash 1.4s ease-out; }
+@keyframes flash { 0%, 30% { box-shadow: 0 0 0 3px var(--accent); } 100% { box-shadow: 0 0 0 0 transparent; } }
+.status-sel { height: 30px; min-height: 30px; padding: 2px 6px; font-size: 12.5px; min-width: 110px; }
+.min-in { width: 80px !important; height: 30px; min-height: 30px; font-family: var(--mono); }
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 1100px) {
+  .c-3, .c-4 { grid-column: span 6; }
+  .c-5, .c-7, .c-8, .c-9 { grid-column: span 12; }
+  .sess { grid-template-columns: 56px 100px minmax(0, 1fr); }
+  .sess-tags, .sess-act { grid-column: 3; justify-content: flex-start; }
+}
+@media (max-width: 900px) {
+  .split { grid-template-columns: 1fr; }
+  .c-6 { grid-column: span 12; }
+  .crumbs .crumb-role, .crumbs .crumb-sep { display: none; }
+}
+@media (max-width: 760px) {
+  .app { grid-template-columns: minmax(0, 1fr); }
+  .rail { position: fixed; top: auto; bottom: 0; inset-inline: 0; height: 62px; width: 100%; flex-direction: row; padding: 6px 8px;
+    border-inline-end: 0; border-top: 1px solid var(--border); overflow-x: auto; overflow-y: hidden; justify-content: flex-start; }
+  .rail-logo, .rail-foot { display: none; }
+  .rail-list { flex-direction: row; gap: 2px; flex: 1; }
+  .rail-list li { flex: 1; min-width: 42px; }
+  .rail-btn { width: 100%; height: 50px; grid-template-rows: 22px auto; gap: 1px; align-content: center; }
+  .rail-btn.active::before { inset-inline-start: 14px; inset-inline-end: 14px; top: -7px; bottom: auto; width: auto; height: 3px; }
+  .rail-lbl { display: block; font-size: 10px; line-height: 1.1; white-space: nowrap; max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+  [data-tip]::after { display: none; }
+  .topbar { padding: 8px 12px; gap: 8px; flex-wrap: wrap; }
+  .crumbs { display: none; }
+  .cmdk { width: auto; flex: 1; margin-inline-start: 0; order: 3; flex-basis: 100%; }
+  .cmdk kbd { display: none; }
+  .hide-sm span { display: none; }
+  .content { padding: 16px 16px 92px; }
+  .c-3, .c-4, .c-6 { grid-column: span 12; }
+  .form-grid, .form-grid.g3 { grid-template-columns: minmax(0, 1fr); }
+  .sess { grid-template-columns: 50px minmax(0, 1fr); gap: 10px; }
+  .sess-time { grid-column: 2; }
+  .sess-main, .sess-tags, .sess-act { grid-column: 1 / -1; }
+  .stepper { flex-direction: column; gap: 10px; }
+  .stepper li { display: grid; grid-template-columns: 34px 1fr; text-align: start; gap: 0 10px; padding: 0; }
+  .stepper li::before { display: none; }
+  .st-dot { margin: 0; grid-row: span 2; }
+  #toasts { bottom: 76px; inset-inline: 16px; width: auto; }
+  .msg { max-width: 94%; }
+  h1 { font-size: 19px; }
+  .overlay { padding: 4vh 10px 10px; }
+  .overlay.drawer-ov { padding: 0; }
+}
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+<a href="#view" class="sr-only skip" data-act="skip">דילוג לתוכן</a>
+<div class="app">
+  <nav class="rail" id="rail" aria-label="ניווט ראשי"></nav>
+  <div class="main">
+    <header class="topbar" id="topbar"></header>
+    <main id="view" class="content" tabindex="-1"></main>
+  </div>
+</div>
+<div id="overlay" class="overlay" hidden></div>
+<div id="toasts" aria-live="polite"></div>
+<noscript><p style="padding:24px">נדרש JavaScript כדי להציג את אב-הטיפוס.</p></noscript>
+<script src="shared/data.js"></script>
+<script>
+"use strict";
+/* =====================================================================
+   CORE — עזרים, אייקונים, ערכת צבעים, מודאל, טוסט, פלטת פקודות, ניתוב
+   ===================================================================== */
+const M = window.MOCK || {};
+const $ = (s, r) => (r || document).querySelector(s);
+const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
+const esc = (v) => String(v == null ? "" : v).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const clone = (o) => JSON.parse(JSON.stringify(o));
+const uniq = (arr) => Array.from(new Set(arr.filter((x) => x != null && x !== "")));
+const YEAR = (M.today || "2026-01-01").slice(0, 4);
+const DAYS = ["א׳", "ב׳", "ג׳", "ד׳", "ה׳", "ו׳", "ש׳"];
+
+const ICONS = {
+  grid: '<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
+  home: '<path d="M3 11.5 12 4l9 7.5"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/>',
+  calendar: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',
+  check2: '<rect x="3" y="3" width="18" height="18" rx="3"/><path d="m8 12 3 3 5-6"/>',
+  list: '<path d="M9 6h11M9 12h11M9 18h11"/><path d="M4 6h.01M4 12h.01M4 18h.01"/>',
+  briefcase: '<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 13h18"/>',
+  layers: '<path d="m12 3 9 5-9 5-9-5 9-5Z"/><path d="m3 13 9 5 9-5"/>',
+  users: '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14a6 6 0 0 1 3.5 6"/>',
+  chat: '<path d="M4 5h16v11H9l-5 4V5Z"/><path d="M8 9h8M8 12h5"/>',
+  search: '<circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/>',
+  sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+  moon: '<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5Z"/>',
+  arrow: '<path d="M19 12H5M11 6l-6 6 6 6"/>',
+  back: '<path d="M5 12h14M13 6l6 6-6 6"/>',
+  video: '<rect x="3" y="6" width="13" height="12" rx="2"/><path d="m16 10 5-3v10l-5-3"/>',
+  pin: '<path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11Z"/><circle cx="12" cy="10" r="2.5"/>',
+  x: '<path d="M6 6l12 12M18 6 6 18"/>',
+  check: '<path d="m5 12 5 5 9-10"/>',
+  alert: '<path d="M12 3 2 20h20L12 3Z"/><path d="M12 10v4M12 17h.01"/>',
+  lock: '<rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/>',
+  clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  plus: '<path d="M12 5v14M5 12h14"/>',
+  upload: '<path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v4h16v-4"/>',
+  refresh: '<path d="M20 11a8 8 0 0 0-14.5-4.5L4 8"/><path d="M4 4v4h4"/><path d="M4 13a8 8 0 0 0 14.5 4.5L20 16"/><path d="M20 20v-4h-4"/>',
+  user: '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
+  clip: '<path d="m20 11-8.5 8.5a5 5 0 0 1-7-7L13 4a3.5 3.5 0 0 1 5 5l-8.5 8.5a2 2 0 0 1-3-3L14 7"/>',
+  link: '<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>',
+  send: '<path d="M21 3 3 10.5l7 2.5 2.5 7L21 3Z"/><path d="m10 13 4-4"/>',
+  info: '<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/>',
+  swap: '<path d="M4 8h14l-4-4M20 16H6l4 4"/>',
+  file: '<path d="M14 3H6v18h12V7l-4-4Z"/><path d="M14 3v4h4"/>',
+  mail: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>',
+  minus: '<path d="M6 12h12"/>',
+  half: '<circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16Z" fill="currentColor"/>',
+  question: '<circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .8-1 1.5v.6M12 17h.01"/>',
+  flag: '<path d="M5 21V4h11l-2 4 2 4H5"/>',
+  shield: '<path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6l-8-3Z"/>',
+  note: '<path d="M5 4h14v12l-4 4H5V4Z"/><path d="M15 20v-4h4M9 9h6M9 13h4"/>',
+  play: '<path d="M7 4v16l13-8L7 4Z"/>',
+  dot: '<circle cx="12" cy="12" r="3.5" fill="currentColor"/>',
+  ban: '<circle cx="12" cy="12" r="9"/><path d="m5.6 5.6 12.8 12.8"/>',
+  filter: '<path d="M3 5h18l-7 8v6l-4 2v-8L3 5Z"/>',
+  shekel: '<path d="M7 20V6h5a3 3 0 0 1 3 3v5M17 4v14h-5a3 3 0 0 1-3-3v-5"/>',
+};
+function ico(name, cls) { return `<svg class="ico ${cls || ""}" viewBox="0 0 24 24" aria-hidden="true" focusable="false">${ICONS[name] || ""}</svg>`; }
+function pill(text, tone, icon, extra) { return `<span class="pill t-${tone || "muted"} ${extra || ""}">${icon ? ico(icon) : ""}${esc(text)}</span>`; }
+
+/* --- תאריכים --- */
+const ddmmToIso = (d) => { const m = /^(\d{2})\/(\d{2})/.exec(d || ""); return m ? `${YEAR}-${m[2]}-${m[1]}` : ""; };
+const isoToDdmm = (iso) => { const m = /^\d{4}-(\d{2})-(\d{2})$/.exec(iso || ""); return m ? `${m[2]}/${m[1]}` : iso; };
+const dayOf = (iso) => DAYS[new Date(iso + "T12:00:00").getDay()];
+const daysBetween = (aIso, bIso) => Math.round((new Date(bIso + "T12:00:00") - new Date(aIso + "T12:00:00")) / 864e5);
+const toMin = (t) => { const m = /^(\d{1,2}):(\d{2})$/.exec(t || ""); return m ? +m[1] * 60 + +m[2] : NaN; };
+const fmtMin = (n) => `${String(Math.floor(n / 60)).padStart(2, "0")}:${String(n % 60).padStart(2, "0")}`;
+const todayDdmm = isoToDdmm(M.today);
+
+/* --- מיני-גרפים --- */
+function spark(vals, w, h, tone) {
+  w = w || 120; h = h || 32;
+  if (!vals || vals.length < 2) return "";
+  const max = Math.max.apply(null, vals), min = Math.min.apply(null, vals), rng = max - min || 1, step = w / (vals.length - 1);
+  const pts = vals.map((v, i) => [(i * step).toFixed(1), (h - 3 - ((v - min) / rng) * (h - 6)).toFixed(1)]);
+  const line = pts.map((p) => p.join(",")).join(" ");
+  const last = pts[pts.length - 1];
+  return `<svg class="spark t-${tone || "accent"}" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" aria-hidden="true"><polygon class="spark-a" points="0,${h} ${line} ${w},${h}"/><polyline class="spark-l" points="${line}"/><circle class="spark-d" cx="${last[0]}" cy="${last[1]}" r="2.6"/></svg>`;
+}
+function meter(pct, tone, label, mark) {
+  const p = Math.max(0, Math.min(100, pct || 0));
+  return `<div class="meter t-${tone || "accent"}" role="progressbar" aria-valuenow="${Math.round(p)}" aria-valuemin="0" aria-valuemax="100"${label ? ` aria-label="${esc(label)}"` : ""}><span style="width:${p}%"></span>${mark != null ? `<i class="meter-mark" style="inset-inline-start:${mark}%" title="רף ${mark}%"></i>` : ""}</div>`;
+}
+function ring(pct, size, tone) {
+  size = size || 84; const r = (size - 8) / 2, c = 2 * Math.PI * r, off = c * (1 - Math.max(0, Math.min(100, pct)) / 100), m = size / 2;
+  return `<span class="ring-wrap"><svg class="ring t-${tone || "accent"}" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" aria-hidden="true"><circle class="ring-bg" cx="${m}" cy="${m}" r="${r}"/><circle class="ring-fg" cx="${m}" cy="${m}" r="${r}" stroke-dasharray="${c.toFixed(1)}" stroke-dashoffset="${off.toFixed(1)}" transform="rotate(-90 ${m} ${m})"/></svg><span class="ring-val">${Math.round(pct)}%</span></span>`;
+}
+function minibars(vals, tone) {
+  const max = Math.max.apply(null, vals) || 1;
+  return `<div class="minibars t-${tone || "accent"}" aria-hidden="true">${vals.map((v) => `<i style="height:${Math.max(8, (v / max) * 100)}%"></i>`).join("")}</div>`;
+}
+
+/* --- ערכת צבעים --- */
+const THEME_KEY = "y3-d3-theme";
+function currentTheme() { return document.documentElement.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+function setTheme(t) {
+  document.documentElement.setAttribute("data-theme", t);
+  try { localStorage.setItem(THEME_KEY, t); } catch (e) { /* אחסון חסום — מתעלמים */ }
+  paintThemeBtn();
+}
+function paintThemeBtn() {
+  const b = $("#themeBtn"); if (!b) return;
+  const light = currentTheme() === "light";
+  b.innerHTML = ico(light ? "moon" : "sun");
+  b.setAttribute("aria-label", light ? "מעבר למצב כהה" : "מעבר למצב בהיר");
+  b.title = b.getAttribute("aria-label");
+}
+
+/* --- טוסט --- */
+function toast(title, tone, sub) {
+  tone = tone || "ok";
+  const t = document.createElement("div");
+  t.className = `toast t-${tone}`;
+  t.setAttribute("role", tone === "danger" ? "alert" : "status");
+  t.innerHTML = `${ico(tone === "ok" ? "check" : tone === "danger" ? "alert" : "info")}<div><div class="toast-t">${esc(title)}</div>${sub ? `<div class="toast-s">${sub}</div>` : ""}</div><button type="button" class="icon-btn sm" aria-label="סגירת הודעה">${ico("x")}</button>`;
+  $("#toasts").appendChild(t);
+  const kill = () => { t.classList.add("out"); setTimeout(() => t.remove(), 220); };
+  t.querySelector("button").addEventListener("click", kill);
+  setTimeout(kill, 5600);
+}
+
+/* --- מודאל / מגירה --- */
+let lastFocus = null, onCloseCb = null;
+function openModal(opts) {
+  onCloseCb = opts.onClose || null;
+  const ov = $("#overlay");
+  const kind = opts.kind || "modal";
+  ov.className = `overlay ${kind}-ov`;
+  ov.innerHTML = `<div class="${kind}${opts.wide ? " wide" : ""}" role="dialog" aria-modal="true" aria-labelledby="mdl-t">
+    <header class="mdl-h">${opts.pre || ""}<h2 id="mdl-t">${opts.title}</h2><button type="button" class="icon-btn" data-close aria-label="סגירה">${ico("x")}</button></header>
+    ${opts.tabs || ""}<div class="mdl-b">${opts.body || ""}</div>${opts.footer ? `<footer class="mdl-f">${opts.footer}</footer>` : ""}</div>`;
+  if (ov.hidden) lastFocus = document.activeElement;
+  ov.hidden = false;
+  document.body.style.overflow = "hidden";
+  const box = ov.firstElementChild;
+  if (opts.onMount) opts.onMount(box);
+  const f = box.querySelector("[autofocus]") || box.querySelector(".mdl-b input:not([type=hidden]), .mdl-b select, .mdl-b textarea, .mdl-b button") || box.querySelector("[data-close]");
+  if (f) f.focus();
+  return box;
+}
+function closeModal() {
+  const ov = $("#overlay");
+  if (ov.hidden) return;
+  ov.hidden = true; ov.innerHTML = ""; document.body.style.overflow = "";
+  const cb = onCloseCb; onCloseCb = null;
+  if (cb) cb();
+  if (lastFocus && document.contains(lastFocus)) lastFocus.focus();
+  else $("#view").focus({ preventScroll: true });
+  lastFocus = null;
+}
+function trapTab(e) {
+  const ov = $("#overlay"); if (ov.hidden) return;
+  const f = $$('a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex="0"]', ov).filter((el) => el.offsetParent !== null);
+  if (!f.length) return;
+  const first = f[0], last = f[f.length - 1];
+  if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+  else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+}
+
+/* --- ולידציה --- */
+function fieldOf(form, name) { const el = form.elements[name]; if (!el) return null; return el.tagName ? el : el[0]; }
+function setErr(form, name, msg) {
+  const el = fieldOf(form, name); if (!el) return;
+  const f = el.closest(".field") || el.parentElement;
+  f.classList.add("invalid");
+  el.setAttribute("aria-invalid", "true");
+  let e = f.querySelector(".err");
+  if (!e) { e = document.createElement("div"); e.className = "err"; e.id = `err-${form.id || "f"}-${name}`; f.appendChild(e); }
+  e.textContent = msg;
+  el.setAttribute("aria-describedby", e.id);
+}
+function clearErrs(form) {
+  $$(".field.invalid", form).forEach((f) => f.classList.remove("invalid"));
+  $$(".err", form).forEach((e) => e.remove());
+  $$("[aria-invalid]", form).forEach((e) => { e.removeAttribute("aria-invalid"); e.removeAttribute("aria-describedby"); });
+}
+/* rules: [[name, (value, form) => "הודעת שגיאה" | ""], ...] */
+function validate(form, rules) {
+  clearErrs(form);
+  let first = null, n = 0;
+  const bad = new Set();
+  rules.forEach(([name, test]) => {
+    const el = form.elements[name]; if (!el || bad.has(name)) return;
+    const v = el.type === "file" ? (el.files && el.files.length ? el.files[0].name : "") : String(el.value || "").trim();
+    const msg = test(v, form);
+    if (msg) { bad.add(name); setErr(form, name, msg); n++; if (!first) first = fieldOf(form, name); }
+  });
+  if (first) { first.focus(); toast(n === 1 ? "יש לתקן שדה אחד בטופס" : `יש לתקן ${n} שדות בטופס`, "danger"); }
+  return !first;
+}
+const required = (label) => (v) => (v ? "" : `שדה חובה: ${label}`);
+const minLen = (n, label) => (v) => (!v ? `שדה חובה: ${label}` : v.length < n ? `נא לכתוב לפחות ${n} תווים` : "");
+function bindClearOnInput(form) {
+  form.addEventListener("input", (e) => {
+    const f = e.target.closest(".field.invalid"); if (!f) return;
+    f.classList.remove("invalid"); const er = f.querySelector(".err"); if (er) er.remove(); e.target.removeAttribute("aria-invalid");
+  });
+}
+
+/* --- ניתוב: #role/screen?params --- */
+const ROLES = {};
+let cur = { role: null, id: null };
+function parseHash() {
+  const h = decodeURIComponent(location.hash.slice(1));
+  const [path, q] = h.split("?");
+  let [role, id] = path.split("/");
+  if (!ROLES[role]) { role = "student"; id = null; }
+  const R = ROLES[role];
+  const scr = R.screens.find((s) => s.id === id) || R.screens[0];
+  return { role, R, scr, params: new URLSearchParams(q || "") };
+}
+function go(role, id, q) { location.hash = `${role}/${id}${q ? "?" + q : ""}`; }
+function buildShell(role) {
+  const R = ROLES[role];
+  const other = role === "student" ? "admin" : "student";
+  $("#rail").innerHTML = `
+    <a class="rail-logo" href="index.html" data-tip="חזרה לעמוד הכניסה" aria-label="חזרה לעמוד הכניסה">ג׳</a>
+    <ul class="rail-list">${R.screens.map((s) => `<li><a class="rail-btn" href="#${role}/${s.id}" data-screen="${s.id}" data-tip="${esc(s.label)}" aria-label="${esc(s.label)}">${ico(s.icon)}<span class="rail-lbl" aria-hidden="true">${esc(s.short || s.label)}</span><span class="rail-badge" data-badge="${s.id}" hidden></span></a></li>`).join("")}</ul>
+    <div class="rail-foot"><a class="rail-btn" href="#${other}/dashboard" data-tip="${esc(ROLES[other].switchLabel)}" aria-label="${esc(ROLES[other].switchLabel)}">${ico("swap")}</a></div>`;
+  $("#topbar").innerHTML = `
+    <nav class="seg" aria-label="בחירת תפקיד">
+      <a href="#student/dashboard" aria-current="${role === "student"}">${ico("user")}תלמידה</a>
+      <a href="#admin/dashboard" aria-current="${role === "admin"}">${ico("shield")}ניהול</a>
+    </nav>
+    <div class="crumbs"><span class="crumb-role">${esc(R.label)}</span><span class="crumb-sep" aria-hidden="true">/</span><span class="crumb-cur" id="crumb"></span></div>
+    <button type="button" class="cmdk" data-act="palette" aria-label="חיפוש או פעולה (Ctrl+K)">${ico("search")}<span class="cmdk-txt">חיפוש או פעולה…</span><kbd>⌘K</kbd></button>
+    <div class="top-actions">
+      <a class="btn ghost sm hide-sm" href="index.html" aria-label="עמוד הכניסה">${ico("home")}<span>כניסה</span></a>
+      <button type="button" class="icon-btn" id="themeBtn" data-act="theme"></button>
+      <span class="avatar" title="${esc(R.user.name)} · ${esc(R.user.sub)}"><span aria-hidden="true">${esc(R.user.initials)}</span><span class="sr-only">${esc(R.user.name)}</span></span>
+    </div>`;
+  paintThemeBtn();
+}
+function paintBadges() {
+  const R = ROLES[cur.role];
+  R.screens.forEach((s) => {
+    const b = $(`[data-badge="${s.id}"]`); if (!b) return;
+    const n = s.badge ? s.badge() : 0;
+    b.hidden = !n; b.textContent = n || "";
+    const a = b.closest("a"); a.setAttribute("aria-label", s.label + (n ? ` (${n} דורשים טיפול)` : ""));
+  });
+}
+function render(keepScroll) {
+  const { role, R, scr, params } = parseHash();
+  if (role !== cur.role) buildShell(role);
+  const changed = role !== cur.role || scr.id !== cur.id;
+  cur = { role, id: scr.id, params, changed };
+  const y = window.scrollY;
+  const view = $("#view");
+  view.innerHTML = scr.render(params);
+  $$(".rail-btn[data-screen]").forEach((a) => {
+    const on = a.dataset.screen === scr.id;
+    a.classList.toggle("active", on);
+    if (on) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current");
+  });
+  $("#crumb").textContent = scr.label;
+  document.title = `${scr.label} · ${R.label} · מערכת ניהול שנה ג׳`;
+  if (changed && !keepScroll) {
+    window.scrollTo(0, 0);
+    const h = view.querySelector("h1"); if (h) { h.setAttribute("tabindex", "-1"); h.focus({ preventScroll: true }); }
+  } else window.scrollTo(0, y);
+  if (scr.mount) scr.mount(view, params);
+  paintBadges();
+}
+const refresh = () => render(true);
+
+/* --- פלטת פקודות --- */
+function openPalette() {
+  const items = [];
+  Object.keys(ROLES).forEach((rk) => ROLES[rk].screens.forEach((s) => items.push({ grp: ROLES[rk].label, label: s.label, icon: s.icon, hint: `#${rk}/${s.id}`, run: () => go(rk, s.id) })));
+  items.push({ grp: "פעולות", label: "החלפת מצב כהה / בהיר", icon: "sun", hint: "ערכת צבעים", run: () => setTheme(currentTheme() === "light" ? "dark" : "light") });
+  items.push({ grp: "פעולות", label: "חזרה לעמוד הכניסה", icon: "home", hint: "index.html", run: () => { location.href = "index.html"; } });
+  Object.keys(ROLES).forEach((rk) => (ROLES[rk].commands || []).forEach((c) => items.push(Object.assign({ grp: "פעולות" }, c))));
+  let sel = 0, shown = items;
+  const box = openModal({
+    kind: "palette",
+    title: '<span class="sr-only">פלטת פקודות</span>',
+    body: "",
+    onMount(b) {
+      b.removeAttribute("aria-labelledby"); b.setAttribute("aria-label", "פלטת פקודות");
+      b.querySelector(".mdl-h").outerHTML = `<div class="pal-in">${ico("search")}<label class="sr-only" for="palq">חיפוש מסך או פעולה</label><input id="palq" autofocus autocomplete="off" placeholder="הקלידי שם מסך או פעולה…" role="combobox" aria-controls="pal-list" aria-expanded="true"><kbd>Esc</kbd></div>`;
+      b.querySelector(".mdl-b").outerHTML = `<div class="pal-list" id="pal-list" role="listbox" aria-label="תוצאות"></div><div class="pal-foot"><span><kbd>↑</kbd> <kbd>↓</kbd> ניווט</span><span><kbd>Enter</kbd> בחירה</span></div>`;
+    },
+  });
+  const input = $("#palq", box), list = $("#pal-list", box);
+  const paint = () => {
+    const q = input.value.trim();
+    shown = items.filter((i) => !q || (i.label + " " + i.grp + " " + i.hint).includes(q));
+    if (sel >= shown.length) sel = 0;
+    let g = null, html = "";
+    shown.forEach((it, i) => {
+      if (it.grp !== g) { g = it.grp; html += `<div class="pal-grp" role="presentation">${esc(g)}</div>`; }
+      html += `<div class="pal-item" role="option" id="pi-${i}" data-i="${i}" aria-selected="${i === sel}">${ico(it.icon || "arrow")}<span>${esc(it.label)}</span><span class="hint mono">${esc(it.hint || "")}</span></div>`;
+    });
+    list.innerHTML = html || `<div class="empty">לא נמצאו תוצאות עבור “${esc(q)}”</div>`;
+    input.setAttribute("aria-activedescendant", shown.length ? `pi-${sel}` : "");
+    const a = $(`#pi-${sel}`, list); if (a) a.scrollIntoView({ block: "nearest" });
+  };
+  const runSel = (i) => { const it = shown[i]; if (!it) return; closeModal(); it.run(); };
+  input.addEventListener("input", () => { sel = 0; paint(); });
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "ArrowDown") { e.preventDefault(); sel = Math.min(shown.length - 1, sel + 1); paint(); }
+    else if (e.key === "ArrowUp") { e.preventDefault(); sel = Math.max(0, sel - 1); paint(); }
+    else if (e.key === "Enter") { e.preventDefault(); runSel(sel); }
+  });
+  list.addEventListener("click", (e) => { const it = e.target.closest(".pal-item"); if (it) runSel(+it.dataset.i); });
+  list.addEventListener("mousemove", (e) => { const it = e.target.closest(".pal-item"); if (it && +it.dataset.i !== sel) { sel = +it.dataset.i; paint(); } });
+  paint();
+}
+
+/* --- פעולות גלובליות (data-act) --- */
+const ACT = {
+  palette: openPalette,
+  theme: () => setTheme(currentTheme() === "light" ? "dark" : "light"),
+  skip: () => $("#view").focus(),
+};
+document.addEventListener("click", (e) => {
+  if (e.target.id === "overlay") { closeModal(); return; }
+  if (e.target.closest("[data-close]")) { closeModal(); return; }
+  const g = e.target.closest("[data-go]");
+  if (g) { e.preventDefault(); closeModal(); location.hash = g.dataset.go; return; }
+  const a = e.target.closest("[data-act]");
+  if (a && !a.disabled && ACT[a.dataset.act]) {
+    if (a.tagName === "A" || a.tagName === "BUTTON") e.preventDefault();
+    ACT[a.dataset.act](a, e);
+  }
+});
+document.addEventListener("keydown", (e) => {
+  if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") { e.preventDefault(); if ($("#overlay").hidden) openPalette(); else closeModal(); return; }
+  if (e.key === "Escape" && !$("#overlay").hidden) { e.preventDefault(); closeModal(); return; }
+  if (e.key === "Tab") trapTab(e);
+});
+window.addEventListener("hashchange", () => { closeModal(); render(false); });
+
+/* =====================================================================
+   STUDENT — אזור תלמידה
+   ===================================================================== */
+const ATT = {
+  present: { tone: "ok", icon: "check" },
+  partial: { tone: "warn", icon: "half" },
+  absent: { tone: "danger", icon: "x" },
+  unreported: { tone: "muted", icon: "minus" },
+  review: { tone: "info", icon: "clock" },
+};
+const attPill = (k) => pill(M.attendanceStatus[k] || k, ATT[k] ? ATT[k].tone : "muted", ATT[k] ? ATT[k].icon : null);
+const REP = { draft: ["muted", "file"], pending: ["warn", "clock"], approved: ["ok", "check"], returned: ["danger", "refresh"], rejected: ["danger", "ban"] };
+const repPill = (k) => pill(M.reportStatus[k] || k, REP[k] ? REP[k][0] : "muted", REP[k] ? REP[k][1] : null);
+const REQ = { new: ["violet", "dot"], in_progress: ["info", "clock"], waiting_student: ["warn", "alert"], closed: ["muted", "check"] };
+const reqPill = (k, labelOverride) => pill(labelOverride || M.requestStatus[k] || k, REQ[k] ? REQ[k][0] : "muted", REQ[k] ? REQ[k][1] : null);
+const OBL = { "חסר": ["danger", "x"], "הושלם": ["ok", "check"], "בבדיקה": ["info", "clock"], "טרם נקלט": ["muted", "minus"] };
+const SUB = { returned: ["הוחזר לתיקון", "danger", "refresh"], superseded: ["הוחלפה בגרסה חדשה", "muted", "layers"], submitted: ["הוגשה · ממתינה למשוב", "info", "clock"] };
+const subPill = (k) => (SUB[k] ? pill(SUB[k][0], SUB[k][1], SUB[k][2]) : pill(k));
+const modeTag = (m) => `<span class="tag">${ico(m === "זום" ? "video" : "pin")}${esc(m)}</span>`;
+const sessStatus = (s) => s.status === "cancelled" ? pill("בוטל", "danger", "ban") : s.status === "updated" ? pill("עודכן", "warn", "refresh") : "";
+const timeRange = (a, b) => `<span class="mono" dir="ltr">${esc(a)}–${esc(b)}</span>`;
+
+/* מצב בזיכרון (אין שרת) */
+const st = {
+  sf: { course: "", mode: "", cancelled: true },
+  att: clone(M.attendance.rows),
+  corrSeq: 312,
+  prac: { target: M.practicum.target, approved: M.practicum.approved, pending: M.practicum.pending, reported: M.practicum.reported },
+  reports: clone(M.practicum.reports),
+  editing: null,
+  repSeq: 96,
+  subs: clone(M.project.submissions),
+  linkMode: "file",
+  appts: clone(M.myAppointments),
+  slots: clone(M.slots),
+  bk: { type: null, slot: null, step: 1, done: null },
+  apSeq: 2231,
+  reqs: clone(M.requests),
+  threads: {},
+  selReq: null,
+  reqSeq: 1102,
+};
+st.reqs.forEach((r) => {
+  const t = [{ from: "me", who: M.me.name, at: r.opened, text: `פתחתי פנייה בנושא: ${r.subject}` }];
+  if (r.lastMsg) t.push({ from: "staff", who: r.owner, at: r.opened, text: r.lastMsg });
+  if (r.status === "closed") t.push({ from: "sys", text: `הפנייה נסגרה על ידי ${r.owner}` });
+  st.threads[r.id] = t;
+});
+st.selReq = (st.reqs.find((r) => r.status === "waiting_student") || st.reqs[0] || {}).id;
+
+const openObl = () => M.obligations.filter((o) => o.status !== "הושלם");
+const waitingReqs = () => st.reqs.filter((r) => r.status === "waiting_student");
+const curStage = () => M.project.stages.find((s) => s.status === "current");
+
+/* ---------- S02 · לוח בקרה ---------- */
+function sDashboard() {
+  const me = M.me, na = M.nextAction, p = st.prac;
+  const open = openObl();
+  const stage = curStage(), stageIdx = M.project.stages.indexOf(stage) + 1, last = st.subs[0];
+  const returned = st.reports.filter((r) => r.status === "returned").length;
+  const actionCount = open.length + waitingReqs().length + returned;
+  const hrs = st.reports.filter((r) => r.status !== "draft").slice().reverse().map((r) => r.hours);
+  const urg = na.urgency === "high" ? pill("דחוף", "danger", "alert") : pill("מומלץ", "info", "info");
+  const oblCounts = Object.keys(OBL).filter((k) => k !== "הושלם").map((k) => [k, open.filter((o) => o.status === k).length]).filter((x) => x[1]);
+  const payReq = open.filter((o) => o.payment === "נדרש").length;
+  const iso = M.today;
+
+  return `
+  <div class="page-h">
+    <div class="me-h">
+      <span class="avatar" aria-hidden="true">${esc(me.initials)}</span>
+      <div>
+        <h1>שלום, ${esc(me.name.split(" ")[0])}</h1>
+        <div class="row small muted" style="margin-top:4px">
+          <span class="chip">${ico("users")}${esc(me.cohort)}</span><span class="chip">${ico("layers")}מסלול ${esc(me.track)}</span><span class="mono">ת״ז מוסדית ${esc(me.institutionalId)}</span>
+        </div>
+      </div>
+    </div>
+    <div class="muted small">יום ${dayOf(iso)} · <span class="mono">${todayDdmm}/${YEAR}</span></div>
+  </div>
+
+  <div class="bento">
+    <section class="card c-8 na" aria-labelledby="na-t">
+      <div class="row"><span class="eyebrow">הפעולה הבאה</span>${urg}</div>
+      <h2 class="na-title" id="na-t">${esc(na.title)}</h2>
+      <p class="muted">${esc(na.detail)}</p>
+      <div class="na-actions">
+        <a class="btn primary" href="#student/${esc(na.screen)}">${esc(na.cta)}${ico("arrow")}</a>
+        <span class="small muted"><span class="mono">${actionCount}</span> פעולות פתוחות בסך הכול</span>
+      </div>
+    </section>
+
+    <a class="card card-link c-4" href="#student/attendance">
+      <span class="go">${ico("arrow")}</span>
+      <div class="card-h"><h2>${ico("check2")}נוכחות</h2></div>
+      <div class="row" style="gap:16px;align-items:center;flex-wrap:nowrap">
+        ${ring(M.attendance.summaryPct, 84, M.attendance.summaryPct >= 80 ? "ok" : "warn")}
+        <div class="grow stack-sm small">
+          ${M.courses.map((c) => `<div><div class="row between"><span>${esc(c.name)}</span><span class="mono">${c.attendance == null ? "—" : c.attendance + "%"}</span></div>${meter(c.attendance || 0, c.attendance == null ? "muted" : c.attendance >= c.required ? "ok" : "danger", c.name, c.required)}</div>`).join("")}
+        </div>
+      </div>
+    </a>
+
+    <a class="card card-link c-4" href="#student/practicum">
+      <span class="go">${ico("arrow")}</span>
+      <div class="card-h"><h2>${ico("briefcase")}פרקטיקום</h2></div>
+      <div class="row between" style="align-items:flex-end">
+        <div><div class="big">${p.approved}<small> / ${p.target} ש׳</small></div><div class="kpi-lbl">שעות מאושרות מתוך היעד</div></div>
+        ${spark(hrs, 96, 34, "accent")}
+      </div>
+      <div class="stackbar" style="margin-top:12px" role="img" aria-label="${p.approved} שעות מאושרות, ${p.pending} ממתינות, יעד ${p.target}">
+        <span class="seg-ok" style="width:${(p.approved / p.target) * 100}%"></span><span class="seg-pend" style="width:${(p.pending / p.target) * 100}%"></span>
+      </div>
+      <div class="legend"><span><i class="seg-ok"></i>אושרו <b class="mono">${p.approved}</b></span><span><i class="seg-pend"></i>ממתינות <b class="mono">${p.pending}</b></span><span>דווחו <b class="mono">${p.reported}</b></span></div>
+    </a>
+
+    <a class="card card-link c-4" href="#student/obligations">
+      <span class="go">${ico("arrow")}</span>
+      <div class="card-h"><h2>${ico("list")}חובות פתוחים</h2></div>
+      <div class="big">${open.length}<small> דרישות</small></div>
+      <div class="row" style="margin-top:10px">${oblCounts.map(([k, n]) => pill(`${k} · ${n}`, OBL[k][0], OBL[k][1])).join("")}</div>
+      ${payReq ? `<div class="small muted" style="margin-top:10px">${ico("shekel")} <span class="mono">${payReq}</span> דרישות כרוכות בתשלום</div>` : ""}
+    </a>
+
+    <a class="card card-link c-4" href="#student/project">
+      <span class="go">${ico("arrow")}</span>
+      <div class="card-h"><h2>${ico("layers")}פרויקט גמר</h2></div>
+      <div class="small muted">שלב <span class="mono">${stageIdx}/${M.project.stages.length}</span></div>
+      <div style="font-weight:600;font-size:16px;margin:2px 0 8px">${esc(stage ? stage.name : "—")}</div>
+      <div class="stackbar" aria-hidden="true" style="gap:3px;background:none;border:0">${M.project.stages.map((s) => `<span style="flex:1;border-radius:3px;background:${s.status === "done" ? "var(--ok)" : s.status === "current" ? "var(--accent)" : "var(--panel-2)"};border:1px solid var(--border)"></span>`).join("")}</div>
+      ${last ? `<div class="row" style="margin-top:12px"><span class="small">הגשה אחרונה: <span class="mono">v${last.version}</span> ${esc(last.title)}</span>${subPill(last.status)}</div>` : ""}
+    </a>
+
+    <section class="card c-6" aria-labelledby="up-t">
+      <div class="card-h"><h2 id="up-t">${ico("calendar")}מפגשים קרובים</h2><a class="more" href="#student/schedule">למערכת השעות${ico("arrow")}</a></div>
+      ${M.sessions.slice(0, 4).map((s) => `
+        <a class="lrow" href="#student/schedule">
+          <span class="datebox"><b>${esc(s.date)}</b><span>${esc(s.day)}</span></span>
+          <span class="grow"><span class="${s.status === "cancelled" ? "strike muted" : ""}" style="font-weight:600">${esc(s.course)}</span><br><span class="small muted">${timeRange(s.start, s.end)} · ${esc(s.mode)}</span></span>
+          ${sessStatus(s)}
+        </a>`).join("")}
+    </section>
+
+    <section class="card c-6" aria-labelledby="an-t">
+      <div class="card-h"><h2 id="an-t">${ico("info")}הודעות ושינויים</h2></div>
+      ${M.announcements.map((a) => `
+        <div class="lrow">
+          <span class="datebox"><b>${esc(a.date)}</b><span>${a.kind === "changed" ? "שינוי" : "מידע"}</span></span>
+          <span class="grow small">${esc(a.text)}</span>
+          ${a.kind === "changed" ? pill("שינוי במערכת", "warn", "refresh") : pill("עדכון", "info", "info")}
+        </div>`).join("")}
+    </section>
+
+    <section class="card c-6" aria-labelledby="rq-t">
+      <div class="card-h"><h2 id="rq-t">${ico("chat")}ממתינות לתשובתך</h2><a class="more" href="#student/requests">לכל הפניות${ico("arrow")}</a></div>
+      ${waitingReqs().length ? waitingReqs().map((r) => `
+        <a class="lrow" href="#student/requests" data-act="s_pickReq" data-id="${esc(r.id)}">
+          <span class="mono small muted">${esc(r.id)}</span>
+          <span class="grow"><span style="font-weight:600">${esc(r.subject)}</span><br><span class="small muted">${esc(r.owner)}: ${esc(r.lastMsg || "")}</span></span>
+          ${reqPill(r.status)}
+        </a>`).join("") : `<div class="empty">אין פניות שממתינות לך ✓</div>`}
+    </section>
+
+    <section class="card c-6" aria-labelledby="mt-t">
+      <div class="card-h"><h2 id="mt-t">${ico("users")}הפגישות שלי</h2><a class="more" href="#student/meetings">קביעת פגישה${ico("arrow")}</a></div>
+      ${st.appts.map((a) => `
+        <a class="lrow" href="#student/meetings">
+          <span class="datebox"><b>${esc(a.date)}</b><span class="mono">${esc(a.time)}</span></span>
+          <span class="grow"><span style="font-weight:600">${esc(a.type)}</span><br><span class="small muted">עם ${esc(a.coach)} · <span class="mono">${esc(a.id)}</span></span></span>
+          ${pill(a.sync, /סונכרן/.test(a.sync) ? "ok" : "warn", /סונכרן/.test(a.sync) ? "check" : "clock")}
+        </a>`).join("")}
+    </section>
+  </div>`;
+}
+
+/* ---------- S03 · מערכת שעות ---------- */
+function sSchedule() {
+  const courses = uniq(M.sessions.map((s) => s.course));
+  const upd = M.sessions.filter((s) => s.status === "updated").length, can = M.sessions.filter((s) => s.status === "cancelled").length;
+  return `
+  <div class="page-h">
+    <div><h1>מערכת שעות</h1><div class="sub">שבוע <span class="mono">${esc(M.sessions[0].date)}–${esc(M.sessions[M.sessions.length - 1].date)}</span> · <span class="mono">${M.sessions.length}</span> מפגשים · <span class="mono">${upd}</span> עודכנו · <span class="mono">${can}</span> בוטלו</div></div>
+  </div>
+  <section class="card flush">
+    <form class="filters" id="sched-f" onsubmit="return false" aria-label="סינון מפגשים">
+      <label class="sr-only" for="f-course">קורס</label>
+      <select class="input" id="f-course" name="course"><option value="">כל הקורסים</option>${courses.map((c) => `<option ${st.sf.course === c ? "selected" : ""}>${esc(c)}</option>`).join("")}</select>
+      <label class="sr-only" for="f-mode">אופן המפגש</label>
+      <select class="input" id="f-mode" name="mode"><option value="">זום ופרונטלי</option><option ${st.sf.mode === "זום" ? "selected" : ""}>זום</option><option ${st.sf.mode === "פרונטלי" ? "selected" : ""}>פרונטלי</option></select>
+      <label class="check"><input type="checkbox" name="cancelled" ${st.sf.cancelled ? "checked" : ""}>הצגת מפגשים שבוטלו</label>
+      <span class="count" id="sched-count" aria-live="polite"></span>
+    </form>
+    <ul id="sched-list" class="tbl-wrap" style="overflow:visible"></ul>
+  </section>
+  <p class="hint" style="margin-top:10px">${ico("info")} כל השעות בפורמט 24 שעות. מפגש שבוטל נשאר ברשימה עם סיבת הביטול.</p>`;
+}
+function mSchedule(view) {
+  const f = $("#sched-f", view);
+  const paint = () => {
+    st.sf = { course: f.course.value, mode: f.mode.value, cancelled: f.cancelled.checked };
+    const rows = M.sessions.filter((s) => (!st.sf.course || s.course === st.sf.course) && (!st.sf.mode || s.mode === st.sf.mode) && (st.sf.cancelled || s.status !== "cancelled"));
+    $("#sched-count", view).textContent = `מוצגים ${rows.length} מתוך ${M.sessions.length}`;
+    $("#sched-list", view).innerHTML = rows.length ? rows.map((s) => {
+      const cancelled = s.status === "cancelled";
+      return `<li class="sess ${cancelled ? "cancelled" : ""}">
+        <span class="datebox"><b>${esc(s.date)}</b><span>יום ${esc(s.day)}</span></span>
+        <span class="sess-time ${cancelled ? "strike" : ""}">${timeRange(s.start, s.end)}</span>
+        <div class="sess-main">
+          <div class="sess-title ${cancelled ? "strike" : ""}">${esc(s.course)}</div>
+          <div class="small muted">${esc(s.lecturer)} · ${esc(s.location)}</div>
+          ${s.change ? `<div class="change-note ${cancelled ? "t-danger" : "t-warn"}">${ico(cancelled ? "ban" : "refresh")}<span>${cancelled ? "סיבת הביטול: " : "מה השתנה: "}${esc(s.change)}</span></div>` : ""}
+        </div>
+        <div class="sess-tags">${modeTag(s.mode)}${sessStatus(s)}</div>
+        <div class="sess-act">${s.mode === "זום" && !cancelled ? `<button type="button" class="btn sm primary" data-act="s_zoom" data-id="${s.id}">${ico("video")}כניסה לזום</button>` : ""}</div>
+      </li>`;
+    }).join("") : `<li class="empty">אין מפגשים שתואמים לסינון</li>`;
+  };
+  f.addEventListener("change", paint);
+  paint();
+}
+
+/* ---------- S05 · נוכחות ---------- */
+function sAttendance() {
+  const a = M.attendance;
+  return `
+  <div class="page-h"><div><h1>נוכחות</h1><div class="sub">סיכום נוכחות לפי קורס ורשימת מפגשים שדווחו</div></div></div>
+  <div class="bento">
+    <section class="card c-4">
+      <div class="card-h"><h2>${ico("check2")}נוכחות מצטברת</h2></div>
+      <div class="row" style="gap:16px;flex-wrap:nowrap">
+        ${ring(a.summaryPct, 96, a.summaryPct >= 80 ? "ok" : "warn")}
+        <div class="small"><b>בסיס החישוב</b><p class="muted" style="margin-top:4px">${esc(a.basis)}</p></div>
+      </div>
+    </section>
+    <section class="card c-8">
+      <div class="card-h"><h2>${ico("list")}מצב לפי קורס</h2><span class="hint">הקו האנכי מסמן את הרף הנדרש</span></div>
+      <div class="stack">
+      ${M.courses.map((c) => {
+        const tone = c.attendance == null ? "muted" : c.attendance >= c.required ? "ok" : "danger";
+        const icon = tone === "ok" ? "check" : tone === "danger" ? "alert" : "minus";
+        return `<div class="row" style="flex-wrap:nowrap;gap:14px">
+          <div style="width:34%;min-width:0"><div style="font-weight:600">${esc(c.name)}</div><div class="xs muted">${esc(c.lecturer)}</div></div>
+          <div class="grow">${meter(c.attendance || 0, tone, c.name, c.required)}<div class="xs muted mono" style="margin-top:3px">${c.attendance == null ? "—" : c.attendance + "%"} / רף ${c.required}%</div></div>
+          ${pill(c.status, tone, icon)}
+        </div>`; }).join("")}
+      </div>
+    </section>
+    <section class="card c-12 flush">
+      <div class="card-h"><h2>${ico("calendar")}מפגשים שדווחו</h2><span class="row small">${Object.keys(M.attendanceStatus).map(attPill).join("")}</span></div>
+      <div class="tbl-wrap" style="margin-top:12px">
+        <table class="tbl">
+          <thead><tr><th>תאריך</th><th>קורס</th><th>אופן</th><th>סטטוס</th><th>דקות</th><th>הערה</th><th><span class="sr-only">פעולות</span></th></tr></thead>
+          <tbody>${st.att.map((r, i) => `<tr>
+            <td class="mono nw">${esc(r.date)}</td><td class="nw">${esc(r.course)}</td><td>${modeTag(r.mode)}</td><td>${attPill(r.status)}</td>
+            <td class="mono">${r.minutes == null ? "—" : r.minutes}</td>
+            <td class="small muted">${esc(r.correction || "")}</td>
+            <td>${r.status === "review" ? `<span class="small muted">בקשה פתוחה</span>` : `<button type="button" class="btn sm" data-act="s_corr" data-i="${i}">${ico("note")}בקשת תיקון</button>`}</td>
+          </tr>`).join("")}</tbody>
+        </table>
+      </div>
+    </section>
+  </div>`;
+}
+ACT.s_corr = (btn) => {
+  const i = +btn.dataset.i;
+  openModal({
+    title: "בקשת תיקון נוכחות",
+    body: `<form id="corr-f" class="form-grid" novalidate>
+      <div class="field full"><label for="cf-s" class="req">מפגש</label><select id="cf-s" name="session">${st.att.map((r, j) => `<option value="${j}" ${j === i ? "selected" : ""} ${r.status === "review" ? "disabled" : ""}>${esc(r.date)} · ${esc(r.course)} · ${esc(M.attendanceStatus[r.status])}</option>`).join("")}</select></div>
+      <div class="field"><label for="cf-r" class="req">הסטטוס המבוקש</label><select id="cf-r" name="req"><option value="">בחרי…</option><option>נוכחת</option><option>חלקית</option></select></div>
+      <div class="field"><label for="cf-a">צירוף אישור (אופציונלי)</label><input type="file" id="cf-a" name="file"></div>
+      <div class="field full"><label for="cf-e" class="req">הסבר</label><textarea id="cf-e" name="explain" placeholder="לדוגמה: התחברתי לזום ממכשיר אחר…"></textarea><span class="hint">לפחות 10 תווים. הבקשה תועבר לרכזת הלימודים.</span></div>
+    </form>`,
+    footer: `<button type="submit" form="corr-f" class="btn primary">${ico("send")}שליחת הבקשה</button><button type="button" class="btn ghost" data-close>ביטול</button>`,
+    onMount(b) {
+      const f = $("#corr-f", b); bindClearOnInput(f);
+      f.addEventListener("submit", (e) => {
+        e.preventDefault();
+        if (!validate(f, [["req", required("הסטטוס המבוקש")], ["explain", minLen(10, "הסבר")]])) return;
+        const row = st.att[+f.session.value], id = `AC-${st.corrSeq++}`;
+        row.status = "review"; row.correction = `בקשת תיקון #${id} — ממתינה להחלטה`;
+        closeModal(); refresh();
+        toast("בקשת התיקון נשלחה", "ok", `מספר מעקב: <b class="mono">${id}</b> · נעדכן אותך כשתתקבל החלטה`);
+      });
+    },
+  });
+};
+
+/* ---------- S06 · ציונים וחובות ---------- */
+function gradeCell(o) {
+  if (o.grade != null) return `<span class="pill t-ok" style="font-family:var(--mono);font-weight:600">${ico("check")}${o.grade}</span>`;
+  if (o.status === "טרם נקלט") return pill("טרם נקלט", "info", "clock", "dashed");
+  return `<span class="small muted row" style="gap:4px">${ico("minus")}אין ציון</span>`;
+}
+function sObligations() {
+  const open = openObl();
+  return `
+  <div class="page-h"><div><h1>ציונים וחובות</h1><div class="sub"><span class="mono">${open.length}</span> דרישות פתוחות מתוך <span class="mono">${M.obligations.length}</span></div></div></div>
+  <div class="bento">
+    <section class="card c-12">
+      <div class="card-h"><h2>${ico("info")}איך לקרוא את עמודת הציון</h2></div>
+      <div class="row" style="gap:18px">
+        <span class="row small">${gradeCell({ grade: 88 })} ציון סופי שנקלט</span>
+        <span class="row small">${gradeCell({ status: "טרם נקלט" })} הציון קיים אצל המרצה אך טרם הוזן למערכת</span>
+        <span class="row small">${gradeCell({ status: "חסר" })} אין ציון — הדרישה טרם הושלמה</span>
+      </div>
+    </section>
+    <section class="card c-12 flush">
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead><tr><th>קורס</th><th>דרישה</th><th>סטטוס</th><th>ציון</th><th>דרך השלמה</th><th>מועד</th><th>תשלום</th></tr></thead>
+          <tbody>${M.obligations.map((o) => `<tr>
+            <td class="nw">${esc(o.course)}</td><td style="font-weight:500">${esc(o.requirement)}</td>
+            <td>${pill(o.status, (OBL[o.status] || ["muted"])[0], (OBL[o.status] || [])[1])}</td>
+            <td>${gradeCell(o)}</td>
+            <td class="small">${esc(o.completion)}</td>
+            <td class="mono nw">${esc(o.due)}</td>
+            <td>${o.payment === "נדרש" ? pill("נדרש תשלום", "warn", "shekel") : `<span class="small muted">${esc(o.payment)}</span>`}</td>
+          </tr>`).join("")}</tbody>
+        </table>
+      </div>
+    </section>
+  </div>`;
+}
+
+/* ---------- S07 · פרקטיקום ---------- */
+function sPracticum() {
+  const P = M.practicum, p = st.prac, ed = st.editing ? st.reports.find((r) => r.id === st.editing) : null;
+  const stat = (lbl, val, tone, icon, sub) => `<section class="card c-3 t-${tone}"><div class="row between"><span class="kpi-lbl">${lbl}</span><span style="color:var(--c)">${ico(icon)}</span></div><div class="big" style="margin-top:6px">${val}<small> ש׳</small></div><div class="xs muted">${sub}</div></section>`;
+  return `
+  <div class="page-h">
+    <div><h1>פרקטיקום</h1><div class="sub">${esc(P.place)} · מלווה: ${esc(P.mentor)}</div></div>
+    <a class="btn primary" href="#rep-form" data-act="s_newRep">${ico("plus")}דיווח חדש</a>
+  </div>
+  <div class="bento">
+    ${stat("דווחו", p.reported, "info", "upload", "כל השעות שנשלחו")}
+    ${stat("ממתינות לאישור", p.pending, "warn", "clock", "בבדיקת המלווה")}
+    ${stat("אושרו", p.approved, "ok", "check", `${Math.round((p.approved / p.target) * 100)}% מהיעד`)}
+    ${stat("יעד", p.target, "muted", "flag", `נותרו ${Math.max(0, p.target - p.approved)} שעות לאישור`)}
+    <section class="card c-12">
+      <div class="stackbar" role="img" aria-label="${p.approved} מאושרות ו-${p.pending} ממתינות מתוך ${p.target}"><span class="seg-ok" style="width:${(p.approved / p.target) * 100}%"></span><span class="seg-pend" style="width:${(p.pending / p.target) * 100}%"></span></div>
+      <div class="legend"><span><i class="seg-ok"></i>אושרו</span><span><i class="seg-pend"></i>ממתינות לאישור</span><span><i></i>נותרו עד היעד</span></div>
+    </section>
+    <section class="card c-12 flush">
+      <div class="card-h"><h2>${ico("list")}הדיווחים שלי</h2></div>
+      <div class="tbl-wrap" style="margin-top:12px"><table class="tbl">
+        <thead><tr><th>מס׳</th><th>תאריך</th><th>שעות</th><th>משימה</th><th>סטטוס</th><th><span class="sr-only">פעולות</span></th></tr></thead>
+        <tbody>${st.reports.map((r) => `<tr${r.status === "returned" ? ' class="hl"' : ""}>
+          <td class="mono nw">${esc(r.id)}</td><td class="mono">${esc(r.date)}</td><td class="mono">${r.hours}</td>
+          <td>${esc(r.task)}${r.feedback ? `<div class="feedback"><b>משוב המלווה (${esc(P.mentor)})</b>${esc(r.feedback)}</div>` : ""}</td>
+          <td>${repPill(r.status)}</td>
+          <td>${r.status === "returned" ? `<button type="button" class="btn sm warn" data-act="s_editRep" data-id="${esc(r.id)}">${ico("refresh")}תיקון ושליחה</button>` : r.status === "draft" ? `<button type="button" class="btn sm" data-act="s_editRep" data-id="${esc(r.id)}">${ico("note")}המשך עריכה</button>` : ""}</td>
+        </tr>`).join("")}</tbody>
+      </table></div>
+    </section>
+    <section class="card c-12" id="rep-form" aria-labelledby="rep-t">
+      <div class="card-h"><h2 id="rep-t">${ico("plus")}${ed ? `עריכת דיווח <span class="mono">${esc(ed.id)}</span>` : "דיווח שעות חדש"}</h2>${ed ? `<button type="button" class="btn sm ghost" data-act="s_cancelEdit">ביטול עריכה</button>` : ""}</div>
+      ${ed && ed.feedback ? `<div class="callout t-danger" style="margin-bottom:14px">${ico("refresh")}<div><strong>הוחזר לתיקון:</strong> ${esc(ed.feedback)}</div></div>` : ""}
+      <form id="rep-f" class="form-grid g3" novalidate>
+        <div class="field"><label for="rf-as" class="req">שיבוץ</label><select id="rf-as" name="assign"><option value="">בחרי שיבוץ…</option><option selected>${esc(P.place)} — ${esc(P.mentor)}</option></select></div>
+        <div class="field"><label for="rf-d" class="req">תאריך</label><input type="date" id="rf-d" name="date" max="${M.today}" value="${ed && ed.date !== "—" ? ddmmToIso(ed.date) : ""}"></div>
+        <div class="field"><label for="rf-p" class="req">מקום</label><input id="rf-p" name="place" value="${esc(P.place)}"></div>
+        <div class="field"><label for="rf-s" class="req">שעת התחלה</label><input type="time" id="rf-s" name="start" step="300"></div>
+        <div class="field"><label for="rf-e" class="req">שעת סיום</label><input type="time" id="rf-e" name="end" step="300"></div>
+        <div class="field"><label for="rf-b">הפסקה (דקות)</label><input type="number" id="rf-b" name="brk" min="0" step="5" value="0" inputmode="numeric"></div>
+        <div class="field full"><label for="rf-t" class="req">תיאור המשימה</label><textarea id="rf-t" name="task" placeholder="מה עשית, אילו כלים שימשו…">${ed ? esc(ed.task) : ""}</textarea></div>
+        <div class="field"><label for="rf-r">תוצר / תוצאה</label><textarea id="rf-r" name="result"></textarea></div>
+        <div class="field"><label for="rf-l">למידה / קושי</label><textarea id="rf-l" name="learn"></textarea></div>
+        <div class="field"><label for="rf-f">קובץ מצורף</label><input type="file" id="rf-f" name="file"><span class="hint">אופציונלי · PDF / תמונה</span></div>
+      </form>
+      <div class="form-actions">
+        <button type="button" class="btn primary" data-act="s_submitRep">${ico("send")}שליחה לבדיקה</button>
+        <button type="button" class="btn" data-act="s_draftRep">${ico("file")}שמירת טיוטה</button>
+        <span class="small muted" id="rep-dur" aria-live="polite" style="align-self:center"></span>
+      </div>
+    </section>
+  </div>`;
+}
+function repDuration(f) {
+  const s = toMin(f.start.value), e = toMin(f.end.value), b = +f.brk.value || 0;
+  return isNaN(s) || isNaN(e) ? null : e - s - b;
+}
+function mPracticum(view) {
+  const f = $("#rep-f", view); bindClearOnInput(f);
+  const upd = () => { const d = repDuration(f); $("#rep-dur", view).innerHTML = d != null && d > 0 ? `משך מחושב: <b class="mono">${fmtMin(d)}</b> שעות` : ""; };
+  f.addEventListener("input", upd);
+  if (st._scrollToForm) { st._scrollToForm = false; $("#rep-form", view).scrollIntoView({ block: "start" }); $("#rf-d", view).focus({ preventScroll: true }); }
+}
+function saveRep(status) {
+  const f = $("#rep-f");
+  const rules = status === "draft"
+    ? [["assign", required("שיבוץ")], ["date", (v) => (v && v > M.today ? "לא ניתן לדווח על תאריך עתידי" : "")]]
+    : [
+        ["assign", required("שיבוץ")],
+        ["date", (v) => (!v ? "שדה חובה: תאריך" : v > M.today ? "לא ניתן לדווח על תאריך עתידי" : "")],
+        ["place", required("מקום")],
+        ["start", required("שעת התחלה")],
+        ["end", (v, fm) => (!v ? "שדה חובה: שעת סיום" : toMin(v) <= toMin(fm.start.value) ? "שעת הסיום חייבת להיות אחרי שעת ההתחלה" : "")],
+        ["brk", (v, fm) => { const n = +v || 0; const span = toMin(fm.end.value) - toMin(fm.start.value); return n < 0 ? "ערך לא תקין" : span > 0 && n >= span ? "ההפסקה ארוכה ממשך הדיווח" : ""; }],
+        ["task", minLen(10, "תיאור המשימה")],
+      ];
+  if (!validate(f, rules)) return;
+  const d = repDuration(f), hours = d && d > 0 ? Math.round((d / 60) * 10) / 10 : 0;
+  const date = f.date.value ? isoToDdmm(f.date.value) : "—";
+  const task = f.task.value.trim() || "טיוטה ללא תיאור";
+  let r = st.editing ? st.reports.find((x) => x.id === st.editing) : null;
+  const wasSubmitted = r && r.status !== "draft";
+  if (!r) { r = { id: `PR-${st.repSeq++}` }; st.reports.unshift(r); }
+  Object.assign(r, { date, hours, task, status });
+  delete r.feedback;
+  if (status === "pending") { if (!wasSubmitted) st.prac.reported += hours; st.prac.pending += hours; }
+  st.editing = null;
+  refresh();
+  toast(status === "draft" ? "הטיוטה נשמרה" : "הדיווח נשלח לבדיקה", "ok", `מספר דיווח <b class="mono">${r.id}</b>${status === "pending" ? ` · ${hours} שעות ממתינות לאישור המלווה` : ""}`);
+}
+ACT.s_submitRep = () => saveRep("pending");
+ACT.s_draftRep = () => saveRep("draft");
+ACT.s_editRep = (b) => { st.editing = b.dataset.id; st._scrollToForm = true; refresh(); };
+ACT.s_cancelEdit = () => { st.editing = null; refresh(); };
+ACT.s_newRep = () => {
+  st.editing = null; st._scrollToForm = true;
+  if (cur.role !== "student" || cur.id !== "practicum") go("student", "practicum"); else refresh();
+};
+
+/* ---------- S09+S10 · פרויקט ---------- */
+function sProject() {
+  const P = M.project, stage = curStage();
+  const left = stage && stage.due ? daysBetween(M.today, ddmmToIso(stage.due)) : null;
+  const nextVer = Math.max.apply(null, st.subs.map((s) => s.version).concat([0])) + 1;
+  const delivStatus = (d) => { const s = st.subs.find((x) => x.title === d); return s ? subPill(s.status) : pill("טרם הוגש", "muted", "minus", "dashed"); };
+  return `
+  <div class="page-h">
+    <div><div class="eyebrow">פרויקט גמר</div><h1>${esc(P.name)}</h1>
+      <div class="row small" style="margin-top:6px">${P.members.map((m) => `<span class="chip">${ico("user")}${esc(m)}${m === M.me.name ? " (את)" : ""}</span>`).join("")}<span class="muted">מנחה: ${esc(P.owner)}</span></div>
+    </div>
+  </div>
+  <div class="bento">
+    <section class="card c-12" aria-labelledby="map-t">
+      <div class="card-h"><h2 id="map-t">${ico("layers")}מפת שלבים</h2></div>
+      <ol class="stepper">${P.stages.map((s, i) => `<li class="${s.status}">
+        <span class="st-dot" aria-hidden="true">${s.status === "done" ? ico("check") : s.status === "locked" ? ico("lock") : i + 1}</span>
+        <div class="st-name">${esc(s.name)}</div>
+        <div class="st-state">${s.status === "done" ? "הושלם" : s.status === "current" ? "שלב נוכחי" + (s.due ? ` · עד <span class="mono">${esc(s.due)}</span>` : "") : "נעול"}</div>
+      </li>`).join("")}</ol>
+    </section>
+    <section class="card c-6">
+      <div class="card-h"><h2>${ico("flag")}השלב הנוכחי: ${esc(stage.name)}</h2>${left != null ? pill(`עוד ${left} ימים`, left <= 7 ? "warn" : "info", "clock") : ""}</div>
+      <div class="small muted">מועד הגשה: <b class="mono" style="color:var(--text)">${esc(stage.due || "—")}</b></div>
+      <div class="eyebrow" style="margin:14px 0 6px">תוצרים נדרשים</div>
+      ${(stage.deliverables || []).map((d) => `<div class="lrow"><span>${ico("file")}</span><span class="grow">${esc(d)}</span>${delivStatus(d)}</div>`).join("")}
+    </section>
+    <section class="card c-6 t-danger" style="border-color:color-mix(in srgb,var(--danger) 40%,var(--border))">
+      <div class="card-h"><h2 style="color:var(--danger)">${ico("alert")}חסמים (${P.blockers.length})</h2></div>
+      ${P.blockers.length ? `<ul class="stack-sm">${P.blockers.map((b) => `<li class="callout t-danger">${ico("ban")}<span>${esc(b)}</span></li>`).join("")}</ul><p class="small muted" style="margin-top:10px">כדי להתקדם לשלב ״פיתוח״ יש להגיש גרסה מתוקנת ולקבל אישור.</p>` : `<div class="empty">אין חסמים ✓</div>`}
+    </section>
+    <section class="card c-7" aria-labelledby="sub-t">
+      <div class="card-h"><h2 id="sub-t">${ico("upload")}הגשות וגרסאות</h2></div>
+      <ol class="timeline">${st.subs.map((s) => `<li class="t-${SUB[s.status] ? SUB[s.status][1] : "muted"}">
+        <div class="row between"><span><b class="mono">v${s.version}</b> · ${esc(s.title)}</span>${subPill(s.status)}</div>
+        <div class="xs muted mono">${esc(s.submittedAt)}${s.note ? ` · ${esc(s.note)}` : ""}</div>
+        ${s.feedback ? `<div class="feedback"><b>משוב ${esc(P.owner)}</b>${esc(s.feedback)}</div>` : ""}
+      </li>`).join("")}</ol>
+    </section>
+    <section class="card c-5" aria-labelledby="nv-t">
+      <div class="card-h"><h2 id="nv-t">${ico("plus")}הגשת גרסה חדשה <span class="mono muted">v${nextVer}</span></h2></div>
+      <form id="sub-f" class="form-grid" novalidate>
+        <div class="field full"><label for="sf-t" class="req">סוג תוצר</label><select id="sf-t" name="type"><option value="">בחרי…</option>${(stage.deliverables || []).map((d) => `<option>${esc(d)}</option>`).join("")}</select></div>
+        <fieldset class="field full" style="border:0;padding:0;margin:0"><legend class="lbl req" style="padding:0;margin-bottom:5px">אופן ההגשה</legend>
+          <div class="row"><label class="check"><input type="radio" name="how" value="file" ${st.linkMode === "file" ? "checked" : ""}>קובץ</label><label class="check"><input type="radio" name="how" value="link" ${st.linkMode === "link" ? "checked" : ""}>קישור</label></div>
+        </fieldset>
+        <div class="field full" ${st.linkMode === "file" ? "" : "hidden"} data-how="file"><label for="sf-f" class="req">קובץ</label><input type="file" id="sf-f" name="file"></div>
+        <div class="field full" ${st.linkMode === "link" ? "" : "hidden"} data-how="link"><label for="sf-l" class="req">קישור</label><input type="url" id="sf-l" name="link" dir="ltr" placeholder="https://"></div>
+        <div class="field full"><label for="sf-n" class="req">כותרת הגרסה</label><input id="sf-n" name="title" placeholder="לדוגמה: מסמך ארכיטקטורה — תיקון לפי משוב"></div>
+        <div class="field full"><label for="sf-o">הערה למנחה</label><textarea id="sf-o" name="note"></textarea></div>
+        <div class="full"><button type="submit" class="btn primary">${ico("upload")}הגשת גרסה</button></div>
+      </form>
+    </section>
+  </div>`;
+}
+function mProject(view) {
+  const f = $("#sub-f", view); bindClearOnInput(f);
+  f.addEventListener("change", (e) => {
+    if (e.target.name !== "how") return;
+    st.linkMode = e.target.value;
+    $$("[data-how]", f).forEach((d) => { d.hidden = d.dataset.how !== st.linkMode; });
+  });
+  f.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const rules = [["type", required("סוג תוצר")], ["title", required("כותרת הגרסה")]];
+    if (st.linkMode === "file") rules.splice(1, 0, ["file", required("קובץ")]);
+    else rules.splice(1, 0, ["link", (v) => (!v ? "שדה חובה: קישור" : /^https?:\/\/\S+\.\S+/.test(v) ? "" : "יש להזין קישור מלא שמתחיל ב-https://")]);
+    if (!validate(f, rules)) return;
+    const v = Math.max.apply(null, st.subs.map((s) => s.version).concat([0])) + 1;
+    st.subs.forEach((s) => { if (s.title === f.type.value && s.status === "returned") s.status = "superseded"; });
+    st.subs.unshift({ version: v, title: f.type.value, submittedAt: `${todayDdmm} ${fmtMin(new Date().getHours() * 60 + new Date().getMinutes())}`, status: "submitted", note: f.title.value.trim() });
+    refresh();
+    toast(`גרסה v${v} הוגשה`, "ok", `${esc(f.type.value)} · המנחה תקבל התראה`);
+  });
+}
+
+/* ---------- S11 · פגישות ---------- */
+function sMeetings() {
+  const bk = st.bk, T = bk.type ? M.appointmentTypes.find((t) => t.id === bk.type) : null, S = bk.slot ? st.slots.find((s) => s.id === bk.slot) : null;
+  const steps = ["סוג ומועד", "סיכום", "אישור"];
+  const stepsHtml = `<ol class="wiz-steps">${steps.map((s, i) => `<li ${bk.step === i + 1 ? 'aria-current="step"' : ""} class="${bk.step > i + 1 ? "done" : ""}"><b>${bk.step > i + 1 ? "✓" : i + 1}</b>${s}</li>`).join("")}</ol>`;
+  let body = "";
+  if (bk.step === 1) {
+    body = `
+      <fieldset style="border:0;padding:0;margin:0"><legend class="eyebrow" style="margin-bottom:8px">1 · בחרי סוג פגישה</legend>
+      <div class="opts">${M.appointmentTypes.map((t) => `<label class="opt"><input type="radio" name="atype" value="${t.id}" ${bk.type === t.id ? "checked" : ""} data-act="s_pickType">
+        <span class="grow"><b>${esc(t.name)}</b><br><span class="small muted mono">${t.duration} דק׳</span><br>${t.eligible ? pill("זמינה לך", "ok", "check") : pill("חסום כרגע", "danger", "lock")}</span></label>`).join("")}</div></fieldset>
+      ${T ? `
+      <div style="margin-top:16px"><div class="eyebrow" style="margin-bottom:4px">תנאי זכאות · ${esc(T.name)}</div>
+        ${T.conditions.map((c) => `<div class="cond"><span class="mark t-${c.ok ? "ok" : "danger"}">${ico(c.ok ? "check" : "x")}</span><span><span class="sr-only">${c.ok ? "מתקיים:" : "לא מתקיים:"}</span>${esc(c.text)}${c.fix ? `<br><span class="small" style="color:var(--warn)">איך משלימים: ${esc(c.fix)}</span>` : ""}</span></div>`).join("")}
+      </div>
+      ${!T.eligible ? `<div class="callout t-danger" style="margin-top:12px">${ico("lock")}<div><strong>לא ניתן לקבוע כרגע פגישת ״${esc(T.name)}״.</strong> יש להשלים את התנאים המסומנים ב-✗. לאחר ההשלמה הקביעה תיפתח אוטומטית.<div style="margin-top:8px"><a class="btn sm" href="#student/project">${ico("layers")}מעבר לפרויקט</a></div></div></div>
+        <div class="form-actions"><button type="button" class="btn primary" disabled aria-disabled="true">${ico("lock")}בחירת מועד — חסום</button></div>` : `
+      <fieldset style="border:0;padding:0;margin:16px 0 0"><legend class="eyebrow" style="margin-bottom:8px">2 · בחרי מועד פנוי</legend>
+        <div class="opts">${st.slots.map((s) => `<label class="opt"><input type="radio" name="slot" value="${s.id}" ${s.free <= 0 ? "disabled" : ""} ${bk.slot === s.id ? "checked" : ""} data-act="s_pickSlot">
+          <span class="grow"><b class="mono">${esc(s.date)} · ${esc(s.time)}</b> <span class="small muted">יום ${esc(s.day)}</span><br><span class="small">${esc(s.coach)}</span><br>${s.free > 0 ? pill(`${s.free} מקום פנוי`, "ok", "check") : pill("מלא", "muted", "ban")}</span></label>`).join("")}</div>
+      </fieldset>
+      <div class="form-actions"><button type="button" class="btn primary" data-act="s_toSummary" ${S ? "" : "disabled"}>המשך לסיכום${ico("arrow")}</button>${S ? "" : '<span class="small muted" style="align-self:center">יש לבחור מועד כדי להמשיך</span>'}</div>`}` : ""}`;
+  } else if (bk.step === 2) {
+    body = `<div class="eyebrow" style="margin-bottom:10px">בדקי את הפרטים לפני האישור</div>
+      <dl class="kv"><dt>סוג</dt><dd>${esc(T.name)}</dd><dt>משך</dt><dd class="mono">${T.duration} דק׳</dd><dt>תאריך</dt><dd><span class="mono">${esc(S.date)}</span> · יום ${esc(S.day)}</dd><dt>שעה</dt><dd class="mono">${esc(S.time)}–${fmtMin(toMin(S.time) + T.duration)}</dd><dt>מאמנת</dt><dd>${esc(S.coach)}</dd><dt>יומן</dt><dd>הפגישה תסונכרן ליומן Google שלך</dd></dl>
+      <div class="form-actions"><button type="button" class="btn primary" data-act="s_confirmBk">${ico("check")}אישור וקביעה</button><button type="button" class="btn" data-act="s_bkBack">${ico("back")}חזרה</button></div>`;
+  } else {
+    const a = bk.done;
+    body = `<div class="confirm-box" role="status"><div class="big-ico">${ico("check")}</div><h2>הפגישה נקבעה</h2>
+      <p class="muted" style="margin:6px 0 12px">${esc(a.type)} · <span class="mono">${esc(a.date)} ${esc(a.time)}</span> · ${esc(a.coach)}</p>
+      <div class="row" style="justify-content:center">${pill("מספר רישום " + a.id, "accent", "file")}${/סונכרן/.test(a.sync) ? pill(a.sync, "ok", "check") : pill(a.sync, "warn", "clock")}</div>
+      <div class="form-actions" style="justify-content:center;border:0"><button type="button" class="btn" data-act="s_bkReset">${ico("plus")}קביעת פגישה נוספת</button></div></div>`;
+  }
+  return `
+  <div class="page-h"><div><h1>פגישות</h1><div class="sub">קביעת פגישה עם צוות ההכוון — מוצגים מועדים פנויים בלבד</div></div></div>
+  <div class="bento">
+    <section class="card c-8" aria-labelledby="bk-t"><div class="card-h"><h2 id="bk-t">${ico("calendar")}קביעת פגישה</h2></div>${stepsHtml}${body}</section>
+    <section class="card c-4" aria-labelledby="my-t">
+      <div class="card-h"><h2 id="my-t">${ico("users")}הפגישות שלי</h2></div>
+      ${st.appts.length ? st.appts.map((a) => `<div class="lrow"><span class="datebox"><b>${esc(a.date)}</b><span class="mono">${esc(a.time)}</span></span><span class="grow"><b>${esc(a.type)}</b><br><span class="xs muted">${esc(a.coach)} · <span class="mono">${esc(a.id)}</span></span><br>${/סונכרן/.test(a.sync) ? pill(a.sync, "ok", "check") : pill(a.sync, "warn", "clock")}</span></div>`).join("") : `<div class="empty">אין פגישות קרובות</div>`}
+    </section>
+  </div>`;
+}
+ACT.s_pickType = (el) => { st.bk.type = el.value; st.bk.slot = null; refresh(); const r = $(`input[name=atype][value="${el.value}"]`); if (r) r.focus(); };
+ACT.s_pickSlot = (el) => { st.bk.slot = el.value; refresh(); const r = $(`input[name=slot][value="${el.value}"]`); if (r) r.focus(); };
+ACT.s_toSummary = () => { if (!st.bk.slot) return; st.bk.step = 2; refresh(); };
+ACT.s_bkBack = () => { st.bk.step = 1; refresh(); };
+ACT.s_bkReset = () => { st.bk = { type: null, slot: null, step: 1, done: null }; refresh(); };
+ACT.s_confirmBk = () => {
+  const T = M.appointmentTypes.find((t) => t.id === st.bk.type), S = st.slots.find((s) => s.id === st.bk.slot);
+  if (!S || S.free <= 0) { toast("המועד כבר אינו פנוי", "danger", "בחרי מועד אחר"); st.bk.step = 1; refresh(); return; }
+  S.free -= 1;
+  const a = { id: `AP-${st.apSeq++}`, type: T.name, date: S.date, time: S.time, coach: S.coach, sync: "ממתין לסנכרון ליומן…" };
+  st.appts.unshift(a); st.bk.step = 3; st.bk.done = a;
+  refresh();
+  toast("הפגישה נקבעה", "ok", `מספר רישום <b class="mono">${a.id}</b>`);
+  setTimeout(() => { a.sync = "סונכרן ליומן"; if (cur.role === "student" && cur.id === "meetings") refresh(); }, 1600);
+};
+
+/* ---------- S13 · פניות ---------- */
+function sRequests() {
+  const r = st.reqs.find((x) => x.id === st.selReq), th = r ? st.threads[r.id] : [];
+  return `
+  <div class="page-h"><div><h1>פניות</h1><div class="sub"><span class="mono">${st.reqs.length}</span> פניות · <span class="mono">${waitingReqs().length}</span> ממתינות לתשובתך</div></div>
+    <button type="button" class="btn primary" data-act="s_newReq">${ico("plus")}פנייה חדשה</button></div>
+  <div class="split">
+    <section class="card flush" aria-label="רשימת פניות">
+      ${st.reqs.map((x) => `<button type="button" class="req-item" data-act="s_pickReq" data-id="${esc(x.id)}" aria-current="${x.id === st.selReq}">
+        <span class="row between"><span class="mono xs muted">${esc(x.id)} · ${esc(x.opened)}</span>${reqPill(x.status)}</span>
+        <span class="t" style="display:block">${esc(x.subject)}</span>
+        <span class="xs muted">${esc(x.type)} · אחראית: ${esc(x.owner)}</span>
+      </button>`).join("")}
+    </section>
+    <section class="card flush" id="req-detail" aria-live="polite">
+      ${r ? `
+      <div class="card-h" style="padding:14px 16px;border-bottom:1px solid var(--border);margin:0">
+        <div><div class="mono xs muted">${esc(r.id)} · נפתחה ${esc(r.opened)}</div><h2 style="font-size:15px">${esc(r.subject)}</h2><div class="xs muted">${esc(r.type)} · אחראית: ${esc(r.owner)}</div></div>${reqPill(r.status)}
+      </div>
+      ${r.status === "waiting_student" ? `<div class="callout t-warn" style="margin:12px 16px 0">${ico("alert")}<span><strong>הצוות ממתין לתשובתך.</strong> אפשר להשיב למטה ולצרף קובץ.</span></div>` : ""}
+      <div class="thread">${th.map((m) => m.from === "sys" ? `<div class="msg sys">${esc(m.text)}</div>` : `<div class="msg ${m.from}"><div class="who"><b>${esc(m.who)}</b><span class="mono">${esc(m.at || "")}</span></div>${esc(m.text)}${m.file ? `<div class="xs muted" style="margin-top:4px">${ico("clip")} ${esc(m.file)}</div>` : ""}</div>`).join("")}</div>
+      ${r.status === "closed" ? `<div class="empty" style="border-top:1px solid var(--border)">${ico("lock")} הפנייה סגורה. לפנייה נוספת פתחי פנייה חדשה.</div>` : `
+      <form id="reply-f" style="padding:12px 16px 16px;border-top:1px solid var(--border)" novalidate>
+        <div class="field"><label for="rp-t">תשובה</label><textarea id="rp-t" name="text" placeholder="כתבי תשובה…"></textarea></div>
+        <div class="row between" style="margin-top:8px"><div class="field"><label for="rp-f" class="sr-only">צירוף קובץ</label><input type="file" id="rp-f" name="file"></div><button type="submit" class="btn primary">${ico("send")}שליחה</button></div>
+      </form>`}` : `<div class="empty">בחרי פנייה מהרשימה</div>`}
+    </section>
+  </div>`;
+}
+function mRequests(view) {
+  const f = $("#reply-f", view); if (!f) return;
+  bindClearOnInput(f);
+  f.addEventListener("submit", (e) => {
+    e.preventDefault();
+    if (!validate(f, [["text", minLen(2, "תשובה")]])) return;
+    const r = st.reqs.find((x) => x.id === st.selReq);
+    st.threads[r.id].push({ from: "me", who: M.me.name, at: `${todayDdmm} ${fmtMin(new Date().getHours() * 60 + new Date().getMinutes())}`, text: f.text.value.trim(), file: f.file.files[0] ? f.file.files[0].name : "" });
+    if (r.status === "waiting_student") r.status = "in_progress";
+    refresh(); toast("התשובה נשלחה", "ok", `פנייה <b class="mono">${esc(r.id)}</b> חזרה לטיפול הצוות`);
+  });
+}
+ACT.s_pickReq = (b) => {
+  st.selReq = b.dataset.id;
+  if (cur.id !== "requests" || cur.role !== "student") { go("student", "requests"); return; }
+  refresh();
+  if (window.innerWidth < 900) $("#req-detail").scrollIntoView({ block: "start" });
+};
+ACT.s_newReq = () => {
+  openModal({
+    title: "פנייה חדשה",
+    body: `<form id="nr-f" class="form-grid" novalidate>
+      <div class="field"><label for="nr-ty" class="req">נושא כללי</label><select id="nr-ty" name="type"><option value="">בחרי…</option>${["לימודים", "נוכחות", "מסמכים", "פרקטיקום", "פרויקט", "טכני", "אחר"].map((t) => `<option>${t}</option>`).join("")}</select></div>
+      <div class="field"><label for="nr-at">קובץ מצורף</label><input type="file" id="nr-at" name="file"></div>
+      <div class="field full"><label for="nr-s" class="req">כותרת</label><input id="nr-s" name="subject" maxlength="80"></div>
+      <div class="field full"><label for="nr-b" class="req">תוכן הפנייה</label><textarea id="nr-b" name="body" placeholder="פרטי בקצרה במה נוכל לעזור…"></textarea></div>
+    </form>`,
+    footer: `<button type="submit" form="nr-f" class="btn primary">${ico("send")}שליחת הפנייה</button><button type="button" class="btn ghost" data-close>ביטול</button>`,
+    onMount(b) {
+      const f = $("#nr-f", b); bindClearOnInput(f);
+      f.addEventListener("submit", (e) => {
+        e.preventDefault();
+        if (!validate(f, [["type", required("נושא כללי")], ["subject", minLen(3, "כותרת")], ["body", minLen(10, "תוכן הפנייה")]])) return;
+        const id = `RQ-${st.reqSeq++}`;
+        st.reqs.unshift({ id, subject: f.subject.value.trim(), type: f.type.value, opened: todayDdmm, status: "new", owner: "טרם שויכה" });
+        st.threads[id] = [{ from: "me", who: M.me.name, at: todayDdmm, text: f.body.value.trim(), file: f.file.files[0] ? f.file.files[0].name : "" }, { from: "sys", text: "הפנייה התקבלה ותשויך לאחראית בהקדם" }];
+        st.selReq = id; closeModal();
+        if (cur.id === "requests") refresh(); else go("student", "requests");
+        toast("הפנייה נשלחה", "ok", `מספר פנייה <b class="mono">${id}</b>`);
+      });
+    },
+  });
+};
+ACT.s_zoom = () => toast("פתיחת קישור הזום", "info", "באב-הטיפוס הקישור אינו פעיל");
+
+ROLES.student = {
+  label: "אזור תלמידה",
+  switchLabel: "מעבר לאזור התלמידה",
+  user: { name: M.me.name, initials: M.me.initials, sub: M.me.track },
+  screens: [
+    { id: "dashboard", label: "לוח בקרה", short: "בית", icon: "grid", render: sDashboard },
+    { id: "schedule", label: "מערכת שעות", short: "מערכת", icon: "calendar", render: sSchedule, mount: mSchedule, badge: () => M.sessions.filter((s) => s.status !== "published").length },
+    { id: "attendance", label: "נוכחות", icon: "check2", render: sAttendance },
+    { id: "obligations", label: "ציונים וחובות", short: "חובות", icon: "list", render: sObligations, badge: () => openObl().length },
+    { id: "practicum", label: "פרקטיקום", icon: "briefcase", render: sPracticum, mount: mPracticum, badge: () => st.reports.filter((r) => r.status === "returned").length },
+    { id: "project", label: "פרויקט גמר", short: "פרויקט", icon: "layers", render: sProject, mount: mProject },
+    { id: "meetings", label: "פגישות", icon: "users", render: sMeetings },
+    { id: "requests", label: "פניות", icon: "chat", render: sRequests, mount: mRequests, badge: () => waitingReqs().length },
+  ],
+  commands: [
+    { label: "דיווח פרקטיקום חדש", icon: "plus", hint: "תלמידה", run: () => ACT.s_newRep() },
+    { label: "פנייה חדשה", icon: "chat", hint: "תלמידה", run: () => ACT.s_newReq() },
+  ],
+};
+
+/* =====================================================================
+   ADMIN — אזור ניהול וצוות
+   ===================================================================== */
+const ACC = { "פעיל": ["ok", "check"], "הוזמנה": ["info", "mail"], "בוגרת משלימה": ["violet", "flag"], "מושבתת": ["muted", "ban"] };
+const accPill = (a) => pill(a, (ACC[a] || ["muted"])[0], (ACC[a] || [])[1]);
+const PRIO = { "גבוהה": ["danger", "alert"], "רגילה": ["muted", "minus"], "נמוכה": ["muted", "minus"] };
+const KPI_GO = {
+  obligations: "admin/students?f=obligations", practicum: "admin/practicum", submissions: "admin/submissions",
+  meetingsToday: "admin/meetings", unassigned: "admin/requests?f=unassigned", payments: "admin/students?f=payments", failures: "admin/dashboard?f=failures",
+};
+const KPI_ICON = { obligations: "list", practicum: "briefcase", submissions: "upload", meetingsToday: "users", unassigned: "chat", payments: "shekel", failures: "alert" };
+const nowHM = () => fmtMin(new Date().getHours() * 60 + new Date().getMinutes());
+const sessMinutes = (s) => { const m = /(\d{2}:\d{2})\D+(\d{2}:\d{2})/.exec(s.time || ""); return m ? toMin(m[2]) - toMin(m[1]) : 180; };
+
+const ad = {
+  failures: clone(M.deliveryFailures),
+  students: clone(M.students),
+  sf: { cohort: "", track: "", account: "", q: "" },
+  picked: new Set(),
+  stuSeq: 1400,
+  sessions: [clone(M.attendanceSession)].concat(M.sessions.filter((s) => s.status !== "cancelled" && ddmmToIso(s.date) <= M.today).map((s) => ({
+    id: s.id, course: s.course, date: s.date, time: `${s.start}–${s.end}`, approved: false,
+    entries: M.students.filter((x) => x.account === "פעיל" || x.account === "הוזמנה").map((x) => ({ name: x.name, status: "unreported", minutes: null })),
+  }))),
+  selSess: M.attendanceSession.id,
+  corrections: clone(M.corrections),
+  pq: clone(M.practicumQueue),
+  meetings: clone(M.meetingsToday),
+  openings: [],
+  rq: clone(M.requestQueue),
+  rf: { status: "", type: "", priority: "", unassigned: false, q: "" },
+  threads: {},
+  notes: {},
+  history: {},
+};
+ad.rq.forEach((r) => {
+  const sr = M.requests.find((x) => x.id === r.id);
+  const t = [{ from: "me", who: r.student, at: sr ? sr.opened : "", text: `פנייה בנושא: ${r.subject}` }];
+  if (sr && sr.lastMsg) t.push({ from: "staff", who: sr.owner, at: sr.opened, text: sr.lastMsg });
+  ad.threads[r.id] = t;
+  ad.notes[r.id] = [];
+});
+const OWNERS = uniq([M.staffUser.name].concat(M.requestQueue.map((r) => r.owner)));
+const findStu = (name) => ad.students.find((s) => s.name === name);
+
+/* ---------- A01 · לוח בקרה ---------- */
+function aDashboard(params) {
+  const u = M.staffUser;
+  return `
+  <div class="page-h">
+    <div><div class="eyebrow">${esc(u.role)} · ${esc(u.scope)}</div><h1>בוקר טוב, ${esc(u.name.split(" ")[0])}</h1></div>
+    <div class="small muted">יום ${dayOf(M.today)} · <span class="mono">${todayDdmm}/${YEAR}</span></div>
+  </div>
+  <div class="bento">
+    ${M.adminKpis.map((k) => `
+      <a class="card card-link kpi c-3 ${k.alert ? "alert" : ""}" href="#${KPI_GO[k.key] || "admin/dashboard"}">
+        <span class="go">${ico("arrow")}</span>
+        <span class="kpi-lbl row" style="gap:6px">${ico(KPI_ICON[k.key] || "dot")}${esc(k.label)}</span>
+        <span class="big">${k.key === "failures" ? ad.failures.length : k.value}</span>
+        <span class="small ${k.alert ? "" : "muted"}" style="${k.alert ? "color:var(--danger)" : ""}">${k.alert ? ico("alert") + " " : ""}${esc(k.trend)}</span>
+      </a>`).join("")}
+    <section class="card c-3" aria-label="סיכום היום">
+      <div class="kpi-lbl">היום בתור</div>
+      <div class="stack-sm small" style="margin-top:8px">
+        <div class="row between"><span>תיקוני נוכחות</span><b class="mono">${ad.corrections.length}</b></div>
+        <div class="row between"><span>פגישות ללא תוצאה</span><b class="mono">${ad.meetings.filter((m) => !m.outcome).length}</b></div>
+        <div class="row between"><span>פניות חדשות</span><b class="mono">${ad.rq.filter((r) => r.status === "new").length}</b></div>
+      </div>
+    </section>
+    <section class="card c-6" id="fail-panel" aria-labelledby="df-t" style="${ad.failures.length ? "border-color:color-mix(in srgb,var(--danger) 45%,var(--border))" : ""}">
+      <div class="card-h"><h2 id="df-t">${ico("alert")}כשלי מסירה${ad.failures.length ? ` <span class="pill t-danger mono">${ad.failures.length}</span>` : ""}</h2></div>
+      ${ad.failures.length ? ad.failures.map((f) => `
+        <div class="lrow">
+          <span class="tag">${ico(f.channel === "דוא״ל" ? "mail" : "calendar")}${esc(f.channel)}</span>
+          <span class="grow"><b>${esc(f.target)}</b><br><span class="small" style="color:var(--danger)">${ico("x")} ${esc(f.error)}</span> <span class="xs muted mono">· ${esc(f.id)} · ${esc(f.at)}</span></span>
+          <button type="button" class="btn sm" data-act="a_retryFail" data-id="${esc(f.id)}">${ico("refresh")}ניסיון חוזר</button>
+        </div>`).join("") : `<div class="empty">${ico("check")} כל ההודעות נמסרו בהצלחה</div>`}
+    </section>
+    <section class="card c-6" aria-labelledby="tm-t">
+      <div class="card-h"><h2 id="tm-t">${ico("users")}פגישות היום</h2><a class="more" href="#admin/meetings">לניהול פגישות${ico("arrow")}</a></div>
+      ${ad.meetings.map((m) => `
+        <a class="lrow" href="#admin/meetings">
+          <span class="mono" style="width:44px">${esc(m.time)}</span>
+          <span class="grow"><b>${esc(m.student)}</b> <span class="small muted">· ${esc(m.type)} · ${esc(m.coach)}</span></span>
+          ${m.outcome ? pill(m.outcome, m.outcome === "התקיימה" ? "ok" : "danger", m.outcome === "התקיימה" ? "check" : "x") : pill("ממתינה לתוצאה", "muted", "clock", "dashed")}
+          ${m.sync === "failed" ? pill("סנכרון נכשל", "danger", "alert") : ""}
+        </a>`).join("")}
+    </section>
+  </div>`;
+}
+function mDashboard(view, params) {
+  if (params.get("f") === "failures" && cur.changed) { const p = $("#fail-panel", view); p.scrollIntoView({ block: "center" }); p.classList.add("flash"); }
+}
+ACT.a_retryFail = (b) => {
+  b.disabled = true; b.innerHTML = `${ico("refresh")}שולח…`;
+  setTimeout(() => {
+    const f = ad.failures.find((x) => x.id === b.dataset.id);
+    ad.failures = ad.failures.filter((x) => x.id !== b.dataset.id);
+    if (f && /AP-2211/.test(f.target)) { const m = ad.meetings.find((x) => x.sync === "failed"); if (m) m.sync = "ok"; }
+    refresh(); toast("השליחה החוזרת הצליחה", "ok", `<span class="mono">${esc(b.dataset.id)}</span> · ${esc(f ? f.channel : "")}`);
+  }, 900);
+};
+
+/* ---------- A02 · תלמידות ---------- */
+function stuFiltered(kpi) {
+  const f = ad.sf, q = f.q.toLowerCase();
+  return ad.students.filter((s) =>
+    (!f.cohort || s.cohort === f.cohort) && (!f.track || s.track === f.track) && (!f.account || s.account === f.account) &&
+    (!q || (s.name + " " + s.id + " " + s.email).toLowerCase().includes(q)) &&
+    (!kpi || s.obligations > 0));
+}
+function aStudents(params) {
+  const kpi = params.get("f");
+  const k = kpi ? M.adminKpis.find((x) => x.key === kpi) : null;
+  const opt = (arr, val, all) => `<option value="">${all}</option>` + arr.map((x) => `<option ${val === x ? "selected" : ""}>${esc(x)}</option>`).join("");
+  return `
+  <div class="page-h">
+    <div><h1>תלמידות</h1><div class="sub"><span class="mono">${ad.students.length}</span> רשומות · מחזורים ומסלולים</div></div>
+    <div class="row">
+      <button type="button" class="btn" data-act="a_invite">${ico("mail")}הזמנה</button>
+      <button type="button" class="btn" data-act="a_import">${ico("upload")}ייבוא</button>
+      <button type="button" class="btn primary" data-act="a_addStu">${ico("plus")}הוספה</button>
+    </div>
+  </div>
+  ${k ? `<div class="callout t-accent" style="margin-bottom:12px">${ico("filter")}<span class="grow">מסונן לפי מדד: <strong>${esc(k.label)}</strong> (${k.value}) — מוצגות תלמידות עם חובות פתוחים${kpi === "payments" ? " הכוללים תשלום לאימות" : ""}.</span><a class="btn sm" href="#admin/students">${ico("x")}ניקוי</a></div>` : ""}
+  <section class="card flush">
+    <form class="filters" id="stu-f" onsubmit="return false" aria-label="סינון תלמידות">
+      <div class="search">${ico("search")}<label class="sr-only" for="sq">חיפוש</label><input class="input" id="sq" name="q" placeholder="חיפוש לפי שם, ת״ז או דוא״ל" value="${esc(ad.sf.q)}"></div>
+      <label class="sr-only" for="sc">מחזור</label><select class="input" id="sc" name="cohort">${opt(uniq(M.students.map((s) => s.cohort)), ad.sf.cohort, "כל המחזורים")}</select>
+      <label class="sr-only" for="stk">מסלול</label><select class="input" id="stk" name="track">${opt(uniq(M.students.map((s) => s.track)), ad.sf.track, "כל המסלולים")}</select>
+      <label class="sr-only" for="sa">סטטוס חשבון</label><select class="input" id="sa" name="account">${opt(uniq(M.students.map((s) => s.account)), ad.sf.account, "כל סטטוסי החשבון")}</select>
+      <span class="count" id="stu-count" aria-live="polite"></span>
+    </form>
+    <div class="tbl-wrap"><table class="tbl" id="stu-t">
+      <thead><tr><th><label class="check"><input type="checkbox" id="pick-all" aria-label="בחירת כל השורות המוצגות"></label></th><th>ת״ז מוסדית</th><th>שם</th><th>דוא״ל</th><th>מחזור</th><th>מסלול</th><th>חשבון</th><th>חובות פתוחים</th><th>נוכחות</th></tr></thead>
+      <tbody></tbody>
+    </table></div>
+  </section>
+  <p class="hint" style="margin-top:8px">לחיצה על שורה פותחת את תיק התלמידה.</p>`;
+}
+function mStudents(view, params) {
+  const f = $("#stu-f", view), kpi = params.get("f"), tb = $("#stu-t tbody", view);
+  const paint = () => {
+    ad.sf = { cohort: f.cohort.value, track: f.track.value, account: f.account.value, q: f.q.value.trim() };
+    const rows = stuFiltered(kpi);
+    $("#stu-count", view).textContent = `${rows.length} מתוך ${ad.students.length}`;
+    tb.innerHTML = rows.length ? rows.map((s) => `<tr class="clickable" data-id="${esc(s.id)}">
+      <td><label class="check"><input type="checkbox" data-pick="${esc(s.id)}" ${ad.picked.has(s.id) ? "checked" : ""} aria-label="בחירת ${esc(s.name)}"></label></td>
+      <td class="mono nw">${esc(s.id)}</td>
+      <td class="nw"><button type="button" class="btn ghost sm" style="padding:0;height:auto;color:var(--text);font-weight:600" data-act="a_openStu" data-id="${esc(s.id)}">${esc(s.name)}</button></td>
+      <td class="mono small muted" dir="ltr" style="text-align:end">${esc(s.email)}</td>
+      <td class="nw">${esc(s.cohort)}</td><td class="nw">${esc(s.track)}</td><td>${accPill(s.account)}</td>
+      <td>${s.obligations ? pill(String(s.obligations), "danger", "alert") : `<span class="mono muted">0</span>`}</td>
+      <td style="min-width:120px">${s.attendance == null ? `<span class="muted small">טרם חושב</span>` : `<div class="row" style="flex-wrap:nowrap"><span class="mono" style="width:34px">${s.attendance}%</span><span class="grow">${meter(s.attendance, s.attendance >= 80 ? "ok" : "danger", "נוכחות " + s.name, 80)}</span>${s.attendance < 80 ? '<span class="sr-only">מתחת לרף</span>' : ""}</div>`}</td>
+    </tr>`).join("") : `<tr><td colspan="9" class="empty">לא נמצאו תלמידות התואמות לסינון</td></tr>`;
+  };
+  f.addEventListener("input", paint);
+  f.addEventListener("change", paint);
+  tb.addEventListener("change", (e) => { const id = e.target.dataset.pick; if (!id) return; if (e.target.checked) ad.picked.add(id); else ad.picked.delete(id); });
+  tb.addEventListener("click", (e) => {
+    if (e.target.closest("input, label, button")) return;
+    const tr = e.target.closest("tr[data-id]"); if (tr) openStudent(tr.dataset.id);
+  });
+  $("#pick-all", view).addEventListener("change", (e) => { $$("[data-pick]", tb).forEach((c) => { c.checked = e.target.checked; if (c.checked) ad.picked.add(c.dataset.pick); else ad.picked.delete(c.dataset.pick); }); });
+  paint();
+}
+ACT.a_openStu = (b) => openStudent(b.dataset.id);
+
+/* A03 · תיק תלמידה (מגירה) */
+const STU_TABS = ["פרטים ושיוכים", "לימודים ונוכחות", "ציונים וחובות", "פרקטיקום", "פרויקט", "פגישות", "פניות", "היסטוריית פעולות"];
+function stuTab(s, i) {
+  const isMe = s.id === M.me.institutionalId;
+  const none = (t) => `<div class="empty">${t}</div>`;
+  switch (i) {
+    case 0: return `<dl class="kv"><dt>ת״ז מוסדית</dt><dd class="mono">${esc(s.id)}</dd><dt>שם</dt><dd>${esc(s.name)}</dd><dt>דוא״ל</dt><dd class="mono" dir="ltr" style="text-align:end">${esc(isMe ? M.me.email : s.email)}</dd><dt>מחזור</dt><dd>${esc(s.cohort)}</dd><dt>מסלול</dt><dd>${esc(s.track)}</dd><dt>סטטוס חשבון</dt><dd>${accPill(s.account)}</dd><dt>תפקידים</dt><dd>תלמידה</dd></dl>`;
+    case 1: return `<div class="row" style="gap:16px;margin-bottom:14px">${s.attendance == null ? pill("טרם חושב", "muted", "minus") : ring(s.attendance, 76, s.attendance >= 80 ? "ok" : "danger")}<span class="small muted">${esc(M.attendance.basis)}</span></div>
+      ${isMe ? M.courses.map((c) => `<div class="lrow"><span class="grow">${esc(c.name)}</span><span class="mono">${c.attendance == null ? "—" : c.attendance + "%"}</span>${pill(c.status, c.attendance == null ? "muted" : c.attendance >= c.required ? "ok" : "danger")}</div>`).join("") : none("פירוט לפי קורס יוצג מהמערכת")}`;
+    case 2: return isMe ? `<table class="tbl"><thead><tr><th>קורס</th><th>דרישה</th><th>סטטוס</th><th>ציון</th></tr></thead><tbody>${M.obligations.map((o) => `<tr><td>${esc(o.course)}</td><td>${esc(o.requirement)}</td><td>${pill(o.status, (OBL[o.status] || ["muted"])[0], (OBL[o.status] || [])[1])}</td><td>${gradeCell(o)}</td></tr>`).join("")}</tbody></table>` : `<div class="big">${s.obligations}<small> חובות פתוחים</small></div>`;
+    case 3: {
+      const q = ad.pq.filter((r) => r.student === s.name);
+      return (isMe ? `<div class="row" style="gap:18px;margin-bottom:12px"><span>מאושרות <b class="mono">${st.prac.approved}</b></span><span>ממתינות <b class="mono">${st.prac.pending}</b></span><span>יעד <b class="mono">${st.prac.target}</b></span></div>` : "") +
+        (q.length ? q.map((r) => `<div class="lrow"><span class="mono small">${esc(r.id)}</span><span class="grow">${esc(r.task)} · <span class="mono">${r.hours} ש׳</span></span>${r.flag ? pill(r.flag, "warn", "flag") : pill("לבדיקה", "muted", "clock")}</div>`).join("") : none("אין דיווחים ממתינים לבדיקה"));
+    }
+    case 4: return M.project.members.includes(s.name) ? `<b>${esc(M.project.name)}</b><div class="small muted">שלב נוכחי: ${esc(curStage().name)} · מנחה ${esc(M.project.owner)}</div><div class="stack-sm" style="margin-top:10px">${M.project.blockers.map((b) => `<div class="callout t-danger">${ico("alert")}${esc(b)}</div>`).join("")}</div>` : none("לא שויכה לפרויקט");
+    case 5: {
+      const m = ad.meetings.filter((x) => x.student === s.name);
+      const a = isMe ? st.appts : [];
+      return m.concat(a).length ? m.map((x) => `<div class="lrow"><span class="mono">היום ${esc(x.time)}</span><span class="grow">${esc(x.type)} · ${esc(x.coach)}</span>${x.outcome ? pill(x.outcome, x.outcome === "התקיימה" ? "ok" : "danger") : pill("טרם תועדה", "muted", "clock")}</div>`).join("") + a.map((x) => `<div class="lrow"><span class="mono">${esc(x.date)} ${esc(x.time)}</span><span class="grow">${esc(x.type)} · ${esc(x.coach)}</span>${pill("עתידית", "info", "calendar")}</div>`).join("") : none("אין פגישות");
+    }
+    case 6: {
+      const r = ad.rq.filter((x) => x.student === s.name);
+      return r.length ? r.map((x) => `<div class="lrow"><span class="mono small">${esc(x.id)}</span><span class="grow">${x.sensitive ? `${ico("lock")} תוכן מוגבל` : esc(x.subject)}</span>${reqPill(x.status, x.status === "waiting_student" ? "ממתינה לתלמידה" : null)}</div>`).join("") : none("אין פניות");
+    }
+    default: {
+      const h = (ad.history[s.id] || []).concat([
+        { at: "21/11 10:42", who: "מערכת", what: "סנכרון נוכחות מזום" },
+        { at: "01/10 09:00", who: M.staffUser.name, what: `שיוך למסלול ${s.track}` },
+        { at: "15/09 12:30", who: "מערכת", what: "יצירת חשבון וייבוא מקובץ" },
+      ]);
+      return `<ol class="timeline">${h.map((x) => `<li><div class="small"><b>${esc(x.what)}</b></div><div class="xs muted"><span class="mono">${esc(x.at)}</span> · ${esc(x.who)}</div></li>`).join("")}</ol>`;
+    }
+  }
+}
+function openStudent(id) {
+  const s = ad.students.find((x) => x.id === id); if (!s) return;
+  let tab = 0;
+  openModal({
+    kind: "drawer",
+    pre: `<span class="avatar" aria-hidden="true">${esc(s.name.split(" ").map((w) => w[0]).join(""))}</span>`,
+    title: `${esc(s.name)} <span class="mono xs muted" style="font-weight:400">${esc(s.id)}</span>`,
+    tabs: `<div class="tabs" role="tablist" aria-label="תיק תלמידה">${STU_TABS.map((t, i) => `<button type="button" class="tab" role="tab" id="stab-${i}" aria-controls="stab-panel" aria-selected="${i === 0}" tabindex="${i === 0 ? 0 : -1}" data-i="${i}">${t}</button>`).join("")}</div>`,
+    body: `<div id="stab-panel" role="tabpanel" aria-labelledby="stab-0">${stuTab(s, 0)}</div>`,
+    onMount(b) {
+      const tl = $(".tabs", b);
+      const sel = (i) => {
+        tab = (i + STU_TABS.length) % STU_TABS.length;
+        $$(".tab", tl).forEach((t, j) => { t.setAttribute("aria-selected", j === tab); t.tabIndex = j === tab ? 0 : -1; });
+        $("#stab-panel", b).setAttribute("aria-labelledby", `stab-${tab}`);
+        $("#stab-panel", b).innerHTML = stuTab(s, tab);
+      };
+      tl.addEventListener("click", (e) => { const t = e.target.closest(".tab"); if (t) sel(+t.dataset.i); });
+      tl.addEventListener("keydown", (e) => {
+        if (e.key === "ArrowLeft" || e.key === "ArrowRight") { e.preventDefault(); sel(tab + (e.key === "ArrowLeft" ? 1 : -1)); $(`#stab-${tab}`, b).focus(); }
+      });
+    },
+  });
+}
+
+ACT.a_addStu = () => {
+  const opts = (arr) => arr.map((x) => `<option>${esc(x)}</option>`).join("");
+  openModal({
+    title: "הוספת תלמידה",
+    body: `<form id="as-f" class="form-grid" novalidate>
+      <div class="field"><label for="as-n" class="req">שם מלא</label><input id="as-n" name="name"></div>
+      <div class="field"><label for="as-i" class="req">ת״ז מוסדית</label><input id="as-i" name="id" dir="ltr" placeholder="000-00-0000" class="mono"></div>
+      <div class="field full"><label for="as-e" class="req">דוא״ל</label><input id="as-e" name="email" type="email" dir="ltr"></div>
+      <div class="field"><label for="as-c" class="req">מחזור</label><select id="as-c" name="cohort">${opts(uniq(M.students.map((s) => s.cohort)))}</select></div>
+      <div class="field"><label for="as-t" class="req">מסלול</label><select id="as-t" name="track">${opts(uniq(M.students.map((s) => s.track)))}</select></div>
+      <label class="check full"><input type="checkbox" name="invite" checked>שליחת הזמנה להפעלת חשבון</label>
+    </form>`,
+    footer: `<button type="submit" form="as-f" class="btn primary">${ico("plus")}הוספה</button><button type="button" class="btn ghost" data-close>ביטול</button>`,
+    onMount(b) {
+      const f = $("#as-f", b); bindClearOnInput(f);
+      f.addEventListener("submit", (e) => {
+        e.preventDefault();
+        if (!validate(f, [
+          ["name", minLen(2, "שם מלא")],
+          ["id", (v) => (!v ? "שדה חובה: ת״ז מוסדית" : !/^\d{3}-\d{2}-\d{4}$/.test(v) ? "פורמט נדרש: 000-00-0000" : ad.students.some((s) => s.id === v) ? "קיימת כבר תלמידה עם מזהה זה" : "")],
+          ["email", (v) => (!v ? "שדה חובה: דוא״ל" : /^\S+@\S+\.\S+$/.test(v) ? "" : "כתובת דוא״ל לא תקינה")],
+        ])) return;
+        ad.students.unshift({ id: f.id.value.trim(), name: f.name.value.trim(), email: f.email.value.trim(), cohort: f.cohort.value, track: f.track.value, account: f.invite.checked ? "הוזמנה" : "פעיל", obligations: 0, attendance: null });
+        closeModal(); refresh(); toast("התלמידה נוספה", "ok", f.invite.checked ? "הזמנה נשלחה לדוא״ל" : "");
+      });
+    },
+  });
+};
+ACT.a_import = () => {
+  const rows = [
+    { line: 2, id: "330-14-2201", name: "ליה אברהם", email: "lia.a@example.ac.il", track: "QA", state: "ok" },
+    { line: 3, id: "331-09-2214", name: "רוני שלום", email: "roni.s@example.ac.il", track: "פיתוח תוכנה", state: "ok" },
+    { line: 4, id: "332-11-2230", name: "מאיה לוין", email: "maya.levin@", track: "פיתוח תוכנה", state: "error", msg: "כתובת דוא״ל לא תקינה" },
+    { line: 5, id: M.students[1].id, name: M.students[1].name, email: M.students[1].email, track: M.students[1].track, state: "dup", msg: "קיימת כבר במערכת — תדולג" },
+  ];
+  const st2 = { ok: ["תקינה", "ok", "check"], error: ["שגיאה", "danger", "x"], dup: ["כפילות", "warn", "layers"] };
+  openModal({
+    title: "ייבוא תלמידות מקובץ", wide: true,
+    body: `<div class="field" style="margin-bottom:12px"><label for="imp-f">קובץ CSV / Excel</label><input type="file" id="imp-f" accept=".csv,.xlsx"><span class="hint">תצוגה מקדימה מבוססת על קובץ לדוגמה: <span class="mono">students_tashpaz.csv</span></span></div>
+      <div class="row" style="margin-bottom:10px">${pill("2 תקינות", "ok", "check")}${pill("1 שגיאה", "danger", "x")}${pill("1 כפילות", "warn", "layers")}</div>
+      <div class="tbl-wrap" style="border:1px solid var(--border);border-radius:8px"><table class="tbl"><thead><tr><th>שורה</th><th>ת״ז</th><th>שם</th><th>דוא״ל</th><th>מסלול</th><th>מצב</th></tr></thead><tbody>
+      ${rows.map((r) => `<tr class="${r.state === "error" ? "hl" : ""}"><td class="mono">${r.line}</td><td class="mono nw">${esc(r.id)}</td><td class="nw">${esc(r.name)}</td><td class="mono small" dir="ltr" style="text-align:end;${r.state === "error" ? "color:var(--danger)" : ""}">${esc(r.email)}</td><td class="nw">${esc(r.track)}</td><td>${pill(st2[r.state][0], st2[r.state][1], st2[r.state][2])}${r.msg ? `<div class="xs" style="color:var(--${st2[r.state][1]});margin-top:3px">${esc(r.msg)}</div>` : ""}</td></tr>`).join("")}
+      </tbody></table></div>`,
+    footer: `<button type="button" class="btn primary" id="imp-go">${ico("upload")}ייבוא 2 שורות תקינות</button><button type="button" class="btn ghost" data-close>ביטול</button>`,
+    onMount(b) {
+      $("#imp-go", b).addEventListener("click", () => {
+        rows.filter((r) => r.state === "ok" && !ad.students.some((s) => s.id === r.id)).forEach((r) => ad.students.push({ id: r.id, name: r.name, email: r.email.replace(/@.*/, "@…"), cohort: "תשפ״ז", track: r.track, account: "הוזמנה", obligations: 0, attendance: null }));
+        closeModal(); refresh(); toast("הייבוא הושלם", "ok", "2 נוספו · 1 שגיאה · 1 כפילות דולגה");
+      });
+    },
+  });
+};
+ACT.a_invite = () => {
+  const ids = Array.from(ad.picked);
+  if (!ids.length) { toast("לא נבחרו תלמידות", "danger", "סמני שורות בטבלה ואז לחצי ״הזמנה״"); return; }
+  ids.forEach((id) => { const s = ad.students.find((x) => x.id === id); if (s && s.account !== "פעיל") s.account = "הוזמנה"; });
+  ad.picked.clear(); refresh();
+  toast(`נשלחו ${ids.length} הזמנות`, "ok", "קישור הפעלת חשבון נשלח לדוא״ל");
+};
+
+/* ---------- A05 · נוכחות ---------- */
+function aAttendance() {
+  const S = ad.sessions.find((x) => x.id === ad.selSess), dur = sessMinutes(S);
+  const cnt = (k) => S.entries.filter((e) => e.status === k).length;
+  return `
+  <div class="page-h"><div><h1>נוכחות — הזנה ואישור</h1><div class="sub">הזנה מרוכזת לפי מפגש ותור בקשות תיקון</div></div></div>
+  <div class="bento">
+    <section class="card c-8 flush" aria-labelledby="bulk-t">
+      <div class="card-h"><h2 id="bulk-t">${ico("check2")}הזנה מרוכזת</h2>${S.approved ? pill("מאושר", "ok", "lock") : pill("טיוטה — לא אושר", "warn", "file")}</div>
+      <div class="filters">
+        <label for="sess-sel" class="small muted">מפגש</label>
+        <select class="input" id="sess-sel">${ad.sessions.map((s) => `<option value="${s.id}" ${s.id === S.id ? "selected" : ""}>${esc(s.course)} · ${esc(s.date)} · ${esc(s.time)}${s.approved ? " · מאושר" : ""}</option>`).join("")}</select>
+        <button type="button" class="btn sm" data-act="a_allPresent">${ico("check")}סימון כולן כנוכחות</button>
+        <span class="count mono">${Object.keys(M.attendanceStatus).map((k) => `${M.attendanceStatus[k]} ${cnt(k)}`).join(" · ")}</span>
+      </div>
+      ${S.approved ? `<div class="callout t-warn" style="margin:0 16px 12px">${ico("lock")}<span><strong>הנתונים במפגש זה אושרו.</strong> שינוי ואישור מחדש ידרסו את הנתונים המאושרים ויתועדו בהיסטוריה.</span></div>` : ""}
+      <div class="tbl-wrap"><table class="tbl" id="bulk-t-tbl">
+        <thead><tr><th>תלמידה</th><th>סטטוס</th><th>דקות (מתוך <span class="mono">${dur}</span>)</th></tr></thead>
+        <tbody>${S.entries.map((e, i) => `<tr>
+          <td class="nw" style="font-weight:500">${esc(e.name)}</td>
+          <td><label class="sr-only" for="es-${i}">סטטוס עבור ${esc(e.name)}</label><select class="input status-sel" id="es-${i}" data-i="${i}" data-k="status">${Object.keys(M.attendanceStatus).filter((k) => k !== "review").map((k) => `<option value="${k}" ${e.status === k ? "selected" : ""}>${esc(M.attendanceStatus[k])}</option>`).join("")}</select></td>
+          <td><div class="field" style="display:inline-flex"><label class="sr-only" for="em-${i}">דקות עבור ${esc(e.name)}</label><input type="number" class="input min-in" id="em-${i}" data-i="${i}" data-k="minutes" min="0" max="${dur}" value="${e.minutes == null ? "" : e.minutes}" placeholder="—" inputmode="numeric"></div></td>
+        </tr>`).join("")}</tbody>
+      </table></div>
+      <div class="form-actions" style="padding:0 16px 16px;border:0">
+        <button type="button" class="btn primary" data-act="a_approveAtt">${ico("lock")}אישור נוכחות</button>
+        <span class="small muted" style="align-self:center">${S.approved ? "אישור חוזר ידרוס את הנתונים הקיימים" : "לאחר האישור הנתונים יוצגו לתלמידות"}</span>
+      </div>
+    </section>
+    <section class="card c-4" aria-labelledby="cq-t">
+      <div class="card-h"><h2 id="cq-t">${ico("note")}בקשות תיקון</h2>${pill(String(ad.corrections.length), ad.corrections.length ? "warn" : "muted")}</div>
+      ${ad.corrections.length ? ad.corrections.map((c) => `
+        <div class="lrow" style="display:block">
+          <div class="row between"><b>${esc(c.student)}</b><span class="mono xs muted">${esc(c.id)} · ${esc(c.opened)}</span></div>
+          <div class="small muted">${esc(c.session)} · מבוקש: <b style="color:var(--text)">${esc(c.requested)}</b></div>
+          <div class="small" style="margin:4px 0">״${esc(c.reason)}״</div>
+          <div class="row">${c.attachment ? pill("מצורף אישור", "info", "clip") : pill("ללא צרופה", "muted", "minus")}<span class="grow"></span>
+            <button type="button" class="btn sm ok" data-act="a_corrDecide" data-id="${esc(c.id)}" data-d="approve">${ico("check")}אישור</button>
+            <button type="button" class="btn sm danger" data-act="a_corrDecide" data-id="${esc(c.id)}" data-d="reject">${ico("x")}דחייה</button></div>
+        </div>`).join("") : `<div class="empty">${ico("check")} התור ריק</div>`}
+    </section>
+  </div>`;
+}
+function mAttendance(view) {
+  $("#sess-sel", view).addEventListener("change", (e) => { ad.selSess = e.target.value; refresh(); });
+  const S = ad.sessions.find((x) => x.id === ad.selSess), dur = sessMinutes(S);
+  const tbl = $("#bulk-t-tbl", view);
+  tbl.addEventListener("change", (e) => {
+    const i = e.target.dataset.i; if (i == null) return;
+    const en = S.entries[+i];
+    if (e.target.dataset.k === "status") {
+      en.status = e.target.value;
+      const m = $(`#em-${i}`, view);
+      if (en.status === "present") { en.minutes = dur; m.value = dur; }
+      else if (en.status === "absent") { en.minutes = 0; m.value = 0; }
+      else if (en.status === "unreported") { en.minutes = null; m.value = ""; }
+    } else en.minutes = e.target.value === "" ? null : +e.target.value;
+  });
+}
+ACT.a_allPresent = () => { const S = ad.sessions.find((x) => x.id === ad.selSess); S.entries.forEach((e) => { e.status = "present"; e.minutes = sessMinutes(S); }); refresh(); toast("כל התלמידות סומנו כנוכחות", "info", "יש לאשר כדי לשמור"); };
+ACT.a_approveAtt = () => {
+  const S = ad.sessions.find((x) => x.id === ad.selSess), dur = sessMinutes(S);
+  const bad = S.entries.map((e, i) => [e, i]).filter(([e]) => e.status === "partial" && !(e.minutes > 0 && e.minutes < dur) || (e.minutes != null && (e.minutes < 0 || e.minutes > dur)));
+  $$(".field.invalid").forEach((f) => f.classList.remove("invalid")); $$(".err").forEach((x) => x.remove());
+  if (bad.length) {
+    bad.forEach(([e, i]) => { const inp = $(`#em-${i}`); const f = inp.closest(".field"); f.classList.add("invalid"); inp.setAttribute("aria-invalid", "true"); const er = document.createElement("div"); er.className = "err"; er.textContent = e.status === "partial" ? `נוכחות חלקית: 1–${dur - 1} דק׳` : `טווח 0–${dur}`; f.appendChild(er); f.style.flexDirection = "column"; });
+    $(`#em-${bad[0][1]}`).focus(); toast("יש לתקן את הדקות המסומנות", "danger"); return;
+  }
+  const doIt = () => { S.approved = true; refresh(); toast("הנוכחות אושרה", "ok", `${esc(S.course)} · <span class="mono">${esc(S.date)}</span> · ${S.entries.length} תלמידות`); };
+  if (!S.approved) { doIt(); return; }
+  openModal({
+    title: "דריסת נתונים מאושרים",
+    body: `<div class="callout t-warn">${ico("alert")}<div><strong>הנוכחות למפגש זה כבר אושרה.</strong><br>אישור מחדש ידרוס את הנתונים הקיימים. הפעולה תתועד בהיסטוריית הפעולות של כל תלמידה שהנתון שלה השתנה.</div></div>`,
+    footer: `<button type="button" class="btn warn" id="ow-go">${ico("refresh")}כן, לדרוס ולאשר</button><button type="button" class="btn ghost" data-close>ביטול</button>`,
+    onMount(b) { $("#ow-go", b).addEventListener("click", () => { closeModal(); doIt(); }); },
+  });
+};
+ACT.a_corrDecide = (b) => {
+  const c = ad.corrections.find((x) => x.id === b.dataset.id), approve = b.dataset.d === "approve";
+  openModal({
+    title: `${approve ? "אישור" : "דחיית"} בקשת תיקון <span class="mono">${esc(c.id)}</span>`,
+    body: `<dl class="kv" style="margin-bottom:14px"><dt>תלמידה</dt><dd>${esc(c.student)}</dd><dt>מפגש</dt><dd>${esc(c.session)}</dd><dt>סטטוס מבוקש</dt><dd>${esc(c.requested)}</dd><dt>נימוק התלמידה</dt><dd>${esc(c.reason)}</dd></dl>
+      <form id="cd-f" novalidate><div class="field"><label for="cd-r" class="req">נימוק ההחלטה</label><textarea id="cd-r" name="reason" placeholder="${approve ? "לדוגמה: אומת מול דוח הזום" : "לדוגמה: לא נמצא תיעוד התחברות"}"></textarea><span class="hint">הנימוק יוצג לתלמידה ויישמר בהיסטוריה</span></div></form>`,
+    footer: `<button type="submit" form="cd-f" class="btn ${approve ? "ok" : "danger"}">${ico(approve ? "check" : "x")}${approve ? "אישור התיקון" : "דחיית הבקשה"}</button><button type="button" class="btn ghost" data-close>ביטול</button>`,
+    onMount(bx) {
+      const f = $("#cd-f", bx); bindClearOnInput(f);
+      f.addEventListener("submit", (e) => {
+        e.preventDefault();
+        if (!validate(f, [["reason", minLen(5, "נימוק ההחלטה")]])) return;
+        ad.corrections = ad.corrections.filter((x) => x.id !== c.id);
+        const row = st.att.find((r) => (r.correction || "").includes(c.id));
+        if (row) { row.status = approve ? (c.requested === "חלקית" ? "partial" : "present") : row.status === "review" ? "absent" : row.status; row.correction = `${approve ? "תוקן" : "נדחה"} (#${c.id}): ${f.reason.value.trim()}`; }
+        const s = findStu(c.student); if (s) (ad.history[s.id] = ad.history[s.id] || []).unshift({ at: `${todayDdmm} ${nowHM()}`, who: M.staffUser.name, what: `בקשת תיקון ${c.id} ${approve ? "אושרה" : "נדחתה"}` });
+        closeModal(); refresh(); toast(approve ? "התיקון אושר" : "הבקשה נדחתה", approve ? "ok" : "info", `<span class="mono">${esc(c.id)}</span> · ${esc(c.student)} תקבל עדכון`);
+      });
+    },
+  });
+};
+
+/* ---------- A07 · פרקטיקום ---------- */
+function flagInfo(r) {
+  if (!r.flag) return "";
+  if (/משך/.test(r.flag)) return `${r.hours} שעות ביום אחד — מעל הסף המקובל של 10 שעות.`;
+  if (/חפיפה/.test(r.flag)) return `השעות בדיווח חופפות לדיווח אחר של התלמידה (${r.flag.replace("חפיפה עם ", "")}).`;
+  if (/מאוחר/.test(r.flag)) return `הדיווח הוגש ${daysBetween(ddmmToIso(r.date), M.today)} ימים אחרי מועד הפעילות (סף: 14 ימים).`;
+  return r.flag;
+}
+function aPracticum() {
+  const flagged = ad.pq.filter((r) => r.flag).length;
+  return `
+  <div class="page-h"><div><h1>פרקטיקום — תור בדיקה</h1><div class="sub"><span class="mono">${ad.pq.length}</span> דיווחים ממתינים · <span class="mono">${flagged}</span> עם חריגות</div></div></div>
+  <section class="card flush">
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>מס׳</th><th>תלמידה</th><th>תאריך</th><th>שעות</th><th>מקום</th><th>משימה</th><th>ממתין</th><th>חריגה</th><th><span class="sr-only">פעולות</span></th></tr></thead>
+      <tbody>${ad.pq.length ? ad.pq.map((r) => `<tr class="clickable" data-act="a_openRep" data-id="${esc(r.id)}">
+        <td class="mono nw">${esc(r.id)}</td><td class="nw" style="font-weight:500">${esc(r.student)}</td><td class="mono">${esc(r.date)}</td>
+        <td class="mono" style="${r.hours > 10 ? "color:var(--warn);font-weight:600" : ""}">${r.hours}</td><td class="nw">${esc(r.place)}</td><td>${esc(r.task)}</td>
+        <td>${r.waitingDays >= 3 ? pill(`${r.waitingDays} ימים`, "warn", "clock") : `<span class="mono small">${r.waitingDays} ימים</span>`}</td>
+        <td>${r.flag ? pill(r.flag, "warn", "flag") : `<span class="small muted">—</span>`}</td>
+        <td><button type="button" class="btn sm" data-act="a_openRep" data-id="${esc(r.id)}">פתיחה${ico("arrow")}</button></td>
+      </tr>`).join("") : `<tr><td colspan="9" class="empty">${ico("check")} אין דיווחים ממתינים</td></tr>`}</tbody>
+    </table></div>
+  </section>`;
+}
+ACT.a_openRep = (el) => {
+  const r = ad.pq.find((x) => x.id === el.dataset.id); if (!r) return;
+  openModal({
+    kind: "drawer",
+    title: `דיווח <span class="mono">${esc(r.id)}</span> · ${esc(r.student)}`,
+    body: `${r.flag ? `<div class="callout t-warn" style="margin-bottom:14px">${ico("flag")}<div><strong>${esc(r.flag)}</strong><br>${esc(flagInfo(r))}</div></div>` : ""}
+      <dl class="kv"><dt>תלמידה</dt><dd>${esc(r.student)}</dd><dt>מקום</dt><dd>${esc(r.place)}</dd><dt>תאריך</dt><dd class="mono">${esc(r.date)}</dd><dt>שעות</dt><dd class="mono">${r.hours}</dd><dt>משימה</dt><dd>${esc(r.task)}</dd><dt>ממתין</dt><dd>${r.waitingDays} ימים</dd></dl>
+      <hr class="sep">
+      <form id="rv-f" novalidate><div class="field"><label for="rv-fb">משוב לתלמידה</label><textarea id="rv-fb" name="fb" placeholder="חובה בהחזרה לתיקון או בדחייה"></textarea><span class="hint">משוב הוא שדה חובה בהחזרה לתיקון ובדחייה.</span></div></form>`,
+    footer: `<button type="button" class="btn ok" data-d="approved">${ico("check")}אישור</button><button type="button" class="btn warn" data-d="returned">${ico("refresh")}החזרה לתיקון</button><button type="button" class="btn danger" data-d="rejected">${ico("ban")}דחייה</button>`,
+    onMount(b) {
+      const f = $("#rv-f", b); bindClearOnInput(f);
+      $(".mdl-f", b).addEventListener("click", (e) => {
+        const btn = e.target.closest("[data-d]"); if (!btn) return;
+        const d = btn.dataset.d;
+        if (d !== "approved" && !validate(f, [["fb", minLen(5, "משוב לתלמידה")]])) return;
+        ad.pq = ad.pq.filter((x) => x.id !== r.id);
+        const mine = st.reports.find((x) => x.id === r.id);
+        if (mine && mine.status === "pending") {
+          st.prac.pending = Math.max(0, st.prac.pending - mine.hours);
+          if (d === "approved") st.prac.approved += mine.hours;
+          mine.status = d; if (d !== "approved") mine.feedback = f.fb.value.trim();
+        }
+        closeModal(); refresh();
+        toast(d === "approved" ? "הדיווח אושר" : d === "returned" ? "הדיווח הוחזר לתיקון" : "הדיווח נדחה", d === "approved" ? "ok" : "info", `<span class="mono">${esc(r.id)}</span> · ${esc(r.student)} תקבל התראה`);
+      });
+    },
+  });
+};
+
+/* ---------- A09 · פגישות ---------- */
+function aMeetings() {
+  const types = M.appointmentTypes;
+  return `
+  <div class="page-h"><div><h1>פגישות</h1><div class="sub">תיעוד תוצאות להיום ופתיחת זמינות</div></div></div>
+  <div class="bento">
+    <section class="card c-7 flush" aria-labelledby="am-t">
+      <div class="card-h"><h2 id="am-t">${ico("users")}פגישות היום · <span class="mono">${todayDdmm}</span></h2></div>
+      <div class="tbl-wrap" style="margin-top:12px"><table class="tbl">
+        <thead><tr><th>שעה</th><th>תלמידה</th><th>סוג</th><th>מאמנת</th><th>תוצאה</th><th>יומן Google</th></tr></thead>
+        <tbody>${ad.meetings.map((m, i) => `<tr>
+          <td class="mono">${esc(m.time)}</td><td class="nw" style="font-weight:500">${esc(m.student)}</td><td class="nw">${esc(m.type)}</td><td class="nw small">${esc(m.coach)}</td>
+          <td class="nw">${m.outcome ? `${pill(m.outcome, m.outcome === "התקיימה" ? "ok" : "danger", m.outcome === "התקיימה" ? "check" : "x")} <button type="button" class="btn ghost sm" data-act="a_outcome" data-i="${i}" data-v="">שינוי</button>`
+            : `<div class="row" style="flex-wrap:nowrap;gap:4px"><button type="button" class="btn sm ok" data-act="a_outcome" data-i="${i}" data-v="התקיימה">${ico("check")}התקיימה</button><button type="button" class="btn sm danger" data-act="a_outcome" data-i="${i}" data-v="לא הגיעה">${ico("x")}לא הגיעה</button></div>`}</td>
+          <td class="nw">${m.sync === "failed" ? `${pill("סנכרון נכשל", "danger", "alert")} <button type="button" class="btn sm" data-act="a_resync" data-i="${i}">${ico("refresh")}ניסיון חוזר</button>` : pill("סונכרן", "ok", "check")}</td>
+        </tr>`).join("")}</tbody>
+      </table></div>
+    </section>
+    <section class="card c-5" aria-labelledby="av-t">
+      <div class="card-h"><h2 id="av-t">${ico("plus")}פתיחת זמינות</h2></div>
+      <form id="av-f" class="form-grid" novalidate>
+        <div class="field full"><label for="av-ty" class="req">סוג פגישה</label><select id="av-ty" name="type"><option value="">בחרי…</option>${types.map((t) => `<option value="${t.id}">${esc(t.name)} (${t.duration} דק׳)</option>`).join("")}</select></div>
+        <div class="field full"><label for="av-d" class="req">תאריך</label><input type="date" id="av-d" name="date" min="${M.today}"></div>
+        <div class="field"><label for="av-s" class="req">משעה</label><input type="time" id="av-s" name="from" value="09:00"></div>
+        <div class="field"><label for="av-e" class="req">עד שעה</label><input type="time" id="av-e" name="to" value="12:00"></div>
+        <div class="field"><label for="av-du" class="req">משך (דק׳)</label><select id="av-du" name="dur">${[15, 30, 45, 60].map((n) => `<option ${n === 30 ? "selected" : ""}>${n}</option>`).join("")}</select></div>
+        <div class="field"><label for="av-g">הפסקה בין פגישות (דק׳)</label><input type="number" id="av-g" name="gap" min="0" max="60" value="0"></div>
+        <div class="field"><label for="av-c" class="req">קיבולת למשבצת</label><input type="number" id="av-c" name="cap" min="1" max="20" value="1"></div>
+        <div class="field" style="justify-content:flex-end"><span class="hint" id="av-prev" aria-live="polite"></span></div>
+        <div class="full"><button type="submit" class="btn primary">${ico("calendar")}פתיחת משבצות</button></div>
+      </form>
+      ${ad.openings.length ? `<hr class="sep"><div class="eyebrow" style="margin-bottom:6px">נפתחו לאחרונה</div>${ad.openings.map((o) => `<div class="lrow small"><span class="mono">${esc(o.date)}</span><span class="grow">${esc(o.type)} · <span class="mono" dir="ltr">${esc(o.range)}</span></span>${pill(`${o.n} משבצות`, "ok", "check")}</div>`).join("")}` : ""}
+    </section>
+  </div>`;
+}
+function slotCount(f) {
+  const a = toMin(f.from.value), b = toMin(f.to.value), d = +f.dur.value, g = +f.gap.value || 0;
+  if (isNaN(a) || isNaN(b) || b <= a || !d) return 0;
+  return Math.floor((b - a + g) / (d + g));
+}
+function mMeetings(view) {
+  const f = $("#av-f", view); bindClearOnInput(f);
+  const prev = () => { const n = slotCount(f); $("#av-prev", view).innerHTML = n ? `ייפתחו <b class="mono">${n}</b> משבצות × קיבולת <b class="mono">${+f.cap.value || 0}</b>` : ""; };
+  f.addEventListener("input", prev); prev();
+  f.addEventListener("submit", (e) => {
+    e.preventDefault();
+    if (!validate(f, [
+      ["type", required("סוג פגישה")],
+      ["date", (v) => (!v ? "שדה חובה: תאריך" : v < M.today ? "לא ניתן לפתוח זמינות בעבר" : "")],
+      ["from", required("משעה")],
+      ["to", (v, fm) => (!v ? "שדה חובה: עד שעה" : toMin(v) <= toMin(fm.from.value) ? "שעת הסיום חייבת להיות אחרי שעת ההתחלה" : slotCount(fm) < 1 ? "הטווח קצר ממשך פגישה אחת" : "")],
+      ["gap", (v) => (+v < 0 || +v > 60 ? "ערך בין 0 ל-60" : "")],
+      ["cap", (v) => (!v ? "שדה חובה: קיבולת" : +v < 1 || +v > 20 ? "ערך בין 1 ל-20" : "")],
+    ])) return;
+    const n = slotCount(f), t = M.appointmentTypes.find((x) => x.id === f.type.value);
+    ad.openings.unshift({ date: isoToDdmm(f.date.value), type: t.name, range: `${f.from.value}–${f.to.value}`, n });
+    refresh(); toast(`נפתחו ${n} משבצות`, "ok", `${esc(t.name)} · <span class="mono">${isoToDdmm(f.date.value)}</span> · יופיעו לתלמידות הזכאיות`);
+  });
+}
+ACT.a_outcome = (b) => { const m = ad.meetings[+b.dataset.i]; m.outcome = b.dataset.v || null; refresh(); if (m.outcome) toast("התוצאה נשמרה", "ok", `${esc(m.student)} · ${esc(m.outcome)}`); };
+ACT.a_resync = (b) => {
+  b.disabled = true; b.innerHTML = `${ico("refresh")}מסנכרן…`;
+  setTimeout(() => { ad.meetings[+b.dataset.i].sync = "ok"; ad.failures = ad.failures.filter((f) => f.channel !== "Google Calendar"); refresh(); toast("הפגישה סונכרנה ליומן Google", "ok"); }, 900);
+};
+
+/* ---------- A12 · פניות ---------- */
+function rqFiltered() {
+  const f = ad.rf, q = f.q.toLowerCase();
+  return ad.rq.filter((r) => (!f.status || r.status === f.status) && (!f.type || r.type === f.type) && (!f.priority || r.priority === f.priority) && (!f.unassigned || !r.owner) &&
+    (!q || (r.id + " " + r.student + " " + (r.sensitive ? "" : r.subject)).toLowerCase().includes(q)));
+}
+function aRequests(params) {
+  if (params.get("f") === "unassigned" && cur.changed) ad.rf.unassigned = true;
+  const f = ad.rf, opt = (arr, val, all, lab) => `<option value="">${all}</option>` + arr.map((x) => `<option value="${esc(x)}" ${val === x ? "selected" : ""}>${esc(lab ? lab(x) : x)}</option>`).join("");
+  const un = ad.rq.filter((r) => !r.owner).length;
+  return `
+  <div class="page-h"><div><h1>פניות — תור צוות</h1><div class="sub"><span class="mono">${ad.rq.length}</span> פניות פתוחות · <span class="mono" style="color:var(--warn)">${un}</span> ללא אחראית</div></div></div>
+  <section class="card flush">
+    <form class="filters" id="rq-f" onsubmit="return false" aria-label="סינון פניות">
+      <div class="search">${ico("search")}<label class="sr-only" for="rqq">חיפוש</label><input class="input" id="rqq" name="q" placeholder="חיפוש לפי מס׳, תלמידה או נושא" value="${esc(f.q)}"></div>
+      <label class="sr-only" for="rqs">סטטוס</label><select class="input" id="rqs" name="status">${opt(Object.keys(M.requestStatus), f.status, "כל הסטטוסים", (k) => (k === "waiting_student" ? "ממתינה לתלמידה" : M.requestStatus[k]))}</select>
+      <label class="sr-only" for="rqt">סוג</label><select class="input" id="rqt" name="type">${opt(uniq(M.requestQueue.map((r) => r.type)), f.type, "כל הסוגים")}</select>
+      <label class="sr-only" for="rqp">עדיפות</label><select class="input" id="rqp" name="priority">${opt(Object.keys(PRIO), f.priority, "כל העדיפויות")}</select>
+      <label class="check"><input type="checkbox" name="unassigned" ${f.unassigned ? "checked" : ""}>ללא אחראית בלבד</label>
+      <span class="count" id="rq-count" aria-live="polite"></span>
+    </form>
+    <div class="tbl-wrap"><table class="tbl" id="rq-t">
+      <thead><tr><th>מס׳</th><th>תלמידה</th><th>נושא</th><th>סוג</th><th>עדיפות</th><th>אחראית</th><th>סטטוס</th><th>עדכון</th><th>מקור</th><th><span class="sr-only">פתיחה</span></th></tr></thead>
+      <tbody></tbody>
+    </table></div>
+  </section>`;
+}
+function mRequestsA(view) {
+  const f = $("#rq-f", view), tb = $("#rq-t tbody", view);
+  const sel = (r, k, arr, lab, extra) => `<label class="sr-only" for="${k}-${r.id}">${lab} ${esc(r.id)}</label><select class="input status-sel" id="${k}-${r.id}" data-id="${esc(r.id)}" data-k="${k}">${extra || ""}${arr.map(([v, t]) => `<option value="${esc(v)}" ${String(r[k] || "") === v ? "selected" : ""}>${esc(t)}</option>`).join("")}</select>`;
+  const paint = () => {
+    ad.rf = { status: f.status.value, type: f.type.value, priority: f.priority.value, unassigned: f.unassigned.checked, q: f.q.value.trim() };
+    const rows = rqFiltered();
+    $("#rq-count", view).textContent = `${rows.length} מתוך ${ad.rq.length}`;
+    tb.innerHTML = rows.length ? rows.map((r) => `<tr class="${!r.owner ? "hl" : ""}">
+      <td class="mono nw">${esc(r.id)}</td><td class="nw">${esc(r.student)}</td>
+      <td>${r.sensitive ? `<span class="row small muted" style="gap:4px">${ico("lock")}תוכן מוגבל</span>` : esc(r.subject)}</td>
+      <td class="nw">${esc(r.type)}</td>
+      <td>${sel(r, "priority", Object.keys(PRIO).map((p) => [p, p]), "עדיפות")}${r.priority === "גבוהה" ? `<span class="sr-only">עדיפות גבוהה</span>` : ""}</td>
+      <td>${!r.owner ? `<div class="xs" style="color:var(--warn);font-weight:600;margin-bottom:2px">${ico("alert")} ללא אחראית</div>` : ""}${sel(r, "owner", OWNERS.map((o) => [o, o]), "אחראית", `<option value="" ${r.owner ? "" : "selected"}>— שיוך —</option>`)}</td>
+      <td>${sel(r, "status", Object.keys(M.requestStatus).map((k) => [k, k === "waiting_student" ? "ממתינה לתלמידה" : M.requestStatus[k]]), "סטטוס")}</td>
+      <td class="nw small muted">${esc(r.updated)}</td><td class="nw small">${esc(r.source)}</td>
+      <td><button type="button" class="btn sm" data-act="a_openRq" data-id="${esc(r.id)}">פתיחה${ico("arrow")}</button></td>
+    </tr>`).join("") : `<tr><td colspan="10" class="empty">אין פניות התואמות לסינון</td></tr>`;
+  };
+  f.addEventListener("input", paint); f.addEventListener("change", paint);
+  tb.addEventListener("change", (e) => {
+    const id = e.target.dataset.id, k = e.target.dataset.k; if (!id) return;
+    const r = ad.rq.find((x) => x.id === id); r[k] = e.target.value || null; r.updated = "עכשיו";
+    if (k === "owner" && r.owner && r.status === "new") r.status = "in_progress";
+    syncStudentReq(r);
+    paint(); paintBadges();
+    toast(k === "owner" ? (r.owner ? `שויכה ל${r.owner}` : "השיוך הוסר") : "העדכון נשמר", "ok", `<span class="mono">${esc(r.id)}</span>`);
+  });
+  paint();
+}
+function syncStudentReq(r) {
+  const s = st.reqs.find((x) => x.id === r.id); if (!s) return;
+  s.status = r.status; if (r.owner) s.owner = r.owner;
+}
+ACT.a_openRq = (b) => {
+  const r = ad.rq.find((x) => x.id === b.dataset.id); if (!r) return;
+  const thread = () => ad.threads[r.id].concat(ad.notes[r.id]).map((m) => m.from === "note"
+    ? `<div class="msg note"><div class="who">${ico("lock")} הערה פנימית · לא מוצג לתלמידה · ${esc(m.who)} <span class="mono">${esc(m.at)}</span></div>${esc(m.text)}</div>`
+    : `<div class="msg ${m.from}"><div class="who"><b>${esc(m.who || "")}</b><span class="mono">${esc(m.at || "")}</span></div>${esc(m.text)}</div>`).join("");
+  openModal({
+    kind: "drawer",
+    onClose: () => { if (cur.role === "admin" && cur.id === "requests") refresh(); },
+    title: `<span class="mono">${esc(r.id)}</span> · ${r.sensitive ? "פנייה רגישה" : esc(r.subject)}`,
+    body: `<div class="row" style="margin-bottom:12px">${reqPill(r.status, r.status === "waiting_student" ? "ממתינה לתלמידה" : null)}${pill("עדיפות " + r.priority, (PRIO[r.priority] || ["muted"])[0], (PRIO[r.priority] || [])[1])}<span class="small muted">${esc(r.student)} · ${esc(r.type)} · מקור: ${esc(r.source)} · אחראית: ${esc(r.owner || "ללא")}</span></div>
+      ${r.sensitive ? `<div class="restricted" style="margin:0">${ico("lock")}<b>תוכן מוגבל</b><span class="small">פנייה זו מסווגת כרגישה. התוכן זמין רק לצוות הייעודי (${esc(r.owner)}).<br>הצפייה מתועדת ביומן הגישה.</span></div>` : `
+      <div class="card flush" style="margin-bottom:14px"><div class="thread" id="rq-thread">${thread()}</div></div>
+      <form id="rr-f" novalidate style="margin-bottom:14px"><div class="field"><label for="rr-t">תשובה לתלמידה</label><textarea id="rr-t" name="text" placeholder="התשובה תישלח לתלמידה ותוצג אצלה"></textarea></div>
+        <div class="row" style="margin-top:8px"><button type="submit" class="btn primary">${ico("send")}שליחה לתלמידה</button><label class="check small"><input type="checkbox" name="wait">סימון ״ממתינה לתלמידה״</label></div></form>
+      <form id="nt-f" class="note-box" novalidate><div class="lbl">${ico("lock")}הערה פנימית — לא מוצג לתלמידה</div>
+        <div class="field"><label for="nt-t" class="sr-only">הערה פנימית</label><textarea id="nt-t" name="text" placeholder="הערה לצוות בלבד…"></textarea></div>
+        <div style="margin-top:8px"><button type="submit" class="btn warn sm">${ico("note")}שמירת הערה פנימית</button></div></form>`}`,
+    onMount(bx) {
+      if (r.sensitive) return;
+      const rf = $("#rr-f", bx), nf = $("#nt-f", bx); bindClearOnInput(rf); bindClearOnInput(nf);
+      const repaint = () => { $("#rq-thread", bx).innerHTML = thread(); };
+      rf.addEventListener("submit", (e) => {
+        e.preventDefault();
+        if (!validate(rf, [["text", minLen(2, "תשובה לתלמידה")]])) return;
+        const msg = { from: "staff", who: M.staffUser.name, at: `${todayDdmm} ${nowHM()}`, text: rf.text.value.trim() };
+        ad.threads[r.id].push(msg);
+        if (st.threads[r.id]) st.threads[r.id].push(Object.assign({}, msg));
+        r.status = rf.wait.checked ? "waiting_student" : r.status === "new" ? "in_progress" : r.status; r.updated = "עכשיו";
+        if (!r.owner) r.owner = M.staffUser.name;
+        syncStudentReq(r);
+        rf.reset(); repaint(); toast("התשובה נשלחה לתלמידה", "ok", `<span class="mono">${esc(r.id)}</span>`);
+      });
+      nf.addEventListener("submit", (e) => {
+        e.preventDefault();
+        if (!validate(nf, [["text", minLen(2, "הערה פנימית")]])) return;
+        ad.notes[r.id].push({ from: "note", who: M.staffUser.name, at: `${todayDdmm} ${nowHM()}`, text: nf.text.value.trim() });
+        nf.reset(); repaint(); toast("ההערה הפנימית נשמרה", "info", "גלויה לצוות בלבד");
+      });
+    },
+  });
+};
+
+/* ---------- הגשות (מקושר מכרטיס KPI) ---------- */
+function aSubmissions() {
+  const P = M.project;
+  return `
+  <div class="page-h"><div><h1>הגשות פרויקטים</h1><div class="sub">הגשות אחרונות לבדיקה · נתוני הדמה כוללים פרויקט אחד</div></div></div>
+  <section class="card flush"><div class="tbl-wrap"><table class="tbl">
+    <thead><tr><th>פרויקט</th><th>צוות</th><th>גרסה</th><th>תוצר</th><th>הוגש</th><th>סטטוס</th><th>משוב</th></tr></thead>
+    <tbody>${st.subs.map((s) => `<tr><td class="nw" style="font-weight:500">${esc(P.name)}</td><td class="small">${P.members.map(esc).join(", ")}</td><td class="mono">v${s.version}</td><td class="nw">${esc(s.title)}</td><td class="mono nw">${esc(s.submittedAt)}</td><td>${subPill(s.status)}</td><td class="small muted">${esc(s.feedback || "—")}</td></tr>`).join("")}</tbody>
+  </table></div></section>`;
+}
+
+ROLES.admin = {
+  label: "ממשק צוות",
+  switchLabel: "מעבר לממשק הצוות",
+  user: { name: M.staffUser.name, initials: M.staffUser.initials, sub: M.staffUser.role },
+  screens: [
+    { id: "dashboard", label: "לוח בקרה", short: "בית", icon: "grid", render: aDashboard, mount: mDashboard, badge: () => ad.failures.length },
+    { id: "students", label: "תלמידות", icon: "users", render: aStudents, mount: mStudents },
+    { id: "attendance", label: "נוכחות", icon: "check2", render: aAttendance, mount: mAttendance, badge: () => ad.corrections.length },
+    { id: "practicum", label: "פרקטיקום", icon: "briefcase", render: aPracticum, badge: () => ad.pq.length },
+    { id: "meetings", label: "פגישות", icon: "calendar", render: aMeetings, mount: mMeetings },
+    { id: "requests", label: "פניות", icon: "chat", render: aRequests, mount: mRequestsA, badge: () => ad.rq.filter((r) => !r.owner).length },
+    { id: "submissions", label: "הגשות", icon: "upload", render: aSubmissions },
+  ],
+  commands: [
+    { label: "הוספת תלמידה", icon: "plus", hint: "צוות", run: () => { go("admin", "students"); setTimeout(ACT.a_addStu, 60); } },
+    { label: "ייבוא תלמידות מקובץ", icon: "upload", hint: "צוות", run: () => { go("admin", "students"); setTimeout(ACT.a_import, 60); } },
+  ],
+};
+
+/* ===== הפעלה ===== */
+(function boot() {
+  if (!window.MOCK) { document.getElementById("view").innerHTML = '<div class="empty">לא נמצא קובץ הנתונים shared/data.js</div>'; return; }
+  if (!location.hash) history.replaceState(null, "", "#student/dashboard");
+  render(false);
+})();
+</script>
+</body>
+</html>

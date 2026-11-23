@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MVP שנה ג׳</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root { --bg:#f7f7f9; --fg:#14161c; --muted:#5b6170; --card:#fff; --line:#e3e5ea; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#0f1115; --fg:#eceef2; --muted:#a2a8b5; --card:#181b21; --line:#2a2e37; }
+  }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg); font-family:"Assistant",system-ui,sans-serif; line-height:1.5; }
+  main { max-width:1080px; margin:0 auto; padding:48px 16px 64px; }
+  .eyebrow { color:var(--muted); font-weight:600; font-size:14px; letter-spacing:.02em; }
+  h1 { font-size:clamp(28px,5vw,40px); margin:4px 0 8px; }
+  .lead { color:var(--muted); max-width:640px; margin:0 0 32px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:20px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:14px; overflow:hidden; display:flex; flex-direction:column; }
+  .swatch { height:120px; position:relative; }
+  .s1 { background:linear-gradient(90deg,#f4f6fa 0 70%,#1e2a5a 70%); }
+  .s1::after { content:""; position:absolute; inset:24px 30% 24px 20px; background:#fff; border-radius:8px; box-shadow:0 2px 8px rgba(30,42,90,.15); }
+  .s2 { background:#fff6ee; }
+  .s2::before { content:""; position:absolute; inset:20px; border-radius:22px; background:linear-gradient(135deg,#c9b8ff,#ffc7b0); }
+  .s2::after { content:""; position:absolute; left:20px; right:20px; bottom:0; height:22px; background:#fff; border-radius:16px 16px 0 0; box-shadow:0 -2px 8px rgba(0,0,0,.06); }
+  .s3 { background:#0b0f17; }
+  .s3::before { content:""; position:absolute; right:0; top:0; bottom:0; width:28px; background:#111826; border-left:1px solid #1f2937; }
+  .s3::after { content:""; position:absolute; inset:18px 44px 18px 16px; border:1px solid #1f2937; border-radius:8px; background:linear-gradient(90deg,transparent 0 60%,rgba(45,212,191,.25) 60% 62%,transparent 62%), #111826; }
+  .body { padding:18px 20px 20px; display:flex; flex-direction:column; gap:10px; flex:1; }
+  h2 { margin:0; font-size:20px; }
+  .desc { color:var(--muted); margin:0; font-size:15px; flex:1; }
+  .links { display:flex; gap:10px; flex-wrap:wrap; }
+  .links a { flex:1; text-align:center; text-decoration:none; font-weight:700; padding:10px 12px; border-radius:10px; border:1px solid var(--line); color:var(--fg); }
+  .links a:first-child { background:var(--fg); color:var(--bg); border-color:var(--fg); }
+  .links a:focus-visible { outline:3px solid #6c8cff; outline-offset:2px; }
+  section.scope { margin-top:40px; border-top:1px solid var(--line); padding-top:24px; }
+  section.scope h3 { margin:0 0 8px; font-size:17px; }
+  section.scope p { color:var(--muted); margin:0 0 6px; font-size:15px; }
+  code { font-size:13px; }
+</style>
+</head>
+<body>
+<main>
+  <div class="eyebrow">מערכת ניהול שנה ג׳ · מדרגה ראשונה</div>
+  <h1>MVP: מסכי תלמידה ומנהל</h1>
+  <p class="lead">שלושה כיווני עיצוב לאותה ליבה תפעולית ולאותם נתוני דמה. כל כיוון הוא קובץ אחד שכולל אזור תלמידה ואזור ניהול לחיצים, עם מעבר בין התפקידים, ומאפשר להשוות בין הכיוונים לפני בחירה.</p>
+
+  <div class="grid">
+    <article class="card">
+      <div class="swatch s1" aria-hidden="true"></div>
+      <div class="body">
+        <h2>1 · קלאסי מקצועי</h2>
+        <p class="desc">תפריט צד קבוע, כרטיסים לבנים וטבלאות נתונים ברורות בכחול כהה. בנוי לעבודה יומיומית של הצוות.</p>
+        <div class="links">
+          <a href="design-1-classic.html#student/dashboard">תלמידה</a>
+          <a href="design-1-classic.html#admin/dashboard">ניהול</a>
+        </div>
+      </div>
+    </article>
+
+    <article class="card">
+      <div class="swatch s2" aria-hidden="true"></div>
+      <div class="body">
+        <h2>2 · רך וידידותי</h2>
+        <p class="desc">מותאם לנייד: סרגל לשוניות תחתון, כרטיסים מעוגלים בצבעי פסטל וכרטיס ״הפעולה הבאה שלך״ בראש המסך.</p>
+        <div class="links">
+          <a href="design-2-soft.html#student/dashboard">תלמידה</a>
+          <a href="design-2-soft.html#admin/dashboard">ניהול</a>
+        </div>
+      </div>
+    </article>
+
+    <article class="card">
+      <div class="swatch s3" aria-hidden="true"></div>
+      <div class="body">
+        <h2>3 · מודרני כהה</h2>
+        <p class="desc">ממשק כהה ודחוס בסגנון כלי מקצועי: לוח בקרה בפריסת בנטו, חלון פקודות ומצב בהיר לבחירה.</p>
+        <div class="links">
+          <a href="design-3-dark.html#student/dashboard">תלמידה</a>
+          <a href="design-3-dark.html#admin/dashboard">ניהול</a>
+        </div>
+      </div>
+    </article>
+  </div>
+
+  <section class="scope">
+    <h3>מה כלול</h3>
+    <p><strong>תלמידה:</strong> דף בית (S02), מערכת שעות (S03), נוכחות ובקשת תיקון (S05), ציונים וחובות (S06), דיווח פרקטיקום (S07), פרויקט והגשות (S09–S10), קביעת פגישה (S11), פניות (S13).</p>
+    <p><strong>ניהול:</strong> לוח בקרה (A01), תלמידות ותיק תלמידה (A02–A03), נוכחות ותיקונים (A05), בקרת פרקטיקום (A07), פגישות וזמינות (A09), תור פניות (A12).</p>
+    <p>כל הנתונים הם נתוני דמה מהקובץ <code>shared/data.js</code>, ומבנהם תואם לחוזה ה־API <code>/api/v1</code>. אין שרת, ופעולות נשמרות בזיכרון הדף בלבד.</p>
+  </section>
+</main>
+</body>
+</html>

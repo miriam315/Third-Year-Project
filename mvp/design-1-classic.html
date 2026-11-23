@@ -1,0 +1,1394 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>מערכת שנה ג׳ — קלאסי</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f4f6fa; --surface:#fff; --surface-2:#f9fafc; --border:#e1e5ee; --border-strong:#cbd2df;
+  --text:#1b2332; --muted:#566074; --faint:#7a8396;
+  --primary:#3346b0; --primary-d:#25348a; --primary-l:#eef0fb;
+  --side:#1c2552; --side-2:#262f63; --side-t:#cfd5f0;
+  --ok:#17663f; --ok-bg:#e3f3ea; --warn:#7f5200; --warn-bg:#fcf0d4;
+  --bad:#a8202c; --bad-bg:#fbe6e8; --info:#1c579b; --info-bg:#e5eefa; --neu:#475066; --neu-bg:#eceff4;
+  --radius:10px; --shadow:0 1px 2px rgba(16,24,40,.05),0 1px 3px rgba(16,24,40,.07);
+  --side-w:248px;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:"Assistant","Heebo",Arial,sans-serif;font-size:16px;line-height:1.5;color:var(--text);background:var(--bg);overflow-x:hidden}
+a{color:var(--primary)}
+h1,h2,h3{margin:0;line-height:1.25}
+h1{font-size:1.6rem;font-weight:800}
+h2{font-size:1.1rem;font-weight:700}
+h3{font-size:1rem;font-weight:700}
+p{margin:.25rem 0}
+:focus-visible{outline:3px solid #6b7cf0;outline-offset:2px;border-radius:4px}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.skip{position:absolute;top:-40px;right:8px;background:var(--primary);color:#fff;padding:6px 12px;border-radius:6px;z-index:100}
+.skip:focus{top:8px}
+svg.i{width:18px;height:18px;flex:none;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:middle}
+
+/* ---------- Sidebar ---------- */
+.sidebar{position:fixed;top:0;right:0;bottom:0;width:var(--side-w);background:var(--side);color:var(--side-t);display:flex;flex-direction:column;z-index:40;transition:transform .2s}
+.brand{display:flex;align-items:center;gap:10px;padding:18px 18px 16px;border-bottom:1px solid rgba(255,255,255,.08)}
+.brand-mark{width:36px;height:36px;border-radius:9px;background:#5466d6;color:#fff;display:grid;place-items:center;font-weight:800}
+.brand b{display:block;color:#fff;font-size:1rem}
+.brand small{font-size:.8rem;color:#a9b2dc}
+.nav{padding:12px 10px;display:flex;flex-direction:column;gap:2px;overflow-y:auto;flex:1}
+.nav-label{font-size:.75rem;letter-spacing:.03em;color:#8e98c6;padding:10px 12px 4px}
+.nav a{display:flex;align-items:center;gap:12px;padding:9px 12px;border-radius:8px;color:var(--side-t);text-decoration:none;font-weight:500}
+.nav a:hover{background:var(--side-2);color:#fff}
+.nav a[aria-current="page"]{background:#3a4592;color:#fff;font-weight:700;box-shadow:inset -3px 0 0 #a7b3ff}
+.nav .count{margin-inline-start:auto;background:#f0b429;color:#2b1d00;font-size:.75rem;font-weight:700;border-radius:999px;padding:0 8px}
+.side-foot{padding:12px 16px;border-top:1px solid rgba(255,255,255,.08);font-size:.88rem;display:flex;flex-direction:column;gap:6px}
+.side-foot a{color:#c6cdf2;text-decoration:none;display:flex;gap:8px;align-items:center}
+.side-foot a:hover{color:#fff;text-decoration:underline}
+.overlay{display:none;position:fixed;inset:0;background:rgba(10,15,35,.45);z-index:35}
+
+/* ---------- Top bar ---------- */
+.main{margin-right:var(--side-w);min-height:100vh;display:flex;flex-direction:column}
+.topbar{position:sticky;top:0;z-index:30;background:var(--surface);border-bottom:1px solid var(--border);height:62px;display:flex;align-items:center;gap:14px;padding:0 24px}
+.hamburger{display:none}
+.search{flex:1;max-width:420px;position:relative}
+.search input{width:100%;height:38px;border:1px solid var(--border);background:var(--surface-2);border-radius:8px;padding:0 38px 0 12px;font:inherit}
+.search svg{position:absolute;right:11px;top:10px;color:var(--faint)}
+.top-actions{margin-inline-start:auto;display:flex;align-items:center;gap:14px}
+.seg{display:inline-flex;border:1px solid var(--border-strong);border-radius:9px;padding:3px;background:var(--surface-2)}
+.seg a{padding:5px 14px;border-radius:7px;text-decoration:none;color:var(--muted);font-weight:700;font-size:.9rem}
+.seg a:hover{color:var(--primary)}
+.seg a[aria-current="true"]{background:var(--primary);color:#fff}
+.user{display:flex;align-items:center;gap:10px}
+.avatar{width:36px;height:36px;border-radius:50%;background:var(--primary);color:#fff;display:grid;place-items:center;font-weight:700;font-size:.9rem;flex:none}
+.avatar.lg{width:56px;height:56px;font-size:1.2rem}
+.user-meta{line-height:1.15}
+.user-meta b{display:block;font-size:.92rem}
+.user-meta small{color:var(--muted);font-size:.8rem}
+
+/* ---------- Content ---------- */
+.content{padding:24px;max-width:1240px;width:100%}
+.page-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+.page-head p{color:var(--muted)}
+.crumbs{font-size:.88rem;color:var(--muted);margin-bottom:4px}
+.crumbs a{text-decoration:none}
+.grid{display:grid;gap:16px}
+.g-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.g-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.span-2{grid-column:span 2}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px}
+.card-h{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.card-h h2{display:flex;align-items:center;gap:8px}
+.card-h h2 svg{color:var(--primary)}
+.card-link{display:block;color:inherit;text-decoration:none;transition:border-color .15s,box-shadow .15s}
+.card-link:hover{border-color:#aab4e6;box-shadow:0 4px 14px rgba(51,70,176,.12)}
+.more{font-size:.88rem;font-weight:600;color:var(--primary);white-space:nowrap}
+.muted{color:var(--muted)}
+.small{font-size:.88rem}
+.stack{display:flex;flex-direction:column;gap:10px}
+.row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.spacer{flex:1}
+.big-num{font-size:2.1rem;font-weight:800;line-height:1}
+.kv{display:grid;grid-template-columns:max-content 1fr;gap:6px 16px;font-size:.95rem}
+.kv dt{color:var(--muted)}
+.kv dd{margin:0;font-weight:600}
+.list{list-style:none;margin:0;padding:0}
+.list li{padding:10px 0;border-bottom:1px solid var(--border)}
+.list li:last-child{border-bottom:0}
+hr.sep{border:0;border-top:1px solid var(--border);margin:14px 0}
+
+/* Next action */
+.next-action{display:flex;gap:16px;align-items:center;border-inline-start:5px solid var(--bad);background:linear-gradient(90deg,#fff, #fff7f7)}
+.next-action .na-icon{width:48px;height:48px;border-radius:12px;background:var(--bad-bg);color:var(--bad);display:grid;place-items:center;flex:none}
+.next-action .na-icon svg{width:26px;height:26px}
+.next-action .eyebrow{font-size:.8rem;font-weight:700;color:var(--bad);letter-spacing:.02em}
+.next-action.calm{border-inline-start-color:var(--primary);background:#fff}
+.next-action.calm .na-icon{background:var(--primary-l);color:var(--primary)}
+.next-action.calm .eyebrow{color:var(--primary)}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:38px;padding:0 16px;border-radius:8px;border:1px solid var(--primary);background:var(--primary);color:#fff;font:inherit;font-weight:600;cursor:pointer;text-decoration:none;white-space:nowrap}
+.btn:hover{background:var(--primary-d)}
+.btn.secondary{background:#fff;color:var(--primary);border-color:var(--border-strong)}
+.btn.secondary:hover{background:var(--primary-l)}
+.btn.ghost{background:transparent;border-color:transparent;color:var(--primary)}
+.btn.ghost:hover{background:var(--primary-l)}
+.btn.danger{background:var(--bad);border-color:var(--bad)}
+.btn.ok{background:var(--ok);border-color:var(--ok)}
+.btn.sm{height:32px;padding:0 10px;font-size:.88rem}
+.btn[disabled],.btn[aria-disabled="true"]{background:#e6e9f0;border-color:#d6dbe5;color:#7d8597;cursor:not-allowed}
+.icon-btn{width:38px;height:38px;border-radius:8px;border:1px solid var(--border);background:#fff;display:inline-grid;place-items:center;cursor:pointer;color:var(--text)}
+
+/* Pills */
+.pill{display:inline-flex;align-items:center;gap:4px;font-size:.82rem;font-weight:700;padding:2px 10px 2px 9px;border-radius:999px;white-space:nowrap;border:1px solid transparent}
+.pill svg.i{width:14px;height:14px;stroke-width:2.5}
+.pill-ok{background:var(--ok-bg);color:var(--ok);border-color:#bfe2cd}
+.pill-warn{background:var(--warn-bg);color:var(--warn);border-color:#f0d48f}
+.pill-bad{background:var(--bad-bg);color:var(--bad);border-color:#f2bcc2}
+.pill-info{background:var(--info-bg);color:var(--info);border-color:#bcd3f0}
+.pill-neu{background:var(--neu-bg);color:var(--neu);border-color:#d5dae4}
+.pill-pri{background:var(--primary-l);color:var(--primary);border-color:#c9cff3}
+.tag{display:inline-flex;align-items:center;gap:4px;font-size:.82rem;color:var(--neu);background:var(--surface-2);border:1px solid var(--border);border-radius:6px;padding:1px 8px}
+.tag svg.i{width:14px;height:14px}
+
+/* Tables */
+.table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:var(--radius);background:#fff}
+table{width:100%;border-collapse:collapse;font-size:.94rem}
+th,td{padding:11px 14px;text-align:right;vertical-align:middle;border-bottom:1px solid var(--border)}
+th{background:#f1f3f8;color:var(--muted);font-weight:700;font-size:.84rem;white-space:nowrap}
+tbody tr:nth-child(even){background:#fafbfd}
+tbody tr:last-child td{border-bottom:0}
+tbody tr.clickable{cursor:pointer}
+tbody tr.clickable:hover{background:#eef1fb}
+tr.hl{background:#fffaf0!important}
+td.num{font-variant-numeric:tabular-nums}
+.sub-line{display:block;font-size:.84rem;color:var(--muted);margin-top:2px}
+.feedback{margin-top:6px;font-size:.88rem;background:var(--warn-bg);border:1px solid #f0d48f;border-radius:6px;padding:6px 10px;color:#5a3c00}
+.feedback b{color:var(--warn)}
+
+/* Progress */
+.progress{height:12px;background:#e7eaf2;border-radius:999px;overflow:hidden;display:flex}
+.progress span{display:block;height:100%}
+.progress .p-ok{background:var(--ok)}
+.progress .p-pend{background:repeating-linear-gradient(45deg,#7fa6dd 0 6px,#a9c4ea 6px 12px)}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:.85rem;color:var(--muted);margin-top:8px}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-inline-end:5px;vertical-align:-1px}
+
+/* Forms */
+.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 16px}
+.form-grid .full{grid-column:1/-1}
+.field label,.field .lbl{display:block;font-weight:600;font-size:.92rem;margin-bottom:4px}
+.req{color:var(--bad)}
+.field input[type=text],.field input[type=date],.field input[type=time],.field input[type=number],.field input[type=url],.field input[type=email],.field select,.field textarea,.filters select,.filters input[type=search]{width:100%;font:inherit;border:1px solid var(--border-strong);border-radius:8px;padding:8px 10px;background:#fff;color:var(--text);min-height:40px}
+.field textarea{min-height:84px;resize:vertical}
+.field input[type=file]{font:inherit;font-size:.9rem;max-width:100%}
+.field [aria-invalid="true"]{border-color:var(--bad);background:#fff8f8}
+.hint{font-size:.82rem;color:var(--muted);margin-top:3px}
+.err{font-size:.85rem;color:var(--bad);font-weight:600;margin-top:3px;min-height:0}
+.err:not(:empty)::before{content:"⚠ "}
+.form-actions{display:flex;gap:10px;justify-content:flex-start;flex-wrap:wrap;margin-top:16px}
+.radio-row{display:flex;gap:16px;flex-wrap:wrap}
+.radio-row label{font-weight:500;display:flex;align-items:center;gap:6px}
+.filters{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;margin-bottom:14px}
+.filters .field{min-width:160px}
+.check{display:flex;align-items:center;gap:8px;font-weight:600;min-height:40px}
+.check input{width:18px;height:18px}
+
+/* Schedule */
+.week-h{font-size:.95rem;font-weight:700;color:var(--muted);margin:18px 0 8px}
+.session{display:grid;grid-template-columns:78px 1fr auto;gap:14px;align-items:center;background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:10px;box-shadow:var(--shadow)}
+.session .date{text-align:center;border-inline-end:1px solid var(--border);padding-inline-end:12px}
+.session .date b{display:block;font-size:1.25rem}
+.session .date small{color:var(--muted)}
+.session .time{font-weight:700;font-variant-numeric:tabular-nums}
+.session .meta{display:flex;gap:8px 14px;flex-wrap:wrap;color:var(--muted);font-size:.9rem;margin-top:4px}
+.session .meta span{display:inline-flex;align-items:center;gap:4px}
+.session.updated{border-inline-start:4px solid var(--warn)}
+.session.cancelled{background:#f7f7f9;border-style:dashed;border-inline-start:4px solid var(--bad)}
+.session.cancelled .strike{text-decoration:line-through;color:var(--faint)}
+.change-note{margin-top:6px;font-size:.88rem;font-weight:600}
+.change-note.u{color:var(--warn)}
+.change-note.c{color:var(--bad)}
+
+/* Stepper */
+.stepper{display:flex;list-style:none;margin:0;padding:0;counter-reset:st}
+.stepper li{flex:1;position:relative;text-align:center;padding-top:44px;font-size:.9rem;font-weight:600}
+.stepper li::before{content:"";position:absolute;top:17px;right:50%;left:-50%;height:3px;background:#d8dde8;z-index:0}
+.stepper li:first-child::before{display:none}
+.stepper li.done::before,.stepper li.current::before{background:var(--ok)}
+.stepper .dot{position:absolute;top:0;right:50%;transform:translateX(50%);width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:#fff;border:2px solid #cdd3df;color:var(--faint);z-index:1}
+.stepper li.done .dot{background:var(--ok);border-color:var(--ok);color:#fff}
+.stepper li.current .dot{background:var(--primary);border-color:var(--primary);color:#fff;box-shadow:0 0 0 5px var(--primary-l)}
+.stepper .st-state{display:block;font-size:.78rem;font-weight:500;color:var(--muted)}
+.stepper li.locked{color:var(--faint)}
+
+/* Callouts */
+.callout{border-radius:8px;padding:12px 14px;display:flex;gap:10px;align-items:flex-start;font-size:.94rem}
+.callout svg{margin-top:2px}
+.callout.warn{background:var(--warn-bg);border:1px solid #f0d48f;color:#5a3c00}
+.callout.bad{background:var(--bad-bg);border:1px solid #f2bcc2;color:#7a1820}
+.callout.info{background:var(--info-bg);border:1px solid #bcd3f0;color:#123f73}
+.callout.ok{background:var(--ok-bg);border:1px solid #bfe2cd;color:#0f4a2d}
+
+/* Meetings */
+.choice{display:block;border:1px solid var(--border-strong);border-radius:var(--radius);padding:12px 14px;cursor:pointer;background:#fff;text-align:right;font:inherit;width:100%}
+.choice:hover{border-color:var(--primary)}
+.choice[aria-pressed="true"]{border-color:var(--primary);box-shadow:0 0 0 2px var(--primary) inset;background:var(--primary-l)}
+.choice[disabled]{cursor:not-allowed;background:#f4f5f8;color:var(--faint);border-style:dashed}
+.cond{display:flex;gap:8px;align-items:flex-start;padding:6px 0}
+.cond .mark{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;flex:none;font-weight:800;font-size:.8rem}
+.cond.ok .mark{background:var(--ok-bg);color:var(--ok)}
+.cond.no .mark{background:var(--bad-bg);color:var(--bad)}
+.steps-mini{display:flex;gap:6px;font-size:.85rem;color:var(--muted);margin-bottom:14px;flex-wrap:wrap}
+.steps-mini span{padding:3px 10px;border-radius:999px;background:var(--neu-bg)}
+.steps-mini span.on{background:var(--primary);color:#fff;font-weight:700}
+
+/* Thread */
+.thread{display:flex;flex-direction:column;gap:12px}
+.msg{max-width:78%;border:1px solid var(--border);border-radius:12px;padding:10px 14px;background:#fff}
+.msg.me{align-self:flex-start;background:var(--primary-l);border-color:#cdd3f3}
+.msg.staff{align-self:flex-end}
+.msg .who{font-size:.82rem;color:var(--muted);font-weight:600;margin-bottom:2px}
+
+/* Modal & toast */
+.modal-back{position:fixed;inset:0;background:rgba(15,20,40,.5);display:none;align-items:center;justify-content:center;padding:16px;z-index:60}
+.modal-back.open{display:flex}
+.modal{background:#fff;border-radius:12px;width:100%;max-width:560px;max-height:90vh;overflow:auto;box-shadow:0 20px 50px rgba(0,0,0,.25)}
+.modal-h{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border)}
+.modal-b{padding:18px 20px}
+.toasts{position:fixed;bottom:20px;left:20px;display:flex;flex-direction:column;gap:8px;z-index:80;max-width:calc(100vw - 40px)}
+.toast{background:#17213f;color:#fff;border-radius:10px;padding:12px 16px;box-shadow:0 8px 24px rgba(0,0,0,.2);display:flex;gap:10px;align-items:center;min-width:260px;border-inline-start:5px solid #43c27f}
+.toast.err{border-inline-start-color:#ff6b78}
+
+/* ---------- Admin additions ---------- */
+.avatar.staff{background:#0f6e66}
+.kpi{padding:16px}
+.kpi .kpi-l{font-weight:600;color:var(--muted);font-size:.92rem;display:flex;align-items:center;gap:6px}
+.kpi .kpi-v{font-size:2rem;font-weight:800;line-height:1.1;margin:8px 0 2px}
+.kpi .kpi-t{font-size:.85rem;color:var(--muted)}
+.kpi.alert{border-color:#f2bcc2;border-inline-start:4px solid var(--bad)}
+.kpi.alert .kpi-t{color:var(--bad);font-weight:700}
+.tabs{display:flex;gap:2px;border-bottom:1px solid var(--border);margin-bottom:16px;overflow-x:auto}
+.tabs a{padding:10px 14px;text-decoration:none;color:var(--muted);font-weight:600;border-bottom:3px solid transparent;white-space:nowrap}
+.tabs a:hover{color:var(--primary)}
+.tabs a[aria-current="page"]{color:var(--primary);border-bottom-color:var(--primary)}
+.internal{background:#fffbea;border:2px dashed #c99700;border-radius:var(--radius);padding:16px}
+.internal-h{display:flex;align-items:center;gap:8px;color:#5e4500;font-weight:800;flex-wrap:wrap}
+.note{background:#fff;border:1px solid #ecd58a;border-radius:8px;padding:8px 12px;margin-top:8px;font-size:.92rem}
+.restricted{text-align:center;padding:36px 20px;background:repeating-linear-gradient(135deg,#f6f7fa 0 10px,#eef0f5 10px 20px);border:1px dashed var(--border-strong);border-radius:var(--radius)}
+.restricted svg.i{width:36px;height:36px;color:var(--neu)}
+.empty{text-align:center;padding:28px 16px;color:var(--muted)}
+.empty b{display:block;color:var(--text);margin-bottom:4px}
+.flash{animation:flash 2s}
+@keyframes flash{0%,50%{box-shadow:0 0 0 4px #f0b429}100%{box-shadow:var(--shadow)}}
+td select,td input[type=number]{font:inherit;border:1px solid var(--border-strong);border-radius:6px;padding:4px 8px;min-height:34px;background:#fff}
+td input[type=number]{width:88px}
+.filter-banner{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.check-list label{display:flex;gap:8px;align-items:center;padding:6px 0;border-bottom:1px solid var(--border)}
+
+/* Responsive */
+@media (max-width:1100px){.g-4{grid-template-columns:repeat(2,minmax(0,1fr))}.g-3{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:800px){
+  .sidebar{transform:translateX(100%)}
+  body.nav-open .sidebar{transform:none}
+  body.nav-open .overlay{display:block}
+  .main{margin-right:0}
+  .hamburger{display:inline-grid}
+  .topbar{padding:0 12px;gap:10px}
+  .user-meta{display:none}
+  .seg a{padding:5px 10px}
+  .search{display:none}
+  .tabs{overflow-x:auto}
+  .content{padding:16px}
+  .g-2,.g-3,.g-4{grid-template-columns:minmax(0,1fr)}
+  .span-2{grid-column:auto}
+  .form-grid{grid-template-columns:minmax(0,1fr)}
+  .session{grid-template-columns:62px 1fr}
+  .session .actions{grid-column:1/-1}
+  .next-action{flex-wrap:wrap}
+  .stepper{flex-direction:column;gap:6px}
+  .stepper li{text-align:right;padding:6px 48px 6px 0;min-height:40px}
+  .stepper li::before{display:none}
+  .stepper .dot{right:0;transform:none;top:2px}
+  .msg{max-width:92%}
+  h1{font-size:1.35rem}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#view">דילוג לתוכן</a>
+
+<aside class="sidebar" id="sidebar" aria-label="ניווט ראשי">
+  <div class="brand">
+    <div class="brand-mark" aria-hidden="true">ג׳</div>
+    <div><b>מערכת שנה ג׳</b><small id="brandSub">אזור התלמידה</small></div>
+  </div>
+  <nav class="nav" id="nav"></nav>
+  <div class="side-foot">
+    <a href="#admin/dashboard" id="sideSwitch"><svg class="i" viewBox="0 0 24 24"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg><span>מעבר לממשק ניהול</span></a>
+    <a href="index.html"><svg class="i" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>חזרה לדף הבית</a>
+  </div>
+</aside>
+<div class="overlay" id="overlay"></div>
+
+<div class="main">
+  <header class="topbar">
+    <button class="icon-btn hamburger" id="hamburger" aria-label="פתיחת תפריט" aria-controls="sidebar" aria-expanded="false"><svg class="i" viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+    <form class="search" role="search" id="searchForm">
+      <label class="sr-only" for="q">חיפוש</label>
+      <svg class="i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+      <input id="q" type="search" placeholder="חיפוש מסך, קורס או מספר פנייה…" autocomplete="off">
+    </form>
+    <div class="top-actions">
+      <nav class="seg" aria-label="החלפת תפקיד"><a href="#student/dashboard" id="segStudent">תלמידה</a><a href="#admin/dashboard" id="segAdmin">ניהול</a></nav>
+      <div class="user" id="userBox"></div>
+    </div>
+  </header>
+  <main class="content" id="view" tabindex="-1"></main>
+</div>
+
+<div class="modal-back" id="modalBack"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" id="modal"></div></div>
+<div class="toasts" id="toasts" aria-live="polite"></div>
+
+<script src="shared/data.js"></script>
+<script>
+(function () {
+"use strict";
+var M = window.MOCK;
+if (!M) { document.getElementById("view").innerHTML = "<p>שגיאה: קובץ הנתונים לא נטען.</p>"; return; }
+
+/* ===================== Helpers ===================== */
+var ICONS = {
+  home:'<path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/>',
+  calendar:'<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>',
+  check:'<path d="M20 6L9 17l-5-5"/>',
+  checkCircle:'<circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-6"/>',
+  clipboard:'<rect x="5" y="4" width="14" height="18" rx="2"/><path d="M9 2h6v4H9zM9 12h6M9 16h4"/>',
+  briefcase:'<rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/>',
+  folder:'<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
+  users:'<circle cx="9" cy="8" r="4"/><path d="M1 21v-1a6 6 0 0 1 12 0v1"/><path d="M16 4a4 4 0 0 1 0 8M23 21v-1a6 6 0 0 0-4-5.6"/>',
+  message:'<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
+  x:'<path d="M18 6L6 18M6 6l12 12"/>',
+  alert:'<path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/>',
+  clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  lock:'<rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',
+  video:'<rect x="2" y="6" width="14" height="12" rx="2"/><path d="M22 8l-6 4 6 4z"/>',
+  pin:'<path d="M12 22s7-7.5 7-13a7 7 0 0 0-14 0c0 5.5 7 13 7 13z"/><circle cx="12" cy="9" r="2.5"/>',
+  user:'<circle cx="12" cy="8" r="4"/><path d="M4 21v-1a8 8 0 0 1 16 0v1"/>',
+  minus:'<path d="M5 12h14"/>',
+  half:'<circle cx="12" cy="12" r="9"/><path d="M12 3v18" /><path d="M12 3a9 9 0 0 0 0 18z" fill="currentColor"/>',
+  search:'<circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/>',
+  undo:'<path d="M9 14L4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-3"/>',
+  edit:'<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>',
+  plus:'<path d="M12 5v14M5 12h14"/>',
+  bell:'<path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/>',
+  info:'<circle cx="12" cy="12" r="9"/><path d="M12 16v-4M12 8h.01"/>',
+  arrow:'<path d="M15 18l-6-6 6-6"/>',
+  refresh:'<path d="M23 4v6h-6"/><path d="M20.5 15a9 9 0 1 1-2.1-9.4L23 10"/>',
+  file:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/>'
+};
+function ico(n, s) { return '<svg class="i" viewBox="0 0 24 24" aria-hidden="true"' + (s ? ' style="width:' + s + 'px;height:' + s + 'px"' : '') + '>' + (ICONS[n] || "") + "</svg>"; }
+function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+function pill(tone, label, icon) { return '<span class="pill pill-' + tone + '">' + (icon ? ico(icon) : "") + esc(label) + "</span>"; }
+function $(sel, root) { return (root || document).querySelector(sel); }
+function $all(sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); }
+
+var TODAY = (function () { var p = M.today.split("-"); return new Date(+p[0], +p[1] - 1, +p[2]); })();
+function isoToDM(iso) { var p = iso.split("-"); return p[2] + "/" + p[1]; }
+function dmToDate(dm) { var p = dm.split("/"); return new Date(TODAY.getFullYear(), +p[1] - 1, +p[0]); }
+function nowHM() { var d = new Date(); return ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2); }
+function toMin(t) { var p = t.split(":"); return +p[0] * 60 + +p[1]; }
+
+function field(label, name, control, o) {
+  o = o || {};
+  return '<div class="field ' + (o.full ? "full" : "") + '"><label for="f-' + name + '">' + label + (o.req ? ' <span class="req" aria-hidden="true">*</span><span class="sr-only">(חובה)</span>' : "") + "</label>" +
+    control + (o.hint ? '<div class="hint">' + o.hint + "</div>" : "") + '<div class="err" id="e-' + name + '" data-err="' + name + '"></div></div>';
+}
+function inp(type, name, attrs) { return '<input type="' + type + '" id="f-' + name + '" name="' + name + '" aria-describedby="e-' + name + '" ' + (attrs || "") + ">"; }
+function sel(name, options, selected) {
+  return '<select id="f-' + name + '" name="' + name + '" aria-describedby="e-' + name + '">' + options.map(function (o) {
+    var v = typeof o === "string" ? o : o.v, l = typeof o === "string" ? o : o.l;
+    return '<option value="' + esc(v) + '"' + (v === selected ? " selected" : "") + (o.dis ? " disabled" : "") + ">" + esc(l) + "</option>";
+  }).join("") + "</select>";
+}
+function area(name, attrs, val) { return '<textarea id="f-' + name + '" name="' + name + '" aria-describedby="e-' + name + '" ' + (attrs || "") + ">" + esc(val || "") + "</textarea>"; }
+function setErr(form, name, msg) {
+  var box = form.querySelector('[data-err="' + name + '"]'); if (box) box.textContent = msg || "";
+  var el = form.elements[name]; if (el && el.setAttribute) { if (msg) el.setAttribute("aria-invalid", "true"); else el.removeAttribute("aria-invalid"); }
+}
+function clearErrs(form) { $all("[data-err]", form).forEach(function (e) { e.textContent = ""; }); $all("[aria-invalid]", form).forEach(function (e) { e.removeAttribute("aria-invalid"); }); }
+function focusFirstError(form) { var el = form.querySelector('[aria-invalid="true"]'); if (el) el.focus(); }
+
+function toast(msg, isErr) {
+  var t = document.createElement("div"); t.className = "toast" + (isErr ? " err" : "");
+  t.innerHTML = ico(isErr ? "alert" : "checkCircle") + "<div>" + msg + "</div>";
+  $("#toasts").appendChild(t);
+  setTimeout(function () { t.remove(); }, 5000);
+}
+
+var lastFocus = null;
+function openModal(title, body) {
+  lastFocus = document.activeElement;
+  $("#modal").innerHTML = '<div class="modal-h"><h2 id="modalTitle">' + title + '</h2><button class="icon-btn" data-act="close-modal" aria-label="סגירה">' + ico("x") + '</button></div><div class="modal-b">' + body + "</div>";
+  $("#modalBack").classList.add("open");
+  var f = $("#modal").querySelector("input,select,textarea,button:not([data-act=close-modal])"); (f || $("#modal button")).focus();
+}
+function closeModal() { $("#modalBack").classList.remove("open"); $("#modal").innerHTML = ""; if (lastFocus) lastFocus.focus(); }
+
+/* ===================== Status vocab ===================== */
+var ATT_TONE = { present: ["ok", "check"], partial: ["warn", "half"], absent: ["bad", "x"], unreported: ["neu", "minus"], review: ["info", "search"] };
+function attPill(s) { return pill(ATT_TONE[s][0], M.attendanceStatus[s], ATT_TONE[s][1]); }
+var REP_TONE = { draft: ["neu", "edit"], pending: ["info", "clock"], approved: ["ok", "check"], returned: ["warn", "undo"], rejected: ["bad", "x"] };
+function repPill(s) { return pill(REP_TONE[s][0], M.reportStatus[s], REP_TONE[s][1]); }
+var REQ_TONE = { new: ["pri", "plus"], in_progress: ["info", "clock"], waiting_student: ["warn", "alert"], closed: ["neu", "check"] };
+function reqPill(s) { return pill(REQ_TONE[s][0], M.requestStatus[s], REQ_TONE[s][1]); }
+var SUB_STATUS = { returned: ["warn", "undo", "הוחזר לתיקון"], superseded: ["neu", "minus", "הוחלפה בגרסה חדשה"], pending: ["info", "clock", "ממתינה לבדיקה"], approved: ["ok", "check", "אושרה"] };
+function subPill(s) { var t = SUB_STATUS[s] || ["neu", "", s]; return pill(t[0], t[2], t[1]); }
+function obStatusPill(s) {
+  if (s === "הושלם") return pill("ok", s, "check");
+  if (s === "חסר") return pill("bad", s, "x");
+  if (s === "בבדיקה") return pill("info", s, "search");
+  if (s === "טרם נקלט") return pill("neu", s, "clock");
+  return pill("neu", s);
+}
+
+/* ===================== State ===================== */
+var S = {
+  sched: { course: "all", mode: "all", showCancelled: true },
+  prEdit: null,
+  mt: { type: null, slot: null, step: "type", booking: null },
+  threads: {},
+  seq: { ac: 312, pr: 96, rq: 1102, ap: 2230 }
+};
+
+function nextAction() {
+  var returned = M.practicum.reports.filter(function (r) { return r.status === "returned"; });
+  if (returned.length) return M.nextAction;
+  var waiting = M.requests.filter(function (r) { return r.status === "waiting_student"; });
+  if (waiting.length) return { title: "פנייה ממתינה לתשובתך", detail: waiting[0].id + " — " + waiting[0].subject + ": " + (waiting[0].lastMsg || ""), cta: "לצפייה בפנייה", screen: "requests/" + waiting[0].id, urgency: "normal" };
+  return { title: "אין פעולות דחופות", detail: "כל הדיווחים מעודכנים. כדאי לבדוק את מערכת השעות לשבוע הקרוב.", cta: "למערכת השעות", screen: "schedule", urgency: "normal" };
+}
+
+/* ===================== Navigation ===================== */
+var NAV = [
+  { id: "dashboard", label: "לוח בקרה", icon: "home" },
+  { id: "schedule", label: "מערכת שעות", icon: "calendar" },
+  { id: "attendance", label: "נוכחות", icon: "checkCircle" },
+  { id: "obligations", label: "דרישות וחובות", icon: "clipboard" },
+  { id: "practicum", label: "פרקטיקום", icon: "briefcase" },
+  { id: "project", label: "פרויקט גמר", icon: "folder" },
+  { id: "meetings", label: "פגישות ואימון", icon: "users" },
+  { id: "requests", label: "פניות", icon: "message" }
+];
+function navCount(id) {
+  if (id === "requests") return M.requests.filter(function (r) { return r.status === "waiting_student"; }).length;
+  if (id === "practicum") return M.practicum.reports.filter(function (r) { return r.status === "returned"; }).length;
+  return 0;
+}
+function renderNav(role, active) {
+  var items = role === "admin" ? NAV_A : NAV, cnt = role === "admin" ? navCountA : navCount;
+  $("#nav").innerHTML = '<div class="nav-label">' + (role === "admin" ? "ניהול וצוות" : "התפריט שלי") + "</div>" + items.map(function (n) {
+    var c = cnt(n.id);
+    return '<a href="#' + role + "/" + n.id + '"' + (n.id === active ? ' aria-current="page"' : "") + ">" + ico(n.icon) + "<span>" + n.label + "</span>" +
+      (c ? '<span class="count" aria-label="' + c + ' פריטים לטיפול">' + c + "</span>" : "") + "</a>";
+  }).join("");
+}
+function parseHash() {
+  var h = decodeURIComponent(location.hash.slice(1)) || "student/dashboard";
+  var parts = h.split("/");
+  if (parts[0] !== "student" && parts[0] !== "admin") parts.unshift("student");
+  return { role: parts[0], screen: parts[1] || "dashboard", param: parts[2], sub: parts[3] };
+}
+/* go("x") navigates within the current role; go("#role/x") is absolute */
+function go(hash) { location.hash = hash.charAt(0) === "#" ? hash : parseHash().role + "/" + hash; }
+
+/* ===================== Screens ===================== */
+var screens = {};   /* student screens */
+var ascreens = {};  /* admin screens */
+
+screens.dashboard = function () {
+  var me = M.me, na = nextAction();
+  var high = na.urgency === "high";
+  var upcoming = M.sessions.slice(0, 4);
+  var openOb = M.obligations.filter(function (o) { return o.status === "חסר"; }).length;
+  var inReview = M.obligations.filter(function (o) { return o.status === "בבדיקה"; }).length;
+  var p = M.practicum, pctA = Math.round(p.approved / p.target * 100), pctP = Math.round(p.pending / p.target * 100);
+  var cur = M.project.stages.filter(function (s) { return s.status === "current"; })[0];
+  var lastSub = M.project.submissions[0];
+  var waiting = M.requests.filter(function (r) { return r.status === "waiting_student"; });
+
+  return '<div class="page-head"><div class="row" style="gap:14px"><div class="avatar lg" aria-hidden="true">' + esc(me.initials) + '</div><div><h1>שלום, ' + esc(me.name) + '</h1><p class="muted">' + esc(me.cohort) + " · מסלול " + esc(me.track) + " · ת״ז מוסדית " + esc(me.institutionalId) + "</p></div></div></div>" +
+
+    '<section class="card next-action ' + (high ? "" : "calm") + '" aria-labelledby="na-t" style="margin-bottom:16px">' +
+    '<div class="na-icon">' + ico(high ? "alert" : "bell") + '</div><div style="flex:1;min-width:200px"><div class="eyebrow">הפעולה הבאה' + (high ? " · דחוף" : "") + '</div><h2 id="na-t">' + esc(na.title) + '</h2><p class="muted">' + esc(na.detail) + "</p></div>" +
+    '<a class="btn" href="#student/' + na.screen + '">' + esc(na.cta) + " " + ico("arrow") + "</a></section>" +
+
+    '<div class="grid g-3">' +
+    '<a class="card card-link span-2" href="#student/schedule"><div class="card-h"><h2>' + ico("calendar") + 'מפגשים קרובים</h2><span class="more">למערכת השעות ←</span></div><ul class="list">' +
+    upcoming.map(function (s) {
+      var st = s.status === "cancelled" ? pill("bad", "בוטל", "x") : s.status === "updated" ? pill("warn", "עודכן", "alert") : "";
+      return '<li class="row"><b style="min-width:92px" class="' + (s.status === "cancelled" ? "muted" : "") + '">' + s.day + " " + s.date + '</b><span class="num" style="min-width:96px;' + (s.status === "cancelled" ? "text-decoration:line-through" : "") + '">' + s.start + "–" + s.end + "</span><span>" + esc(s.course) + '</span><span class="tag">' + ico(s.mode === "זום" ? "video" : "pin") + s.mode + "</span>" + st + "</li>";
+    }).join("") + "</ul></a>" +
+
+    '<a class="card card-link" href="#student/obligations"><div class="card-h"><h2>' + ico("clipboard") + 'חובות פתוחים</h2><span class="more">לפירוט ←</span></div><div class="big-num">' + openOb + '</div><p class="muted">דרישות חסרות להשלמה' + (inReview ? " · עוד " + inReview + " בבדיקה" : "") + '</p><p class="small" style="margin-top:8px">' + ico("clock", 14) + " חלון ההשלמות פתוח עד 15/12</p></a>" +
+
+    '<a class="card card-link" href="#student/practicum"><div class="card-h"><h2>' + ico("briefcase") + 'שעות פרקטיקום</h2><span class="more">לפרקטיקום ←</span></div><div class="row" style="align-items:baseline;gap:6px"><span class="big-num">' + p.approved + '</span><span class="muted">מתוך ' + p.target + ' שעות מאושרות</span></div>' +
+    '<div class="progress" style="margin-top:10px" role="img" aria-label="' + p.approved + " שעות מאושרות ו-" + p.pending + ' ממתינות מתוך ' + p.target + '"><span class="p-ok" style="width:' + pctA + '%"></span><span class="p-pend" style="width:' + pctP + '%"></span></div>' +
+    '<div class="legend"><span><i style="background:var(--ok)"></i>מאושרות ' + p.approved + '</span><span><i style="background:#8fb1e2"></i>ממתינות ' + p.pending + "</span></div></a>" +
+
+    '<a class="card card-link" href="#student/project"><div class="card-h"><h2>' + ico("folder") + 'פרויקט גמר</h2><span class="more">לפרויקט ←</span></div><p class="muted small">שלב נוכחי</p><p style="font-weight:700;font-size:1.05rem">' + esc(cur ? cur.name : "—") + (cur && cur.due ? ' <span class="muted small">· עד ' + cur.due + "</span>" : "") + '</p><hr class="sep"><p class="muted small">הגשה אחרונה</p><p>' + esc(lastSub.title) + " גרסה " + lastSub.version + " " + subPill(lastSub.status) + "</p></a>" +
+
+    '<a class="card card-link" href="#student/requests"><div class="card-h"><h2>' + ico("message") + 'ממתינות לתשובתך</h2><span class="more">לפניות ←</span></div>' +
+    (waiting.length ? '<ul class="list">' + waiting.map(function (r) { return "<li><b>" + r.id + "</b> · " + esc(r.subject) + '<span class="sub-line">' + esc(r.lastMsg || "") + "</span></li>"; }).join("") + "</ul>" : '<p class="muted">אין פניות שממתינות לתשובתך.</p>') + "</a>" +
+
+    '<section class="card span-2" aria-labelledby="ann-t" style="grid-column:1/-1"><div class="card-h"><h2 id="ann-t">' + ico("bell") + "הודעות ושינויים</h2></div><ul class=\"list\">" +
+    M.announcements.map(function (a) { return '<li class="row">' + (a.kind === "changed" ? pill("warn", "שינוי במערכת", "alert") : pill("info", "מידע", "info")) + '<span class="muted num">' + a.date + "</span><span>" + esc(a.text) + "</span></li>"; }).join("") + "</ul></section>" +
+    "</div>";
+};
+
+/* ---------- Schedule ---------- */
+function weekKey(dm) { var d = dmToDate(dm); var s = new Date(d); s.setDate(d.getDate() - d.getDay()); return s; }
+function fmtDM(d) { return ("0" + d.getDate()).slice(-2) + "/" + ("0" + (d.getMonth() + 1)).slice(-2); }
+screens.schedule = function () {
+  var f = S.sched;
+  var list = M.sessions.filter(function (s) {
+    return (f.course === "all" || s.course === f.course) && (f.mode === "all" || s.mode === f.mode) && (f.showCancelled || s.status !== "cancelled");
+  });
+  var weeks = [], byWeek = {};
+  list.forEach(function (s) { var k = weekKey(s.date).getTime(); if (!byWeek[k]) { byWeek[k] = []; weeks.push(k); } byWeek[k].push(s); });
+  var thisWeek = weekKey(fmtDM(TODAY)).getTime();
+  var courses = [{ v: "all", l: "כל הקורסים" }].concat(M.courses.map(function (c) { return c.name; }));
+  return '<div class="page-head"><div><h1>מערכת שעות</h1><p>מפגשים לפי שבוע. שעות בפורמט 24 שעות. מפגשים שבוטלו מוצגים עם סיבת הביטול.</p></div></div>' +
+    '<form class="filters card" id="schedFilters" aria-label="סינון מערכת שעות">' +
+    field("קורס", "sc_course", sel("sc_course", courses, f.course)) +
+    field("אופן מפגש", "sc_mode", sel("sc_mode", [{ v: "all", l: "הכל" }, { v: "זום", l: "זום" }, { v: "פרונטלי", l: "פרונטלי" }], f.mode)) +
+    '<label class="check"><input type="checkbox" name="sc_cancel" ' + (f.showCancelled ? "checked" : "") + "> הצגת מפגשים שבוטלו</label>" +
+    '<span class="spacer"></span><span class="muted small" aria-live="polite">' + list.length + " מפגשים מוצגים</span></form>" +
+    (list.length ? weeks.map(function (k) {
+      var start = new Date(k), end = new Date(k); end.setDate(end.getDate() + 6);
+      return '<h2 class="week-h">' + (k === thisWeek ? "השבוע" : "שבוע") + " · " + fmtDM(start) + "–" + fmtDM(end) + "</h2>" + byWeek[k].map(sessionRow).join("");
+    }).join("") : '<div class="card" style="text-align:center;padding:40px"><p style="font-weight:700">לא נמצאו מפגשים</p><p class="muted">נסי לשנות את הסינון.</p></div>');
+};
+function sessionRow(s) {
+  var c = s.status === "cancelled", u = s.status === "updated";
+  var badge = c ? pill("bad", "בוטל", "x") : u ? pill("warn", "עודכן", "alert") : "";
+  return '<article class="session ' + (c ? "cancelled" : u ? "updated" : "") + '" aria-label="' + esc(s.course) + " " + s.date + (c ? " — בוטל" : "") + '">' +
+    '<div class="date"><small>יום ' + s.day + "</small><b>" + s.date + "</b></div>" +
+    '<div><div class="row"><span class="time ' + (c ? "strike" : "") + '">' + s.start + "–" + s.end + '</span><h3 class="' + (c ? "strike" : "") + '">' + esc(s.course) + "</h3>" + badge + "</div>" +
+    '<div class="meta"><span>' + ico(s.mode === "זום" ? "video" : "pin", 15) + s.mode + "</span><span>" + ico("user", 15) + esc(s.lecturer) + "</span><span>" + esc(s.location) + "</span></div>" +
+    (s.change ? '<div class="change-note ' + (c ? "c" : "u") + '">' + (c ? "סיבה: " : "מה השתנה: ") + esc(s.change) + "</div>" : "") + "</div>" +
+    '<div class="actions">' + (s.mode === "זום" && !c ? '<button class="btn sm" data-act="zoom" data-id="' + s.id + '">' + ico("video", 15) + "כניסה לזום</button>" : "") + "</div></article>";
+}
+
+/* ---------- Attendance ---------- */
+screens.attendance = function () {
+  var a = M.attendance;
+  return '<div class="page-head"><div><h1>נוכחות</h1><p>סיכום נוכחות לפי קורס ופירוט מפגשים.</p></div></div>' +
+    '<div class="grid g-4" style="margin-bottom:16px"><section class="card" aria-labelledby="att-sum"><h2 id="att-sum" class="muted small" style="font-weight:600">נוכחות כוללת</h2><div class="big-num" style="margin:6px 0">' + a.summaryPct + '%</div><p class="small muted"><b>בסיס החישוב:</b> ' + esc(a.basis) + "</p></section>" +
+    M.courses.map(function (c) {
+      var tone = c.attendance == null ? ["neu", "minus"] : c.attendance >= c.required ? ["ok", "check"] : ["bad", "alert"];
+      return '<section class="card"><h3>' + esc(c.name) + '</h3><p class="muted small">' + esc(c.lecturer) + '</p><div class="row" style="margin-top:8px;align-items:baseline"><span class="big-num" style="font-size:1.6rem">' + (c.attendance == null ? "—" : c.attendance + "%") + '</span><span class="muted small">רף נדרש ' + c.required + "%</span></div>" +
+        (c.attendance != null ? '<div class="progress" style="margin:8px 0;height:8px" aria-hidden="true"><span class="' + (c.attendance >= c.required ? "p-ok" : "") + '" style="width:' + c.attendance + "%;" + (c.attendance < c.required ? "background:var(--bad)" : "") + '"></span></div>' : '<div style="height:16px"></div>') +
+        pill(tone[0], c.status, tone[1]) + "</section>";
+    }).join("") + "</div>" +
+    '<section class="card" aria-labelledby="att-t"><div class="card-h"><h2 id="att-t">פירוט מפגשים</h2><span class="muted small">טעות בדיווח? אפשר להגיש בקשת תיקון.</span></div><div class="table-wrap"><table><thead><tr><th>תאריך</th><th>קורס</th><th>אופן</th><th>סטטוס</th><th>דקות</th><th><span class="sr-only">פעולות</span></th></tr></thead><tbody>' +
+    a.rows.map(function (r, i) {
+      return "<tr><td class=\"num\">" + r.date + "</td><td>" + esc(r.course) + "</td><td>" + r.mode + "</td><td>" + attPill(r.status) + (r.correction ? '<span class="sub-line">' + esc(r.correction) + "</span>" : "") + '</td><td class="num">' + (r.minutes == null ? "—" : r.minutes) + "</td><td>" +
+        (r.status === "review" ? '<span class="muted small">בקשה פתוחה</span>' : '<button class="btn secondary sm" data-act="att-fix" data-i="' + i + '">' + ico("edit", 15) + "בקשת תיקון</button>") + "</td></tr>";
+    }).join("") + "</tbody></table></div></section>";
+};
+function openAttFix(i) {
+  var rows = M.attendance.rows;
+  var opts = rows.map(function (r, idx) { return { v: String(idx), l: r.date + " · " + r.course + " (" + M.attendanceStatus[r.status] + ")", dis: r.status === "review" }; });
+  openModal("בקשת תיקון נוכחות", '<form id="attFixForm" novalidate><div class="form-grid">' +
+    field("מפגש", "af_session", sel("af_session", opts, String(i)), { req: true, full: true }) +
+    field("הסטטוס המבוקש", "af_req", sel("af_req", [{ v: "", l: "בחרי סטטוס" }, { v: "present", l: "נוכחת" }, { v: "partial", l: "חלקית" }]), { req: true, full: true }) +
+    field("הסבר", "af_text", area("af_text", 'rows="4" placeholder="תארי מה קרה במפגש ולמה הדיווח שגוי"'), { req: true, full: true, hint: "לפחות 10 תווים." }) +
+    field("צרופה (לא חובה)", "af_file", inp("file", "af_file", 'accept=".pdf,.jpg,.png"'), { full: true, hint: "צילום מסך מהזום, אישור מרצה וכד׳." }) +
+    '</div><div class="form-actions"><button class="btn" type="submit">שליחת הבקשה</button><button class="btn secondary" type="button" data-act="close-modal">ביטול</button></div></form>');
+}
+
+/* ---------- Obligations ---------- */
+function gradeCell(o) {
+  if (o.grade != null) return '<span class="pill pill-ok" style="font-size:.95rem">' + ico("check") + o.grade + "</span>";
+  if (o.status === "טרם נקלט") return '<span class="pill pill-info">' + ico("clock") + "טרם נקלט</span><span class=\"sub-line\">הציון טרם הוזן למערכת</span>";
+  return '<span class="pill pill-neu">' + ico("minus") + "אין ציון</span>";
+}
+screens.obligations = function () {
+  var ob = M.obligations;
+  var open = ob.filter(function (o) { return o.status === "חסר"; }).length;
+  return '<div class="page-head"><div><h1>דרישות וחובות</h1><p>כל הדרישות לפי קורס, מצבן ואיך משלימים חוסרים.</p></div><div class="row">' + pill("bad", open + " חסרות", "x") + pill("ok", ob.filter(function (o) { return o.status === "הושלם"; }).length + " הושלמו", "check") + "</div></div>" +
+    '<div class="callout info" style="margin-bottom:14px">' + ico("info") + '<div><b>מקרא ציונים:</b> ציון בירוק עם ✓ = ציון סופי שנקלט · <b>״טרם נקלט״</b> = המטלה הוגשה/נבחנה אך הציון עדיין לא הוזן · <b>״אין ציון״</b> = הדרישה אינה מדורגת או טרם הושלמה.</div></div>' +
+    '<div class="table-wrap"><table><thead><tr><th>קורס</th><th>דרישה</th><th>סטטוס</th><th>ציון</th><th>מסלול השלמה</th><th>מועד</th><th>תשלום</th></tr></thead><tbody>' +
+    ob.map(function (o) {
+      return "<tr" + (o.status === "חסר" ? ' class="hl"' : "") + "><td>" + esc(o.course) + "</td><td><b>" + esc(o.requirement) + "</b></td><td>" + obStatusPill(o.status) + "</td><td>" + gradeCell(o) + "</td><td>" + esc(o.completion) + '</td><td class="num">' + esc(o.due) + "</td><td>" +
+        (o.payment === "נדרש" ? pill("warn", "נדרש תשלום", "alert") : '<span class="muted">' + esc(o.payment) + "</span>") + "</td></tr>";
+    }).join("") + "</tbody></table></div>";
+};
+
+/* ---------- Practicum ---------- */
+screens.practicum = function () {
+  var p = M.practicum, ed = S.prEdit ? p.reports.filter(function (r) { return r.id === S.prEdit; })[0] : null;
+  var pa = Math.round(p.approved / p.target * 100), pp = Math.round(p.pending / p.target * 100);
+  return '<div class="page-head"><div><h1>פרקטיקום</h1><p>' + esc(p.place) + " · מלווה: " + esc(p.mentor) + '</p></div><a class="btn" href="#student/practicum" data-act="pr-new">' + ico("plus") + "דיווח חדש</a></div>" +
+    '<div class="grid g-4" style="margin-bottom:16px">' +
+    statBox("שעות שדווחו", p.reported, "סה״כ כולל ממתינות", "clipboard") +
+    statBox("ממתינות לאישור", p.pending, "בבדיקת המלווה", "clock") +
+    statBox("שעות מאושרות", p.approved, "נספרות ליעד", "checkCircle") +
+    statBox("יעד", p.target, "נותרו " + Math.max(0, p.target - p.approved) + " שעות מאושרות", "briefcase") + "</div>" +
+    '<section class="card" style="margin-bottom:16px"><h2 class="sr-only">התקדמות</h2><div class="progress" role="img" aria-label="' + pa + '% מהיעד אושר"><span class="p-ok" style="width:' + pa + '%"></span><span class="p-pend" style="width:' + pp + '%"></span></div><div class="legend"><span><i style="background:var(--ok)"></i>מאושרות (' + pa + '%)</span><span><i style="background:#8fb1e2"></i>ממתינות (' + pp + '%)</span><span><i style="background:#e7eaf2"></i>נותרו</span></div></section>' +
+    '<section class="card" aria-labelledby="rep-t" style="margin-bottom:16px"><div class="card-h"><h2 id="rep-t">הדיווחים שלי</h2></div><div class="table-wrap"><table><thead><tr><th>מס׳</th><th>תאריך</th><th>שעות</th><th>משימה</th><th>סטטוס</th><th><span class="sr-only">פעולות</span></th></tr></thead><tbody>' +
+    p.reports.map(function (r) {
+      return "<tr" + (r.status === "returned" ? ' class="hl"' : "") + '><td class="num">' + r.id + '</td><td class="num">' + r.date + '</td><td class="num">' + r.hours + "</td><td>" + esc(r.task) +
+        (r.feedback ? '<div class="feedback"><b>משוב המלווה:</b> ' + esc(r.feedback) + "</div>" : "") + "</td><td>" + repPill(r.status) + "</td><td>" +
+        (r.status === "returned" ? '<button class="btn sm" data-act="pr-edit" data-id="' + r.id + '">' + ico("edit", 15) + "תיקון</button>" : r.status === "draft" ? '<button class="btn secondary sm" data-act="pr-edit" data-id="' + r.id + '">המשך עריכה</button>' : "") + "</td></tr>";
+    }).join("") + "</tbody></table></div></section>" +
+    practicumForm(ed);
+};
+function statBox(label, val, sub, icon) {
+  return '<div class="card"><div class="row muted small" style="font-weight:600">' + ico(icon, 16) + label + '</div><div class="big-num" style="margin:6px 0">' + val + '</div><div class="muted small">' + sub + "</div></div>";
+}
+function practicumForm(ed) {
+  var p = M.practicum;
+  return '<section class="card" id="prFormCard" aria-labelledby="prf-t"><div class="card-h"><h2 id="prf-t">' + (ed ? "עריכת דיווח " + ed.id : "דיווח שעות חדש") + "</h2>" + (ed ? '<button class="btn ghost sm" data-act="pr-new">ביטול עריכה</button>' : "") + "</div>" +
+    (ed && ed.feedback ? '<div class="callout warn" style="margin-bottom:14px">' + ico("undo") + "<div><b>משוב לתיקון:</b> " + esc(ed.feedback) + "</div></div>" : "") +
+    '<form id="prForm" novalidate><div class="form-grid">' +
+    field("שיבוץ", "pr_assign", sel("pr_assign", [{ v: "", l: "בחרי שיבוץ" }, { v: "main", l: p.place + " — מלווה " + p.mentor }], ed ? "main" : ""), { req: true }) +
+    field("תאריך", "pr_date", inp("date", "pr_date", 'max="' + M.today + '"'), { req: true, hint: "לא ניתן לדווח על תאריך עתידי." }) +
+    field("מקום", "pr_place", inp("text", "pr_place", 'value="' + esc(p.place) + '"'), { req: true }) +
+    field("הפסקה (דקות)", "pr_break", inp("number", "pr_break", 'min="0" step="5" value="0"')) +
+    field("שעת התחלה", "pr_start", inp("time", "pr_start"), { req: true }) +
+    field("שעת סיום", "pr_end", inp("time", "pr_end"), { req: true }) +
+    field("תיאור המשימה", "pr_task", area("pr_task", 'rows="3" placeholder="מה עשית? אילו כלים שימשו?"', ed ? ed.task : ""), { req: true, full: true }) +
+    field("תוצר / תוצאה", "pr_result", area("pr_result", 'rows="2"'), { req: true, full: true }) +
+    field("למידה או קושי", "pr_learn", area("pr_learn", 'rows="2"'), { full: true }) +
+    field("צרופה", "pr_file", inp("file", "pr_file"), { full: true }) +
+    '</div><div class="form-actions"><button class="btn" type="submit" name="act" value="send">' + ico("check") + 'שליחה לבדיקה</button><button class="btn secondary" type="submit" name="act" value="draft">שמירת טיוטה</button></div></form></section>';
+}
+
+/* ---------- Project ---------- */
+screens.project = function () {
+  var pr = M.project, cur = pr.stages.filter(function (s) { return s.status === "current"; })[0];
+  var stLabel = { done: "הושלם", current: "שלב נוכחי", locked: "נעול" };
+  return '<div class="page-head"><div><h1>פרויקט גמר</h1><p>' + esc(pr.name) + "</p></div></div>" +
+    '<div class="grid g-3" style="margin-bottom:16px"><section class="card"><h2 style="margin-bottom:10px">פרטי הפרויקט</h2><dl class="kv"><dt>שם</dt><dd>' + esc(pr.name) + "</dd><dt>מנחה</dt><dd>" + esc(pr.owner) + '</dd><dt>חברות צוות</dt><dd><div class="row" style="gap:6px">' + pr.members.map(function (m) { return '<span class="tag">' + ico("user", 13) + esc(m) + "</span>"; }).join("") + "</div></dd></dl></section>" +
+    '<section class="card span-2" aria-labelledby="stg-t"><h2 id="stg-t" style="margin-bottom:16px">מפת שלבים</h2><ol class="stepper">' +
+    pr.stages.map(function (s, i) {
+      return '<li class="' + s.status + '"' + (s.status === "current" ? ' aria-current="step"' : "") + '><span class="dot">' + (s.status === "done" ? ico("check", 16) : s.status === "locked" ? ico("lock", 15) : i + 1) + "</span>" + esc(s.name) + '<span class="st-state">' + stLabel[s.status] + (s.due ? " · עד " + s.due : "") + "</span></li>";
+    }).join("") + "</ol></section></div>" +
+    '<div class="grid g-2" style="margin-bottom:16px"><section class="card"><div class="card-h"><h2>דרישות השלב: ' + esc(cur.name) + "</h2>" + pill("pri", "מועד: " + cur.due, "clock") + '</div><ul class="list">' + cur.deliverables.map(function (d) { return '<li class="row">' + ico("file", 16) + esc(d) + "</li>"; }).join("") + "</ul></section>" +
+    '<section class="card"><h2 style="margin-bottom:10px">חסמים</h2>' + (pr.blockers.length ? pr.blockers.map(function (b) { return '<div class="callout bad" style="margin-bottom:8px">' + ico("alert") + "<div><b>חוסם התקדמות:</b> " + esc(b) + "</div></div>"; }).join("") : '<div class="callout ok">' + ico("check") + "אין חסמים פעילים.</div>") + "</section></div>" +
+    '<section class="card" style="margin-bottom:16px" aria-labelledby="sub-t"><h2 id="sub-t" style="margin-bottom:10px">הגשות וגרסאות</h2><ul class="list">' +
+    pr.submissions.map(function (s) {
+      return '<li><div class="row"><b>גרסה ' + s.version + "</b><span>" + esc(s.title) + '</span><span class="muted small num">' + ico("clock", 14) + " " + s.submittedAt + "</span>" + subPill(s.status) + "</div>" + (s.feedback ? '<div class="feedback" style="background:var(--surface-2);border-color:var(--border);color:var(--text)"><b style="color:var(--primary)">משוב:</b> ' + esc(s.feedback) + "</div>" : '<p class="muted small">טרם התקבל משוב.</p>') + "</li>";
+    }).join("") + "</ul></section>" +
+    '<section class="card" aria-labelledby="ns-t"><h2 id="ns-t" style="margin-bottom:12px">הגשת גרסה חדשה</h2><form id="pjForm" novalidate><div class="form-grid">' +
+    field("סוג תוצר", "pj_type", sel("pj_type", [{ v: "", l: "בחרי תוצר" }].concat(cur.deliverables)), { req: true }) +
+    field("כותרת הגרסה", "pj_title", inp("text", "pj_title", 'placeholder="למשל: גרסה 3 — הוספת תרשים זרימה"'), { req: true }) +
+    '<div class="field full"><span class="lbl" id="pjk-l">אופן ההגשה</span><div class="radio-row" role="radiogroup" aria-labelledby="pjk-l"><label><input type="radio" name="pj_kind" value="file" checked> העלאת קובץ</label><label><input type="radio" name="pj_kind" value="link"> קישור</label></div></div>' +
+    '<div class="full" id="pjFileWrap">' + field("קובץ", "pj_file", inp("file", "pj_file"), { req: true }) + "</div>" +
+    '<div class="full" id="pjLinkWrap" hidden>' + field("קישור", "pj_link", inp("url", "pj_link", 'placeholder="https://" dir="ltr"'), { req: true }) + "</div>" +
+    field("הערה למנחה", "pj_note", area("pj_note", 'rows="2"'), { full: true }) +
+    '</div><div class="form-actions"><button class="btn" type="submit">' + ico("check") + "הגשה</button></div></form></section>";
+};
+
+/* ---------- Meetings ---------- */
+screens.meetings = function () {
+  var mt = S.mt, type = M.appointmentTypes.filter(function (t) { return t.id === mt.type; })[0];
+  var stepNames = [["type", "1. סוג פגישה"], ["slot", "2. מועד"], ["summary", "3. סיכום"], ["done", "4. אישור"]];
+  var body = "";
+  if (mt.step === "done" && mt.booking) {
+    var b = mt.booking;
+    body = '<div class="callout ok" style="margin-bottom:14px">' + ico("checkCircle") + '<div><b>הפגישה נקבעה בהצלחה.</b> מספר רישום: <b>' + b.id + "</b></div></div>" +
+      '<dl class="kv"><dt>סוג</dt><dd>' + esc(b.type) + "</dd><dt>מועד</dt><dd>" + b.date + " · " + b.time + "</dd><dt>מאמנת</dt><dd>" + esc(b.coach) + '</dd><dt>סנכרון ליומן</dt><dd id="syncState">' + syncPill(b.sync) + "</dd></dl>" +
+      '<div class="form-actions"><button class="btn secondary" data-act="mt-reset">קביעת פגישה נוספת</button></div>';
+  } else {
+    body = '<h3 style="margin-bottom:8px">בחרי סוג פגישה</h3><div class="grid g-3">' + M.appointmentTypes.map(function (t) {
+      return '<button class="choice" data-act="mt-type" data-id="' + t.id + '" aria-pressed="' + (t.id === mt.type) + '"><b>' + esc(t.name) + '</b><span class="sub-line">' + t.duration + " דקות</span><span style=\"display:block;margin-top:6px\">" + (t.eligible ? pill("ok", "זמין לקביעה", "check") : pill("bad", "לא זמין כעת", "lock")) + "</span></button>";
+    }).join("") + "</div>";
+    if (type) {
+      body += '<hr class="sep"><h3>תנאי זכאות — ' + esc(type.name) + "</h3>" + type.conditions.map(function (c) {
+        return '<div class="cond ' + (c.ok ? "ok" : "no") + '"><span class="mark" aria-hidden="true">' + (c.ok ? "✓" : "✗") + "</span><div><span class=\"sr-only\">" + (c.ok ? "תנאי מתקיים:" : "תנאי לא מתקיים:") + "</span>" + esc(c.text) + (c.fix ? '<span class="sub-line" style="color:var(--bad)"><b>איך משלימים:</b> ' + esc(c.fix) + ' · <a href="#student/project">מעבר לפרויקט</a></span>' : "") + "</div></div>";
+      }).join("");
+      if (!type.eligible) {
+        body += '<div class="callout bad" style="margin-top:10px">' + ico("lock") + "<div><b>לא ניתן לקבוע פגישה מסוג זה כרגע.</b> יש להשלים את התנאים המסומנים ב-✗. לאחר ההשלמה הקביעה תיפתח אוטומטית.</div></div>" +
+          '<div class="form-actions"><button class="btn" disabled aria-disabled="true">המשך לבחירת מועד</button></div>';
+      } else if (mt.step === "summary") {
+        var sl = M.slots.filter(function (x) { return x.id === mt.slot; })[0];
+        body += '<hr class="sep"><h3 style="margin-bottom:8px">סיכום לפני אישור</h3><dl class="kv"><dt>סוג</dt><dd>' + esc(type.name) + " (" + type.duration + " דקות)</dd><dt>מועד</dt><dd>יום " + sl.day + " " + sl.date + " · " + sl.time + "</dd><dt>מאמנת</dt><dd>" + esc(sl.coach) + "</dd><dt>תזכורת</dt><dd>דוא״ל + יומן Google</dd></dl>" +
+          '<div class="form-actions"><button class="btn" data-act="mt-confirm">' + ico("check") + 'אישור וקביעה</button><button class="btn secondary" data-act="mt-back">חזרה לבחירת מועד</button></div>';
+      } else {
+        body += '<hr class="sep"><h3 style="margin-bottom:8px">מועדים פנויים</h3><div class="grid g-4">' + M.slots.map(function (s) {
+          var full = s.free < 1;
+          return '<button class="choice" data-act="mt-slot" data-id="' + s.id + '" aria-pressed="' + (s.id === mt.slot) + '"' + (full ? " disabled" : "") + "><b>יום " + s.day + " " + s.date + '</b><span class="sub-line num">' + s.time + " · " + esc(s.coach) + "</span>" + (full ? pill("neu", "מלא", "x") : pill("ok", "פנוי", "check")) + "</button>";
+        }).join("") + '</div><div class="form-actions"><button class="btn" data-act="mt-next"' + (mt.slot ? "" : ' disabled aria-disabled="true"') + ">המשך לסיכום</button></div>";
+      }
+    }
+  }
+  return '<div class="page-head"><div><h1>פגישות ואימון</h1><p>קביעת פגישה עם מאמנת וצפייה בפגישות שלך.</p></div></div>' +
+    '<div class="grid g-3"><section class="card span-2" aria-labelledby="bk-t"><h2 id="bk-t" style="margin-bottom:10px">קביעת פגישה</h2><div class="steps-mini" aria-hidden="true">' +
+    stepNames.map(function (s) { var cur = mt.step === s[0] || (s[0] === "slot" && mt.step === "type" && mt.type); return '<span class="' + (cur ? "on" : "") + '">' + s[1] + "</span>"; }).join("") + "</div>" + body + "</section>" +
+    '<section class="card" aria-labelledby="my-t"><h2 id="my-t" style="margin-bottom:10px">הפגישות שלי</h2><ul class="list">' +
+    M.myAppointments.map(function (a) { return '<li><div class="row"><b>' + esc(a.type) + '</b><span class="muted small">' + a.id + '</span></div><div class="small">' + a.date + " · " + a.time + " · " + esc(a.coach) + '</div><div style="margin-top:4px">' + syncPill(a.sync) + "</div></li>"; }).join("") + "</ul></section></div>";
+};
+function syncPill(s) { return s === "ממתין לסנכרון" ? pill("info", s + "…", "refresh") : /כשל/.test(s) ? pill("bad", s, "x") : pill("ok", s, "check"); }
+
+/* ---------- Requests ---------- */
+function getThread(r) {
+  if (!S.threads[r.id]) {
+    var t = [{ me: true, who: M.me.name, at: r.opened, text: "פנייה בנושא: " + r.subject }];
+    if (r.status !== "new") t.push({ me: false, who: r.owner, at: r.opened, text: "הפנייה התקבלה ונמצאת בטיפול." });
+    if (r.lastMsg) t.push({ me: false, who: r.owner, at: r.opened, text: r.lastMsg });
+    if (r.status === "closed") t.push({ me: false, who: r.owner, at: r.opened, text: "הפנייה טופלה ונסגרה. ניתן לפתוח פנייה חדשה בכל עת." });
+    S.threads[r.id] = t;
+  }
+  return S.threads[r.id];
+}
+screens.requests = function (rt) {
+  if (rt.param) {
+    var r = M.requests.filter(function (x) { return x.id === rt.param; })[0];
+    if (r) return requestThread(r);
+  }
+  return '<div class="page-head"><div><h1>פניות</h1><p>פניות למזכירות ולצוות. לחצי על פנייה לצפייה בשיחה.</p></div><button class="btn" data-act="rq-new">' + ico("plus") + "פנייה חדשה</button></div>" +
+    '<div class="table-wrap"><table><thead><tr><th>מס׳</th><th>נושא</th><th>סוג</th><th>נפתחה</th><th>סטטוס</th><th>אחראית</th></tr></thead><tbody>' +
+    M.requests.map(function (r) {
+      return '<tr class="clickable' + (r.status === "waiting_student" ? " hl" : "") + '" data-href="#student/requests/' + r.id + '"><td class="num">' + r.id + '</td><td><a href="#student/requests/' + r.id + '">' + esc(r.subject) + "</a></td><td>" + esc(r.type) + '</td><td class="num">' + r.opened + "</td><td>" + reqPill(r.status) + "</td><td>" + esc(r.owner) + "</td></tr>";
+    }).join("") + "</tbody></table></div>";
+};
+function requestThread(r) {
+  var t = getThread(r);
+  return '<div class="crumbs"><a href="#student/requests">פניות</a> / ' + r.id + '</div><div class="page-head"><div><h1>' + esc(r.subject) + '</h1><p>' + r.id + " · " + esc(r.type) + " · נפתחה " + r.opened + " · אחראית: " + esc(r.owner) + "</p></div>" + reqPill(r.status) + "</div>" +
+    (r.status === "waiting_student" ? '<div class="callout warn" style="margin-bottom:14px">' + ico("alert") + "<div><b>הצוות ממתין לתשובתך.</b> השיבי בטופס למטה.</div></div>" : "") +
+    '<section class="card" aria-label="שרשור הפנייה"><div class="thread">' + t.map(function (m) { return '<div class="msg ' + (m.me ? "me" : "staff") + '"><div class="who">' + esc(m.who) + " · " + m.at + "</div>" + esc(m.text) + "</div>"; }).join("") + "</div>" +
+    (r.status === "closed" ? '<p class="muted" style="margin-top:14px">הפנייה סגורה.</p>' :
+      '<hr class="sep"><form id="replyForm" data-id="' + r.id + '" novalidate>' + field("תשובה", "rp_text", area("rp_text", 'rows="3" placeholder="כתבי את תשובתך"'), { req: true }) + '<div style="margin-top:10px">' + field("צרופה", "rp_file", inp("file", "rp_file")) + '</div><div class="form-actions"><button class="btn" type="submit">שליחה</button><a class="btn secondary" href="#student/requests">חזרה לרשימה</a></div></form>') + "</section>";
+}
+
+/* ===================== Render ===================== */
+function render() {
+  var rt = parseHash(), admin = rt.role === "admin", set = admin ? ascreens : screens;
+  if (!set[rt.screen]) { rt.screen = "dashboard"; rt.param = null; }
+  renderNav(rt.role, rt.screen);
+  $("#view").innerHTML = set[rt.screen](rt);
+  var item = (admin ? NAV_A : NAV).filter(function (n) { return n.id === rt.screen; })[0];
+  document.title = (item ? item.label : "") + (admin ? " — ניהול" : " — אזור התלמידה") + " · מערכת שנה ג׳";
+  $("#brandSub").textContent = admin ? "ממשק ניהול וצוות" : "אזור התלמידה";
+  $("#segStudent").setAttribute("aria-current", String(!admin));
+  $("#segAdmin").setAttribute("aria-current", String(admin));
+  $("#sideSwitch").setAttribute("href", admin ? "#student/dashboard" : "#admin/dashboard");
+  $("#sideSwitch span").textContent = admin ? "מעבר לאזור התלמידה" : "מעבר לממשק ניהול";
+  $("#q").placeholder = admin ? "חיפוש תלמידה, ת״ז או מספר פנייה…" : "חיפוש מסך, קורס או מספר פנייה…";
+  var u = admin ? { i: M.staffUser.initials, n: M.staffUser.name, r: M.staffUser.role } : { i: M.me.initials, n: M.me.name, r: M.me.roles.join(", ") + " · " + M.me.track };
+  $("#userBox").innerHTML = '<div class="avatar' + (admin ? " staff" : "") + '" aria-hidden="true">' + esc(u.i) + '</div><div class="user-meta"><b>' + esc(u.n) + "</b><small>" + esc(u.r) + "</small></div>";
+  document.body.classList.remove("nav-open");
+  $("#hamburger").setAttribute("aria-expanded", "false");
+  afterRender(rt);
+}
+function afterRender(rt) {
+  if (rt.role === "student" && rt.screen === "project") {
+    $all('input[name="pj_kind"]').forEach(function (r) {
+      r.addEventListener("change", function () { var f = r.value === "file" && r.checked || r.value === "link" && !r.checked; $("#pjFileWrap").hidden = !f; $("#pjLinkWrap").hidden = f; });
+    });
+  }
+}
+window.addEventListener("hashchange", function () { render(); window.scrollTo(0, 0); $("#view").focus({ preventScroll: true }); });
+
+/* ===================== Events ===================== */
+document.addEventListener("click", function (e) {
+  var row = e.target.closest("tr[data-href]");
+  if (row && !e.target.closest("a,button")) { go(row.getAttribute("data-href")); return; }
+  var b = e.target.closest("[data-act]"); if (!b) return;
+  var act = b.getAttribute("data-act"), id = b.getAttribute("data-id");
+  switch (act) {
+    case "close-modal": closeModal(); break;
+    case "zoom": toast("נפתח קישור הזום למפגש (הדגמה)."); break;
+    case "att-fix": openAttFix(+b.getAttribute("data-i")); break;
+    case "pr-new": e.preventDefault(); S.prEdit = null; render(); var c = $("#prFormCard"); if (c) { c.scrollIntoView({ behavior: "smooth" }); $("#f-pr_assign").focus({ preventScroll: true }); } break;
+    case "pr-edit": S.prEdit = id; render(); $("#prFormCard").scrollIntoView({ behavior: "smooth" }); $("#f-pr_assign").focus({ preventScroll: true }); break;
+    case "mt-type": S.mt.type = id; S.mt.slot = null; S.mt.step = "slot"; render(); break;
+    case "mt-slot": S.mt.slot = id; render(); var nb = $('[data-act="mt-next"]'); if (nb) nb.focus(); break;
+    case "mt-next": if (S.mt.slot) { S.mt.step = "summary"; render(); } break;
+    case "mt-back": S.mt.step = "slot"; render(); break;
+    case "mt-confirm": confirmBooking(); break;
+    case "mt-reset": S.mt = { type: null, slot: null, step: "type", booking: null }; render(); break;
+    case "rq-new": openNewRequest(); break;
+  }
+});
+document.addEventListener("change", function (e) {
+  var f = e.target.form;
+  if (f && f.id === "schedFilters") {
+    S.sched = { course: f.elements.sc_course.value, mode: f.elements.sc_mode.value, showCancelled: f.elements.sc_cancel.checked };
+    var focusName = e.target.name; render(); var el = $("#schedFilters").elements[focusName]; if (el) el.focus();
+  }
+});
+document.addEventListener("submit", function (e) {
+  var f = e.target; e.preventDefault();
+  if (f.id === "searchForm") return doSearch();
+  if (f.id === "attFixForm") return submitAttFix(f);
+  if (f.id === "prForm") return submitPracticum(f, e.submitter ? e.submitter.value : "send");
+  if (f.id === "pjForm") return submitProject(f);
+  if (f.id === "replyForm") return submitReply(f);
+  if (f.id === "newReqForm") return submitNewRequest(f);
+});
+document.addEventListener("keydown", function (e) { if (e.key === "Escape") { if ($("#modalBack").classList.contains("open")) closeModal(); else document.body.classList.remove("nav-open"); } });
+$("#modalBack").addEventListener("click", function (e) { if (e.target === this) closeModal(); });
+$("#hamburger").addEventListener("click", function () { var o = document.body.classList.toggle("nav-open"); this.setAttribute("aria-expanded", String(o)); if (o) $("#nav a").focus(); });
+$("#overlay").addEventListener("click", function () { document.body.classList.remove("nav-open"); $("#hamburger").setAttribute("aria-expanded", "false"); });
+
+/* ===================== Actions ===================== */
+function doSearch() {
+  var q = $("#q").value.trim(); if (!q) return;
+  if (parseHash().role === "admin") return doSearchAdmin(q);
+  var rq = M.requests.filter(function (r) { return r.id.toLowerCase() === q.toLowerCase() || r.subject.indexOf(q) > -1; })[0];
+  if (rq) return go("requests/" + rq.id);
+  var n = NAV.filter(function (x) { return x.label.indexOf(q) > -1; })[0];
+  if (n) return go(n.id);
+  var c = M.courses.filter(function (x) { return x.name.indexOf(q) > -1; })[0];
+  if (c) { S.sched.course = c.name; go("schedule"); render(); return; }
+  toast("לא נמצאו תוצאות עבור ״" + esc(q) + "״", true);
+}
+
+function submitAttFix(f) {
+  clearErrs(f); var ok = true;
+  if (!f.elements.af_req.value) { setErr(f, "af_req", "יש לבחור את הסטטוס המבוקש"); ok = false; }
+  if (f.elements.af_text.value.trim().length < 10) { setErr(f, "af_text", "נא לכתוב הסבר של 10 תווים לפחות"); ok = false; }
+  var file = f.elements.af_file.files[0];
+  if (file && file.size > 5 * 1024 * 1024) { setErr(f, "af_file", "גודל הקובץ עולה על 5MB"); ok = false; }
+  if (!ok) return focusFirstError(f);
+  var row = M.attendance.rows[+f.elements.af_session.value], num = "AC-" + S.seq.ac++;
+  row.status = "review"; row.correction = "בקשת תיקון #" + num + " — ממתינה להחלטה";
+  closeModal(); render();
+  toast("בקשת התיקון נשלחה. מספר מעקב: <b>" + num + "</b>");
+}
+
+function submitPracticum(f, mode) {
+  clearErrs(f); var ok = true, v = function (n) { return f.elements[n].value.trim(); };
+  var draft = mode === "draft";
+  if (v("pr_date") && v("pr_date") > M.today) { setErr(f, "pr_date", "לא ניתן לדווח על תאריך עתידי"); ok = false; }
+  if (v("pr_start") && v("pr_end") && toMin(v("pr_end")) <= toMin(v("pr_start"))) { setErr(f, "pr_end", "שעת הסיום חייבת להיות אחרי שעת ההתחלה"); ok = false; }
+  var brk = +v("pr_break") || 0;
+  if (brk < 0) { setErr(f, "pr_break", "ערך לא תקין"); ok = false; }
+  if (draft) {
+    if (!v("pr_date") && !v("pr_task")) { setErr(f, "pr_task", "לשמירת טיוטה יש למלא לפחות תאריך או תיאור משימה"); ok = false; }
+  } else {
+    var req = { pr_assign: "יש לבחור שיבוץ", pr_date: "יש להזין תאריך", pr_place: "יש להזין מקום", pr_start: "יש להזין שעת התחלה", pr_end: "יש להזין שעת סיום", pr_task: "יש לתאר את המשימה", pr_result: "יש לתאר את התוצר" };
+    Object.keys(req).forEach(function (n) { if (!v(n)) { setErr(f, n, req[n]); ok = false; } });
+  }
+  var mins = 0;
+  if (ok && v("pr_start") && v("pr_end")) {
+    mins = toMin(v("pr_end")) - toMin(v("pr_start")) - brk;
+    if (mins <= 0) { setErr(f, "pr_break", "זמן ההפסקה ארוך מטווח השעות"); ok = false; }
+  }
+  if (!ok) return focusFirstError(f);
+  var hours = Math.round(mins / 60 * 10) / 10, P = M.practicum;
+  var rep = S.prEdit ? P.reports.filter(function (r) { return r.id === S.prEdit; })[0] : null;
+  if (!rep) { rep = { id: "PR-" + S.seq.pr++, status: "draft", hours: 0 }; P.reports.unshift(rep); }
+  var wasCounted = rep.status === "returned" || rep.status === "pending";
+  if (wasCounted) { P.reported -= rep.hours; if (rep.status === "pending") P.pending -= rep.hours; }
+  rep.date = v("pr_date") ? isoToDM(v("pr_date")) : "—";
+  rep.hours = hours; rep.task = v("pr_task") || "טיוטה";
+  rep.status = draft ? "draft" : "pending"; delete rep.feedback;
+  if (!draft) { P.reported += hours; P.pending += hours; }
+  S.prEdit = null; render();
+  toast(draft ? "הטיוטה " + rep.id + " נשמרה." : "הדיווח " + rep.id + " נשלח לבדיקת המלווה (" + hours + " שעות).");
+}
+
+function submitProject(f) {
+  clearErrs(f); var ok = true, kind = f.querySelector('input[name="pj_kind"]:checked').value;
+  if (!f.elements.pj_type.value) { setErr(f, "pj_type", "יש לבחור סוג תוצר"); ok = false; }
+  if (!f.elements.pj_title.value.trim()) { setErr(f, "pj_title", "יש להזין כותרת לגרסה"); ok = false; }
+  if (kind === "file" && !f.elements.pj_file.files.length) { setErr(f, "pj_file", "יש לבחור קובץ להעלאה"); ok = false; }
+  if (kind === "link" && !/^https?:\/\/\S+\.\S+/.test(f.elements.pj_link.value.trim())) { setErr(f, "pj_link", "יש להזין קישור תקין שמתחיל ב-https://"); ok = false; }
+  if (!ok) return focusFirstError(f);
+  var subs = M.project.submissions, ver = subs.reduce(function (m, s) { return Math.max(m, s.version); }, 0) + 1;
+  subs.unshift({ version: ver, title: f.elements.pj_type.value + " — " + f.elements.pj_title.value.trim(), submittedAt: fmtDM(TODAY) + " " + nowHM(), status: "pending", feedback: null });
+  render(); toast("גרסה " + ver + " הוגשה בהצלחה ונשלחה למנחה.");
+}
+
+function confirmBooking() {
+  var t = M.appointmentTypes.filter(function (x) { return x.id === S.mt.type; })[0], sl = M.slots.filter(function (x) { return x.id === S.mt.slot; })[0];
+  var b = { id: "AP-" + S.seq.ap++, type: t.name, date: sl.date, time: sl.time, coach: sl.coach, sync: "ממתין לסנכרון" };
+  sl.free -= 1; M.myAppointments.push(b); S.mt.booking = b; S.mt.step = "done"; render();
+  toast("הפגישה נקבעה. מספר רישום: <b>" + b.id + "</b>");
+  setTimeout(function () { b.sync = "סונכרן ליומן"; var el = $("#syncState"); if (el) el.innerHTML = syncPill(b.sync); var h = parseHash(); if (h.role === "student" && h.screen === "meetings") render(); }, 1600);
+}
+
+function openNewRequest() {
+  openModal("פנייה חדשה", '<form id="newReqForm" novalidate><div class="form-grid">' +
+    field("סוג פנייה", "nr_type", sel("nr_type", [{ v: "", l: "בחרי סוג" }, "מסמכים", "נוכחות", "לימודים", "פרקטיקום", "תשלומים", "טכני", "אחר"]), { req: true, full: true }) +
+    field("נושא", "nr_subject", inp("text", "nr_subject", 'maxlength="80"'), { req: true, full: true }) +
+    field("תוכן הפנייה", "nr_text", area("nr_text", 'rows="4"'), { req: true, full: true }) +
+    field("צרופה", "nr_file", inp("file", "nr_file"), { full: true }) +
+    '</div><div class="form-actions"><button class="btn" type="submit">שליחת הפנייה</button><button class="btn secondary" type="button" data-act="close-modal">ביטול</button></div></form>');
+}
+function submitNewRequest(f) {
+  clearErrs(f); var ok = true;
+  if (!f.elements.nr_type.value) { setErr(f, "nr_type", "יש לבחור סוג פנייה"); ok = false; }
+  if (f.elements.nr_subject.value.trim().length < 3) { setErr(f, "nr_subject", "יש להזין נושא"); ok = false; }
+  if (f.elements.nr_text.value.trim().length < 5) { setErr(f, "nr_text", "יש לפרט את הפנייה"); ok = false; }
+  if (!ok) return focusFirstError(f);
+  var r = { id: "RQ-" + S.seq.rq++, subject: f.elements.nr_subject.value.trim(), type: f.elements.nr_type.value, opened: fmtDM(TODAY), status: "new", owner: "טרם שויכה" };
+  S.threads[r.id] = [{ me: true, who: M.me.name, at: r.opened, text: f.elements.nr_text.value.trim() }];
+  M.requests.unshift(r); closeModal(); render();
+  toast("הפנייה נשלחה. מספר פנייה: <b>" + r.id + "</b>");
+}
+function submitReply(f) {
+  clearErrs(f);
+  if (f.elements.rp_text.value.trim().length < 2) { setErr(f, "rp_text", "יש לכתוב תשובה"); return focusFirstError(f); }
+  var r = M.requests.filter(function (x) { return x.id === f.getAttribute("data-id"); })[0];
+  getThread(r).push({ me: true, who: M.me.name, at: fmtDM(TODAY) + " " + nowHM(), text: f.elements.rp_text.value.trim() });
+  if (r.status === "waiting_student") r.status = "in_progress";
+  render(); toast("התשובה נשלחה לצוות.");
+}
+
+/* =====================================================================
+   ADMIN / STAFF AREA  (#admin/...)
+   ===================================================================== */
+var NAV_A = [
+  { id: "dashboard", label: "לוח בקרה", icon: "home" },
+  { id: "students", label: "תלמידות", icon: "users" },
+  { id: "attendance", label: "נוכחות", icon: "checkCircle" },
+  { id: "practicum", label: "פרקטיקום", icon: "briefcase" },
+  { id: "meetings", label: "פגישות", icon: "calendar" },
+  { id: "requests", label: "פניות", icon: "message" }
+];
+function navCountA(id) {
+  if (id === "practicum") return M.practicumQueue.length;
+  if (id === "attendance") return M.corrections.length;
+  if (id === "requests") return M.requestQueue.filter(function (r) { return !r.owner; }).length;
+  return 0;
+}
+var A = {
+  stu: { cohort: "all", track: "all", account: "all", q: "" },
+  rq: { status: "all", type: "all", owner: "all", q: "" },
+  notes: {},
+  avail: [],
+  seq: { stu: 2001 }
+};
+function kpi(key) { return M.adminKpis.filter(function (k) { return k.key === key; })[0]; }
+function bumpKpi(key, d) { var k = kpi(key); if (k) k.value = Math.max(0, k.value + d); }
+function uniq(arr) { return arr.filter(function (v, i) { return v != null && arr.indexOf(v) === i; }); }
+function findStudent(id) { return M.students.filter(function (s) { return s.id === id; })[0]; }
+var ACC_TONE = { "פעיל": ["ok", "check"], "הוזמנה": ["info", "clock"], "בוגרת משלימה": ["pri", "info"], "מושבתת": ["neu", "lock"] };
+function accPill(a) { var t = ACC_TONE[a] || ["neu", ""]; return pill(t[0], a, t[1]); }
+function attPct(v) { return v == null ? '<span class="muted">—</span>' : v < 80 ? pill("bad", v + "%", "alert") : '<span class="num">' + v + "%</span>"; }
+function prioPill(p) { return p === "גבוהה" ? pill("bad", p, "alert") : pill("neu", p); }
+function syncCell(s) { return s === "failed" ? pill("bad", "כשל סנכרון", "x") : pill("ok", "סונכרן", "check"); }
+function outcomePill(o) { return o === "התקיימה" ? pill("ok", o, "check") : o === "לא הגיעה" ? pill("bad", o, "x") : pill("neu", "טרם תועד", "minus"); }
+function emptyState(t, d) { return '<div class="empty"><b>' + t + "</b>" + (d || "") + "</div>"; }
+
+/* ---------- A01 Dashboard ---------- */
+var KPI_LINK = {
+  obligations: "#admin/students/f:obligations", practicum: "#admin/practicum", submissions: "#admin/students/314-22-1042/project",
+  meetingsToday: "#admin/meetings", unassigned: "#admin/requests/f:unassigned", payments: "#admin/students/f:payments", failures: "#admin/dashboard/failures"
+};
+var KPI_ICON = { obligations: "clipboard", practicum: "briefcase", submissions: "folder", meetingsToday: "calendar", unassigned: "message", payments: "file", failures: "alert" };
+ascreens.dashboard = function () {
+  var f = M.deliveryFailures;
+  return '<div class="page-head"><div><h1>לוח בקרה</h1><p>' + esc(M.staffUser.name) + " · " + esc(M.staffUser.role) + " · " + esc(M.staffUser.scope) + "</p></div></div>" +
+    '<div class="grid g-4" style="margin-bottom:16px">' + M.adminKpis.map(function (k) {
+      return '<a class="card card-link kpi' + (k.alert && k.value ? " alert" : "") + '" href="' + KPI_LINK[k.key] + '"><div class="kpi-l">' + ico(KPI_ICON[k.key], 16) + esc(k.label) + '</div><div class="kpi-v">' + k.value + '</div><div class="kpi-t">' + (k.alert && k.value ? "⚠ " : "") + esc(k.trend) + "</div></a>";
+    }).join("") + "</div>" +
+    '<div class="grid g-2"><section class="card" id="failuresPanel" aria-labelledby="df-t"><div class="card-h"><h2 id="df-t">' + ico("alert") + "כשלי שליחה וסנכרון</h2>" + (f.length ? pill("bad", f.length + " פתוחים", "x") : pill("ok", "הכל תקין", "check")) + "</div>" +
+    (f.length ? '<ul class="list">' + f.map(function (d) {
+      return '<li><div class="row"><b>' + esc(d.channel) + '</b><span class="muted small">' + d.id + " · " + esc(d.at) + '</span><span class="spacer"></span><button class="btn secondary sm" data-act="a-retry" data-id="' + d.id + '">' + ico("refresh", 15) + 'ניסיון חוזר</button></div><div class="small">' + esc(d.target) + '</div><div class="small" style="color:var(--bad);font-weight:600">שגיאה: ' + esc(d.error) + "</div></li>";
+    }).join("") + "</ul>" : emptyState("אין כשלים פתוחים", "כל ההודעות והסנכרונים בוצעו בהצלחה.")) + "</section>" +
+    '<section class="card" aria-labelledby="mt-t"><div class="card-h"><h2 id="mt-t">' + ico("calendar") + 'פגישות היום</h2><a class="more" href="#admin/meetings">לניהול פגישות ←</a></div><ul class="list">' +
+    M.meetingsToday.map(function (m) {
+      return '<li class="row"><b class="num" style="min-width:48px">' + m.time + "</b><span>" + esc(m.student) + '<span class="sub-line">' + esc(m.type) + " · " + esc(m.coach) + '</span></span><span class="spacer"></span>' + outcomePill(m.outcome) + (m.sync === "failed" ? pill("bad", "כשל יומן", "x") : "") + "</li>";
+    }).join("") + "</ul></section></div>";
+};
+function retryFailure(btn, id) {
+  btn.disabled = true; btn.innerHTML = ico("refresh", 15) + "מנסה שוב…";
+  setTimeout(function () {
+    var d = M.deliveryFailures.filter(function (x) { return x.id === id; })[0];
+    M.deliveryFailures = M.deliveryFailures.filter(function (x) { return x.id !== id; });
+    bumpKpi("failures", -1);
+    if (d && d.channel === "Google Calendar") M.meetingsToday.forEach(function (m) { if (d.target.indexOf(m.student) > -1) m.sync = "ok"; });
+    render(); toast("הניסיון החוזר הצליח (" + esc(id) + ").");
+  }, 1200);
+}
+
+/* ---------- A02 Students + A03 Student file ---------- */
+ascreens.students = function (rt) {
+  if (rt.param && rt.param.indexOf("f:") !== 0) { var st = findStudent(rt.param); if (st) return studentFile(st, rt.sub || "details"); }
+  var pf = rt.param ? rt.param.slice(2) : null;
+  var opt = function (key, all) { return [{ v: "all", l: all }].concat(uniq(M.students.map(function (s) { return s[key]; }))); };
+  return '<div class="page-head"><div><h1>תלמידות</h1><p>ניהול רשומות, שיוכים וסטטוס חשבון.</p></div><div class="row"><button class="btn" data-act="a-add">' + ico("plus") + 'הוספה</button><button class="btn secondary" data-act="a-import">' + ico("file") + 'ייבוא</button><button class="btn secondary" data-act="a-invite">' + ico("message") + "הזמנה</button></div></div>" +
+    (pf ? '<div class="callout info filter-banner">' + ico("info") + "<b>סינון פעיל:</b> " + (pf === "payments" ? "תשלומים לאימות — מוצגות תלמידות עם חובות פתוחים" : "תלמידות עם חובות פתוחים") + ' <a href="#admin/students">ניקוי הסינון</a></div>' : "") +
+    '<form class="filters card" id="stuFilters" aria-label="סינון תלמידות" data-pf="' + (pf || "") + '">' +
+    '<div class="field" style="flex:1;min-width:200px"><label for="f-sf_q">חיפוש</label><input type="search" id="f-sf_q" name="sf_q" placeholder="שם, ת״ז או דוא״ל" value="' + esc(A.stu.q) + '"></div>' +
+    field("מחזור", "sf_cohort", sel("sf_cohort", opt("cohort", "כל המחזורים"), A.stu.cohort)) +
+    field("מסלול", "sf_track", sel("sf_track", opt("track", "כל המסלולים"), A.stu.track)) +
+    field("סטטוס חשבון", "sf_account", sel("sf_account", opt("account", "כל הסטטוסים"), A.stu.account)) + "</form>" +
+    '<p class="muted small" id="stuCount" aria-live="polite"></p><div class="table-wrap"><table><thead><tr><th>ת״ז מוסדית</th><th>שם</th><th>דוא״ל</th><th>מחזור</th><th>מסלול</th><th>סטטוס חשבון</th><th>חובות פתוחים</th><th>נוכחות</th></tr></thead><tbody id="stuBody"></tbody></table></div>';
+};
+function fillStudents() {
+  var body = $("#stuBody"); if (!body) return;
+  var f = A.stu, pf = $("#stuFilters").getAttribute("data-pf"), q = f.q.toLowerCase();
+  var list = M.students.filter(function (s) {
+    return (f.cohort === "all" || s.cohort === f.cohort) && (f.track === "all" || s.track === f.track) && (f.account === "all" || s.account === f.account) &&
+      (!pf || s.obligations > 0) && (!q || (s.name + " " + s.id + " " + s.email).toLowerCase().indexOf(q) > -1);
+  });
+  $("#stuCount").textContent = "מוצגות " + list.length + " מתוך " + M.students.length + " תלמידות";
+  body.innerHTML = list.length ? list.map(function (s) {
+    return '<tr class="clickable" data-href="#admin/students/' + s.id + '"><td class="num">' + s.id + '</td><td><a href="#admin/students/' + s.id + '"><b>' + esc(s.name) + "</b></a></td><td dir=\"ltr\" style=\"text-align:right\">" + esc(s.email) + "</td><td>" + esc(s.cohort) + "</td><td>" + esc(s.track) + "</td><td>" + accPill(s.account) + '</td><td class="num">' + (s.obligations ? pill("warn", String(s.obligations), "alert") : '<span class="muted">0</span>') + "</td><td>" + attPct(s.attendance) + "</td></tr>";
+  }).join("") : '<tr><td colspan="8">' + emptyState("לא נמצאו תלמידות", "נסי לשנות את הסינון או את החיפוש.") + "</td></tr>";
+}
+var FILE_TABS = [["details", "פרטים ושיוכים"], ["studies", "לימודים ונוכחות"], ["grades", "ציונים וחובות"], ["practicum", "פרקטיקום"], ["project", "פרויקט"], ["meetings", "פגישות"], ["requests", "פניות"], ["history", "היסטוריית פעולות"]];
+function studentFile(s, tab) {
+  var isMe = s.id === M.me.institutionalId, base = "#admin/students/" + s.id + "/";
+  var initials = s.name.split(" ").map(function (w) { return w.charAt(0); }).join("");
+  return '<div class="crumbs"><a href="#admin/students">תלמידות</a> / ' + esc(s.name) + "</div>" +
+    '<section class="card" style="margin-bottom:16px"><div class="row" style="gap:14px"><div class="avatar lg" aria-hidden="true">' + esc(initials) + '</div><div style="flex:1;min-width:180px"><h1>' + esc(s.name) + '</h1><p class="muted">' + s.id + " · " + esc(s.cohort) + " · " + esc(s.track) + "</p></div>" + accPill(s.account) +
+    '<span class="tag">חובות פתוחים: ' + s.obligations + '</span><span class="tag">נוכחות: ' + (s.attendance == null ? "—" : s.attendance + "%") + "</span></div></section>" +
+    '<nav class="tabs" aria-label="לשוניות תיק תלמידה">' + FILE_TABS.map(function (t) { return '<a href="' + base + t[0] + '"' + (t[0] === tab ? ' aria-current="page"' : "") + ">" + t[1] + "</a>"; }).join("") + "</nav>" +
+    '<section class="card">' + fileTab(s, tab, isMe) + "</section>";
+}
+function fileTab(s, tab, isMe) {
+  var demo = emptyState("אין נתונים מפורטים", "בגרסת ההדגמה פירוט מלא זמין עבור " + esc(M.me.name) + " בלבד.");
+  switch (tab) {
+    case "details":
+      return '<h2 style="margin-bottom:10px">פרטים ושיוכים</h2><dl class="kv"><dt>שם מלא</dt><dd>' + esc(s.name) + "</dd><dt>ת״ז מוסדית</dt><dd>" + s.id + '</dd><dt>דוא״ל</dt><dd dir="ltr" style="text-align:right">' + esc(isMe ? M.me.email : s.email) + "</dd><dt>מחזור</dt><dd>" + esc(s.cohort) + "</dd><dt>מסלול</dt><dd>" + esc(s.track) + "</dd><dt>סטטוס חשבון</dt><dd>" + accPill(s.account) + "</dd>" +
+        (isMe ? "<dt>שיבוץ פרקטיקום</dt><dd>" + esc(M.practicum.place) + " · מלווה " + esc(M.practicum.mentor) + "</dd>" : "") +
+        (M.project.members.indexOf(s.name) > -1 ? "<dt>פרויקט</dt><dd>" + esc(M.project.name) + "</dd>" : "") + "</dl>";
+    case "studies":
+      if (!isMe) return "<h2>לימודים ונוכחות</h2><p>נוכחות כוללת: <b>" + (s.attendance == null ? "טרם חושבה" : s.attendance + "%") + "</b></p>" + demo;
+      return '<h2 style="margin-bottom:10px">לימודים ונוכחות · ' + M.attendance.summaryPct + '%</h2><div class="table-wrap"><table><thead><tr><th>קורס</th><th>מרצה</th><th>נוכחות</th><th>רף</th><th>מצב</th></tr></thead><tbody>' +
+        M.courses.map(function (c) { return "<tr><td>" + esc(c.name) + "</td><td>" + esc(c.lecturer) + "</td><td>" + attPct(c.attendance) + "</td><td>" + c.required + "%</td><td>" + esc(c.status) + "</td></tr>"; }).join("") + "</tbody></table></div>";
+    case "grades":
+      if (!isMe) return "<h2>ציונים וחובות</h2><p>חובות פתוחים: <b>" + s.obligations + "</b></p>" + demo;
+      return '<h2 style="margin-bottom:10px">ציונים וחובות</h2><div class="table-wrap"><table><thead><tr><th>קורס</th><th>דרישה</th><th>סטטוס</th><th>ציון</th><th>תשלום</th></tr></thead><tbody>' +
+        M.obligations.map(function (o) { return "<tr><td>" + esc(o.course) + "</td><td>" + esc(o.requirement) + "</td><td>" + obStatusPill(o.status) + "</td><td>" + gradeCell(o) + "</td><td>" + esc(o.payment) + "</td></tr>"; }).join("") + "</tbody></table></div>";
+    case "practicum":
+      var q = M.practicumQueue.filter(function (r) { return r.student === s.name; });
+      return '<h2 style="margin-bottom:10px">פרקטיקום</h2>' + (isMe ? '<p>מאושרות <b>' + M.practicum.approved + "</b> · ממתינות <b>" + M.practicum.pending + "</b> · דווחו <b>" + M.practicum.reported + "</b> מתוך יעד " + M.practicum.target + "</p>" : "") +
+        (q.length ? '<h3 style="margin:10px 0 6px">בתור הבדיקה</h3><ul class="list">' + q.map(function (r) { return "<li>" + r.id + " · " + r.date + " · " + r.hours + " שעות · " + esc(r.task) + (r.flag ? " " + pill("warn", r.flag, "alert") : "") + "</li>"; }).join("") + '</ul><a class="btn secondary sm" href="#admin/practicum">לתור הבדיקה</a>' : isMe ? "" : demo);
+    case "project":
+      if (M.project.members.indexOf(s.name) < 0) return "<h2>פרויקט</h2>" + emptyState("לא משויכת לפרויקט", "אין שיוך לפרויקט בנתוני ההדגמה.");
+      var cur = M.project.stages.filter(function (x) { return x.status === "current"; })[0];
+      return '<h2 style="margin-bottom:10px">' + esc(M.project.name) + '</h2><p>שלב נוכחי: <b>' + esc(cur.name) + "</b> · עד " + cur.due + '</p><h3 style="margin:12px 0 6px">הגשות</h3><ul class="list">' +
+        M.project.submissions.map(function (x) { return '<li class="row"><b>גרסה ' + x.version + "</b>" + esc(x.title) + '<span class="muted small">' + x.submittedAt + "</span>" + subPill(x.status) + "</li>"; }).join("") + "</ul>";
+    case "meetings":
+      var ms = M.meetingsToday.filter(function (m) { return m.student === s.name; }).map(function (m) { return "<li>היום " + m.time + " · " + esc(m.type) + " · " + esc(m.coach) + " " + outcomePill(m.outcome) + "</li>"; });
+      if (isMe) ms = ms.concat(M.myAppointments.map(function (a) { return "<li>" + a.date + " " + a.time + " · " + esc(a.type) + " · " + a.id + "</li>"; }));
+      return '<h2 style="margin-bottom:10px">פגישות</h2>' + (ms.length ? '<ul class="list">' + ms.join("") + "</ul>" : emptyState("אין פגישות", ""));
+    case "requests":
+      var rs = M.requestQueue.filter(function (r) { return r.student === s.name; });
+      return '<h2 style="margin-bottom:10px">פניות</h2>' + (rs.length ? '<ul class="list">' + rs.map(function (r) { return '<li class="row"><a href="#admin/requests/' + r.id + '">' + r.id + "</a>" + (r.sensitive ? pill("neu", "תוכן מוגבל", "lock") : esc(r.subject)) + reqPill(r.status) + "</li>"; }).join("") + "</ul>" : emptyState("אין פניות", ""));
+    case "history":
+      var h = [["01/09 09:12", "מערכת", "נוצר חשבון ושויך ל" + s.cohort], ["01/09 09:12", "מערכת", "שיוך למסלול " + s.track], ["03/09 10:40", M.staffUser.name, "סטטוס חשבון עודכן: " + s.account]];
+      if (s.obligations) h.push(["15/11 14:05", "מערכת", "נפתחו " + s.obligations + " חובות לאחר סגירת ציונים"]);
+      return '<h2 style="margin-bottom:10px">היסטוריית פעולות</h2><div class="table-wrap"><table><thead><tr><th>מועד</th><th>מבצע/ת</th><th>פעולה</th></tr></thead><tbody>' + h.reverse().map(function (x) { return '<tr><td class="num">' + x[0] + "</td><td>" + esc(x[1]) + "</td><td>" + esc(x[2]) + "</td></tr>"; }).join("") + "</tbody></table></div>";
+  }
+  return "";
+}
+function openAddStudent() {
+  openModal("הוספת תלמידה", '<form id="aAddForm" novalidate><div class="form-grid">' +
+    field("שם מלא", "as_name", inp("text", "as_name"), { req: true }) +
+    field("ת״ז מוסדית", "as_id", inp("text", "as_id", 'placeholder="000-00-0000" dir="ltr"'), { req: true, hint: "פורמט: 3-2-4 ספרות" }) +
+    field("דוא״ל", "as_email", inp("email", "as_email", 'dir="ltr"'), { req: true, full: true }) +
+    field("מחזור", "as_cohort", sel("as_cohort", uniq(M.students.map(function (s) { return s.cohort; })))) +
+    field("מסלול", "as_track", sel("as_track", uniq(M.students.map(function (s) { return s.track; })))) +
+    '</div><div class="form-actions"><button class="btn" type="submit">הוספה ושליחת הזמנה</button><button class="btn secondary" type="button" data-act="close-modal">ביטול</button></div></form>');
+}
+function openImport() {
+  var dup = M.students[1];
+  var rows = [
+    { id: "330-12-" + A.seq.stu, name: "ליאת אברהם", email: "liat.a@…", cohort: "תשפ״ז", track: "QA", st: "ok" },
+    { id: "331-40-2002", name: "רוני שושן", email: "", cohort: "תשפ״ז", track: "פיתוח תוכנה", st: "err", msg: "חסרה כתובת דוא״ל" },
+    { id: dup.id, name: dup.name, email: dup.email, cohort: dup.cohort, track: dup.track, st: "dup", msg: "ת״ז קיימת במערכת — השורה תדולג" }
+  ];
+  A.importRows = rows;
+  openModal("ייבוא תלמידות מקובץ", '<div class="field"><label for="f-im_file">קובץ CSV / Excel</label><input type="file" id="f-im_file" accept=".csv,.xlsx"><div class="hint">תצוגה מקדימה של קובץ לדוגמה — 3 שורות.</div></div>' +
+    '<div class="row" style="margin:12px 0">' + pill("ok", "1 תקינה", "check") + pill("bad", "1 שגיאה", "x") + pill("warn", "1 כפילות", "alert") + "</div>" +
+    '<div class="table-wrap"><table><thead><tr><th>ת״ז</th><th>שם</th><th>דוא״ל</th><th>תוצאה</th></tr></thead><tbody>' + rows.map(function (r) {
+      return "<tr" + (r.st !== "ok" ? ' class="hl"' : "") + '><td class="num">' + r.id + "</td><td>" + esc(r.name) + "</td><td>" + (r.email ? esc(r.email) : '<span style="color:var(--bad)">(ריק)</span>') + "</td><td>" +
+        (r.st === "ok" ? pill("ok", "תקינה", "check") : r.st === "err" ? pill("bad", "שגיאה", "x") : pill("warn", "כפילות", "alert")) + (r.msg ? '<span class="sub-line">' + esc(r.msg) + "</span>" : "") + "</td></tr>";
+    }).join("") + '</tbody></table></div><div class="form-actions"><button class="btn" data-act="a-import-go">ייבוא שורה תקינה אחת</button><button class="btn secondary" data-act="close-modal">ביטול</button></div>');
+}
+function openInvite() {
+  var c = M.students.filter(function (s) { return s.account !== "פעיל" && s.account !== "מושבתת"; });
+  openModal("שליחת הזמנה למערכת", '<form id="aInviteForm" novalidate><p class="muted small">בחרי תלמידות שטרם הפעילו חשבון. תישלח הזמנה בדוא״ל.</p><fieldset style="border:0;padding:0;margin:8px 0" class="check-list"><legend class="sr-only">תלמידות</legend>' +
+    c.map(function (s) { return '<label><input type="checkbox" name="inv" value="' + s.id + '" checked> ' + esc(s.name) + " " + accPill(s.account) + "</label>"; }).join("") +
+    '</fieldset><div class="err" data-err="inv"></div><div class="form-actions"><button class="btn" type="submit">שליחת הזמנות</button><button class="btn secondary" type="button" data-act="close-modal">ביטול</button></div></form>');
+}
+
+/* ---------- A05 Attendance ---------- */
+ascreens.attendance = function () {
+  var a = M.attendanceSession, opts = [{ v: a.id, l: a.course + " · " + a.date + " · " + a.time }].concat(M.sessions.map(function (s) {
+    return { v: s.id, l: s.course + " · " + s.date + " " + s.start + (s.status === "cancelled" ? " (בוטל)" : " (עתידי — לא ניתן לדווח)"), dis: true };
+  }));
+  return '<div class="page-head"><div><h1>נוכחות</h1><p>הזנה מרוכזת לפי מפגש ותור בקשות תיקון.</p></div></div>' +
+    '<section class="card" style="margin-bottom:16px" aria-labelledby="bulk-t"><div class="card-h"><h2 id="bulk-t">הזנת נוכחות</h2>' + (a.approved ? pill("ok", "אושר", "check") : pill("warn", "טיוטה — טרם אושר", "edit")) + "</div>" +
+    '<div class="filters">' + field("מפגש", "at_session", sel("at_session", opts, a.id)) + "</div>" +
+    (a.approved ? '<div class="callout warn" style="margin-bottom:12px">' + ico("alert") + "<div>נתוני המפגש כבר אושרו. שמירה נוספת תדרוס את הנתונים המאושרים ותירשם בהיסטוריה.</div></div>" : "") +
+    '<div class="table-wrap"><table><thead><tr><th>תלמידה</th><th>סטטוס</th><th>דקות נוכחות</th></tr></thead><tbody>' +
+    a.entries.map(function (e, i) {
+      return "<tr><td><b>" + esc(e.name) + '</b></td><td><label class="sr-only" for="ats-' + i + '">סטטוס עבור ' + esc(e.name) + '</label><select id="ats-' + i + '" data-ati="' + i + '">' +
+        Object.keys(M.attendanceStatus).map(function (k) { return '<option value="' + k + '"' + (k === e.status ? " selected" : "") + ">" + M.attendanceStatus[k] + "</option>"; }).join("") +
+        '</select></td><td><label class="sr-only" for="atm-' + i + '">דקות עבור ' + esc(e.name) + '</label><input type="number" id="atm-' + i + '" data-atm="' + i + '" min="0" max="180" value="' + (e.minutes == null ? "" : e.minutes) + '"> <span class="muted small">/ 180</span><div class="err" id="atm-err-' + i + '"></div></td></tr>';
+    }).join("") + '</tbody></table></div><div class="form-actions"><button class="btn" data-act="a-att-approve">' + ico("check") + 'אישור נוכחות</button><button class="btn secondary" data-act="a-att-all">סימון כולן כנוכחות</button></div></section>' +
+    '<section class="card" aria-labelledby="corr-t"><div class="card-h"><h2 id="corr-t">תור בקשות תיקון</h2>' + pill("info", M.corrections.length + " ממתינות", "clock") + "</div>" +
+    (M.corrections.length ? '<div class="table-wrap"><table><thead><tr><th>מס׳</th><th>תלמידה</th><th>מפגש</th><th>מבוקש</th><th>נימוק</th><th>צרופה</th><th>נפתחה</th><th><span class="sr-only">פעולות</span></th></tr></thead><tbody>' +
+      M.corrections.map(function (c) {
+        return '<tr><td class="num">' + c.id + "</td><td>" + esc(c.student) + "</td><td>" + esc(c.session) + "</td><td>" + esc(c.requested) + "</td><td>" + esc(c.reason) + "</td><td>" + (c.attachment ? pill("pri", "מצורף", "file") : '<span class="muted">אין</span>') + '</td><td class="num">' + c.opened + '</td><td><div class="row" style="flex-wrap:nowrap"><button class="btn ok sm" data-act="a-corr" data-id="' + c.id + '" data-v="approve">אישור</button><button class="btn danger sm" data-act="a-corr" data-id="' + c.id + '" data-v="reject">דחייה</button></div></td></tr>';
+      }).join("") + "</tbody></table></div>" : emptyState("התור ריק", "אין בקשות תיקון ממתינות.")) + "</section>";
+};
+function readAttendance() {
+  var ok = true, vals = M.attendanceSession.entries.map(function (e, i) {
+    var st = $("#ats-" + i).value, raw = $("#atm-" + i).value, err = $("#atm-err-" + i), m = raw === "" ? null : +raw;
+    err.textContent = ""; $("#atm-" + i).removeAttribute("aria-invalid");
+    var msg = "";
+    if (m != null && (m < 0 || m > 180)) msg = "בין 0 ל-180 דקות";
+    else if ((st === "present" || st === "partial") && !m) msg = "יש להזין דקות";
+    if (msg) { ok = false; err.textContent = msg; $("#atm-" + i).setAttribute("aria-invalid", "true"); }
+    return { status: st, minutes: st === "unreported" ? null : st === "absent" ? 0 : m };
+  });
+  return ok ? vals : null;
+}
+function applyAttendance(vals) {
+  var a = M.attendanceSession, was = a.approved;
+  vals.forEach(function (v, i) { a.entries[i].status = v.status; a.entries[i].minutes = v.minutes; });
+  a.approved = true; closeModal(); render();
+  toast(was ? "הנתונים המאושרים עודכנו (דריסה נרשמה בהיסטוריה)." : "נוכחות המפגש אושרה ונשמרה.");
+}
+function openCorrDecision(id, v) {
+  var c = M.corrections.filter(function (x) { return x.id === id; })[0];
+  openModal((v === "approve" ? "אישור" : "דחיית") + " בקשת תיקון " + c.id, '<form id="aCorrForm" data-id="' + c.id + '" data-v="' + v + '" novalidate><dl class="kv" style="margin-bottom:12px"><dt>תלמידה</dt><dd>' + esc(c.student) + "</dd><dt>מפגש</dt><dd>" + esc(c.session) + "</dd><dt>מבוקש</dt><dd>" + esc(c.requested) + "</dd><dt>נימוק</dt><dd>" + esc(c.reason) + "</dd></dl>" +
+    field("נימוק ההחלטה", "cd_reason", area("cd_reason", 'rows="3"'), { req: true, hint: "הנימוק יוצג לתלמידה ויישמר ביומן." }) +
+    '<div class="form-actions"><button class="btn ' + (v === "approve" ? "ok" : "danger") + '" type="submit">' + (v === "approve" ? "אישור הבקשה" : "דחיית הבקשה") + '</button><button class="btn secondary" type="button" data-act="close-modal">ביטול</button></div></form>');
+}
+
+/* ---------- A07 Practicum ---------- */
+var FLAG_HELP = { "משך חריג": "מספר השעות ביום חורג מהמקובל (מעל 10).", "חפיפה": "הדיווח חופף בזמן לדיווח אחר של אותה תלמידה.", "דיווח מאוחר": "הדיווח הוגש זמן רב אחרי מועד הפעילות." };
+function flagHelp(f) { for (var k in FLAG_HELP) if (f.indexOf(k) === 0) return FLAG_HELP[k]; return ""; }
+ascreens.practicum = function () {
+  var q = M.practicumQueue;
+  return '<div class="page-head"><div><h1>פרקטיקום — תור בדיקה</h1><p>דיווחי שעות שממתינים לאישור. דיווחים עם חריגה מסומנים.</p></div><div class="row">' + pill("info", q.length + " בתור", "clock") + pill("warn", q.filter(function (r) { return r.flag; }).length + " עם חריגה", "alert") + "</div></div>" +
+    (q.length ? '<div class="table-wrap"><table><thead><tr><th>מס׳</th><th>תלמידה</th><th>תאריך</th><th>שעות</th><th>מקום</th><th>משימה</th><th>ממתין</th><th>חריגה</th><th><span class="sr-only">פעולות</span></th></tr></thead><tbody>' +
+      q.map(function (r) {
+        return "<tr" + (r.flag ? ' class="hl"' : "") + '><td class="num">' + r.id + "</td><td>" + esc(r.student) + '</td><td class="num">' + r.date + '</td><td class="num">' + r.hours + "</td><td>" + esc(r.place) + "</td><td>" + esc(r.task) + "</td><td>" + (r.waitingDays >= 3 ? pill("warn", r.waitingDays + " ימים", "clock") : r.waitingDays + " ימים") + "</td><td>" + (r.flag ? pill("warn", r.flag, "alert") : '<span class="muted">—</span>') + '</td><td><button class="btn sm" data-act="a-pr-open" data-id="' + r.id + '">פתיחה</button></td></tr>';
+      }).join("") + "</tbody></table></div>" : '<div class="card">' + emptyState("התור ריק", "כל הדיווחים נבדקו.") + "</div>");
+};
+function openPracticumReview(id) {
+  var r = M.practicumQueue.filter(function (x) { return x.id === id; })[0];
+  openModal("בדיקת דיווח " + r.id, '<dl class="kv"><dt>תלמידה</dt><dd>' + esc(r.student) + "</dd><dt>תאריך</dt><dd>" + r.date + "</dd><dt>שעות</dt><dd>" + r.hours + "</dd><dt>מקום</dt><dd>" + esc(r.place) + "</dd><dt>משימה</dt><dd>" + esc(r.task) + "</dd><dt>ממתין</dt><dd>" + r.waitingDays + " ימים</dd></dl>" +
+    (r.flag ? '<div class="callout warn" style="margin-top:12px">' + ico("alert") + "<div><b>חריגה: " + esc(r.flag) + "</b><br>" + esc(flagHelp(r.flag)) + "</div></div>" : "") +
+    '<form id="aPrForm" data-id="' + r.id + '" novalidate style="margin-top:14px">' + field("משוב לתלמידה", "pv_fb", area("pv_fb", 'rows="3"'), { hint: "חובה בהחזרה לתיקון או בדחייה." }) +
+    '<div class="form-actions"><button class="btn ok" type="submit" value="approved">' + ico("check") + 'אישור</button><button class="btn secondary" type="submit" value="returned">' + ico("undo") + 'החזרה לתיקון</button><button class="btn danger" type="submit" value="rejected">' + ico("x") + "דחייה</button></div></form>");
+}
+
+/* ---------- A09 Meetings ---------- */
+ascreens.meetings = function () {
+  return '<div class="page-head"><div><h1>פגישות</h1><p>פגישות היום, תיעוד תוצאה וסנכרון ליומן.</p></div></div>' +
+    '<section class="card" style="margin-bottom:16px" aria-labelledby="tm-t"><h2 id="tm-t" style="margin-bottom:10px">פגישות היום · ' + isoToDM(M.today) + '</h2><div class="table-wrap"><table><thead><tr><th>שעה</th><th>תלמידה</th><th>סוג</th><th>מאמנת</th><th>תוצאה</th><th>סנכרון Google</th></tr></thead><tbody>' +
+    M.meetingsToday.map(function (m, i) {
+      return "<tr" + (m.sync === "failed" ? ' class="hl"' : "") + '><td class="num"><b>' + m.time + "</b></td><td>" + esc(m.student) + "</td><td>" + esc(m.type) + "</td><td>" + esc(m.coach) + "</td><td>" +
+        (m.outcome ? outcomePill(m.outcome) : '<div class="row" style="flex-wrap:nowrap"><button class="btn ok sm" data-act="a-out" data-i="' + i + '" data-v="התקיימה">התקיימה</button><button class="btn secondary sm" data-act="a-out" data-i="' + i + '" data-v="לא הגיעה">לא הגיעה</button></div>') +
+        "</td><td>" + syncCell(m.sync) + (m.sync === "failed" ? ' <button class="btn ghost sm" data-act="a-resync" data-i="' + i + '">' + ico("refresh", 14) + "סנכרון חוזר</button>" : "") + "</td></tr>";
+    }).join("") + "</tbody></table></div></section>" +
+    '<div class="grid g-3"><section class="card span-2" aria-labelledby="av-t"><h2 id="av-t" style="margin-bottom:12px">פתיחת זמינות</h2><form id="aAvailForm" novalidate><div class="form-grid">' +
+    field("סוג פגישה", "av_type", sel("av_type", [{ v: "", l: "בחרי סוג" }].concat(M.appointmentTypes.map(function (t) { return { v: t.id, l: t.name + " (" + t.duration + " ד׳)" }; }))), { req: true }) +
+    field("תאריך", "av_date", inp("date", "av_date", 'min="' + M.today + '"'), { req: true }) +
+    field("משעה", "av_from", inp("time", "av_from", 'value="09:00"'), { req: true }) +
+    field("עד שעה", "av_to", inp("time", "av_to", 'value="12:00"'), { req: true }) +
+    field("משך פגישה (דקות)", "av_dur", inp("number", "av_dur", 'min="10" step="5" value="30"'), { req: true }) +
+    field("הפסקה בין פגישות (דקות)", "av_gap", inp("number", "av_gap", 'min="0" step="5" value="0"')) +
+    field("קיבולת לכל משבצת", "av_cap", inp("number", "av_cap", 'min="1" value="1"'), { req: true }) +
+    '</div><div class="form-actions"><button class="btn" type="submit">' + ico("plus") + "פתיחת משבצות</button></div></form></section>" +
+    '<section class="card" aria-labelledby="avl-t"><h2 id="avl-t" style="margin-bottom:10px">זמינות שנפתחה</h2>' +
+    (A.avail.length ? '<ul class="list">' + A.avail.map(function (a) { return "<li><b>" + a.date + "</b> · " + esc(a.type) + '<span class="sub-line num">' + a.slots.join(", ") + " · קיבולת " + a.cap + "</span></li>"; }).join("") + "</ul>" : emptyState("טרם נפתחה זמינות", "משבצות שתפתחי יופיעו כאן.")) + "</section></div>";
+};
+
+/* ---------- A12 Requests ---------- */
+function owners() { return uniq(M.requestQueue.map(function (r) { return r.owner; }).concat([M.staffUser.name])); }
+ascreens.requests = function (rt) {
+  if (rt.param && rt.param.indexOf("f:") !== 0) { var r = M.requestQueue.filter(function (x) { return x.id === rt.param; })[0]; if (r) return adminRequest(r); }
+  if (rt.param === "f:unassigned") A.rq.owner = "none";
+  var f = A.rq;
+  return '<div class="page-head"><div><h1>פניות — תור צוות</h1><p>פניות ללא אחראית מודגשות. לחצי על פנייה לטיפול.</p></div>' + pill("warn", M.requestQueue.filter(function (r) { return !r.owner; }).length + " ללא אחראית", "alert") + "</div>" +
+    '<form class="filters card" id="rqFilters" aria-label="סינון פניות"><div class="field" style="flex:1;min-width:180px"><label for="f-rf_q">חיפוש</label><input type="search" id="f-rf_q" name="rf_q" value="' + esc(f.q) + '" placeholder="מס׳, תלמידה או נושא"></div>' +
+    field("סטטוס", "rf_status", sel("rf_status", [{ v: "all", l: "כל הסטטוסים" }].concat(Object.keys(M.requestStatus).map(function (k) { return { v: k, l: M.requestStatus[k].replace("ממתינה לתשובתך", "ממתינה לתלמידה") }; })), f.status)) +
+    field("סוג", "rf_type", sel("rf_type", [{ v: "all", l: "כל הסוגים" }].concat(uniq(M.requestQueue.map(function (r) { return r.type; }))), f.type)) +
+    field("אחראית", "rf_owner", sel("rf_owner", [{ v: "all", l: "כולן" }, { v: "none", l: "ללא אחראית" }].concat(owners()), f.owner)) + "</form>" +
+    '<p class="muted small" id="rqCount" aria-live="polite"></p><div class="table-wrap"><table><thead><tr><th>מס׳</th><th>תלמידה</th><th>נושא</th><th>סוג</th><th>עדיפות</th><th>אחראית</th><th>סטטוס</th><th>עודכן</th><th>מקור</th></tr></thead><tbody id="rqBody"></tbody></table></div>';
+};
+function staffStatusPill(s) { return s === "waiting_student" ? pill("warn", "ממתינה לתלמידה", "clock") : reqPill(s); }
+function fillRequests() {
+  var body = $("#rqBody"); if (!body) return;
+  var f = A.rq, q = f.q.toLowerCase();
+  var list = M.requestQueue.filter(function (r) {
+    return (f.status === "all" || r.status === f.status) && (f.type === "all" || r.type === f.type) &&
+      (f.owner === "all" || (f.owner === "none" ? !r.owner : r.owner === f.owner)) && (!q || (r.id + r.student + r.subject).toLowerCase().indexOf(q) > -1);
+  });
+  $("#rqCount").textContent = "מוצגות " + list.length + " פניות";
+  body.innerHTML = list.length ? list.map(function (r) {
+    return '<tr class="clickable' + (!r.owner ? " hl" : "") + '" data-href="#admin/requests/' + r.id + '"><td class="num"><a href="#admin/requests/' + r.id + '">' + r.id + "</a></td><td>" + esc(r.student) + "</td><td>" + (r.sensitive ? pill("neu", "תוכן מוגבל", "lock") : esc(r.subject)) + "</td><td>" + esc(r.type) + "</td><td>" + prioPill(r.priority) + "</td><td>" +
+      (r.owner ? esc(r.owner) : pill("warn", "ללא אחראית", "alert")) + "</td><td>" + staffStatusPill(r.status) + "</td><td>" + esc(r.updated) + "</td><td>" + esc(r.source) + "</td></tr>";
+  }).join("") : '<tr><td colspan="9">' + emptyState("אין פניות תואמות", "") + "</td></tr>";
+}
+function adminThread(r) {
+  var sr = M.requests.filter(function (x) { return x.id === r.id; })[0];
+  if (sr) return getThread(sr);
+  if (!S.threads[r.id]) S.threads[r.id] = [{ me: true, who: r.student, at: r.updated, text: "פנייה בנושא: " + r.subject + " (התקבלה דרך " + r.source + ")" }];
+  return S.threads[r.id];
+}
+function adminRequest(r) {
+  var notes = A.notes[r.id] || [];
+  var head = '<div class="crumbs"><a href="#admin/requests">פניות</a> / ' + r.id + '</div><div class="page-head"><div><h1>' + (r.sensitive ? "פנייה מסווגת" : esc(r.subject)) + "</h1><p>" + r.id + " · " + esc(r.student) + " · " + esc(r.type) + " · מקור: " + esc(r.source) + "</p></div><div class=\"row\">" + prioPill(r.priority) + staffStatusPill(r.status) + "</div></div>";
+  var meta = '<section class="card" aria-labelledby="meta-t"><h2 id="meta-t" style="margin-bottom:10px">ניהול הפנייה</h2><form id="aReqMeta" data-id="' + r.id + '" novalidate class="stack">' +
+    field("אחראית", "rm_owner", sel("rm_owner", [{ v: "", l: "— ללא אחראית —" }].concat(owners()), r.owner || "")) +
+    field("עדיפות", "rm_prio", sel("rm_prio", ["רגילה", "גבוהה"], r.priority)) +
+    field("סטטוס", "rm_status", sel("rm_status", Object.keys(M.requestStatus).map(function (k) { return { v: k, l: k === "waiting_student" ? "ממתינה לתלמידה" : M.requestStatus[k] }; }), r.status)) +
+    '<button class="btn" type="submit">שמירת שינויים</button>' + (!r.owner ? '<button class="btn secondary" type="button" data-act="a-assign-me" data-id="' + r.id + '">שיוך אליי</button>' : "") + "</form></section>";
+  if (r.sensitive) {
+    return head + '<div class="grid g-3"><section class="card span-2"><div class="restricted">' + ico("lock") + '<h2 style="margin:10px 0 6px">תוכן מוגבל</h2><p class="muted">פנייה זו מסווגת כרגישה. התוכן והשרשור זמינים לצוות הייעודי בלבד.<br>מוצגים מטא-נתונים בלבד.</p><div class="form-actions" style="justify-content:center"><button class="btn secondary" data-act="a-access">בקשת גישה</button></div></div></section>' + meta + "</div>";
+  }
+  var t = adminThread(r);
+  return head + '<div class="grid g-3"><div class="span-2 stack" style="gap:16px"><section class="card" aria-labelledby="th-t"><h2 id="th-t" style="margin-bottom:12px">שרשור עם התלמידה</h2><div class="thread">' +
+    t.map(function (m) { return '<div class="msg ' + (m.me ? "staff" : "me") + '"><div class="who">' + esc(m.who) + (m.me ? " (תלמידה)" : " (צוות)") + " · " + esc(m.at) + "</div>" + esc(m.text) + "</div>"; }).join("") + "</div>" +
+    '<hr class="sep"><form id="aReplyForm" data-id="' + r.id + '" novalidate>' + field("תשובה לתלמידה", "ar_text", area("ar_text", 'rows="3"'), { req: true, hint: "התשובה תוצג לתלמידה ותישלח בדוא״ל." }) +
+    '<label class="check"><input type="checkbox" name="ar_wait" checked> סימון כ״ממתינה לתלמידה״</label><div class="form-actions"><button class="btn" type="submit">שליחת תשובה</button></div></form></section>' +
+    '<section class="internal" aria-labelledby="in-t"><div class="internal-h" id="in-t">' + ico("lock") + 'הערה פנימית <span class="pill pill-warn">' + ico("lock") + "לא מוצג לתלמידה</span></div>" +
+    (notes.length ? notes.map(function (n) { return '<div class="note"><div class="muted small">' + esc(n.who) + " · " + n.at + "</div>" + esc(n.text) + "</div>"; }).join("") : '<p class="small" style="color:#5e4500">אין הערות פנימיות עדיין.</p>') +
+    '<form id="aNoteForm" data-id="' + r.id + '" novalidate style="margin-top:10px">' + field("הערה לצוות", "an_text", area("an_text", 'rows="2" style="background:#fff"')) + '<div class="form-actions" style="margin-top:8px"><button class="btn secondary" type="submit">' + ico("lock", 15) + "הוספת הערה פנימית</button></div></form></section></div>" + meta + "</div>";
+}
+
+/* ---------- Admin search ---------- */
+function doSearchAdmin(q) {
+  var ql = q.toLowerCase();
+  var r = M.requestQueue.filter(function (x) { return x.id.toLowerCase() === ql; })[0];
+  if (r) return go("#admin/requests/" + r.id);
+  var s = M.students.filter(function (x) { return x.name.indexOf(q) > -1 || x.id.indexOf(q) > -1; })[0];
+  if (s) return go("#admin/students/" + s.id);
+  var n = NAV_A.filter(function (x) { return x.label.indexOf(q) > -1; })[0];
+  if (n) return go("#admin/" + n.id);
+  toast("לא נמצאו תוצאות עבור ״" + esc(q) + "״", true);
+}
+
+/* ---------- Admin events ---------- */
+var origAfterRender = afterRender;
+afterRender = function (rt) {
+  origAfterRender(rt);
+  if (rt.role !== "admin") return;
+  if (rt.screen === "students") fillStudents();
+  if (rt.screen === "requests") fillRequests();
+  if (rt.screen === "dashboard" && rt.param === "failures") { var p = $("#failuresPanel"); p.scrollIntoView({ behavior: "smooth", block: "center" }); p.classList.add("flash"); }
+};
+document.addEventListener("click", function (e) {
+  var b = e.target.closest("[data-act]"); if (!b) return;
+  var act = b.getAttribute("data-act"), id = b.getAttribute("data-id"), i = +b.getAttribute("data-i");
+  switch (act) {
+    case "a-retry": retryFailure(b, id); break;
+    case "a-add": openAddStudent(); break;
+    case "a-import": openImport(); break;
+    case "a-import-go":
+      var ok = A.importRows.filter(function (r) { return r.st === "ok"; })[0];
+      M.students.push({ id: ok.id, name: ok.name, email: ok.email, cohort: ok.cohort, track: ok.track, account: "הוזמנה", obligations: 0, attendance: null });
+      A.seq.stu++; closeModal(); render(); toast("יובאה שורה 1. שורה אחת נדחתה (שגיאה) ושורה אחת דולגה (כפילות)."); break;
+    case "a-invite": openInvite(); break;
+    case "a-att-all": $all("[data-ati]").forEach(function (s, k) { s.value = "present"; var m = $("#atm-" + k); if (!m.value || m.value === "0") m.value = 180; }); toast("כל התלמידות סומנו כנוכחות. יש לאשר כדי לשמור."); break;
+    case "a-att-approve":
+      var vals = readAttendance(); if (!vals) { toast("יש לתקן שגיאות בטבלה.", true); return; }
+      if (M.attendanceSession.approved) {
+        A.pendingAtt = vals;
+        openModal("דריסת נתונים מאושרים", '<div class="callout warn">' + ico("alert") + "<div>נוכחות המפגש <b>" + esc(M.attendanceSession.course + " " + M.attendanceSession.date) + "</b> כבר אושרה. שמירה תדרוס את הנתונים הקיימים. להמשיך?</div></div>" +
+          '<div class="form-actions"><button class="btn danger" data-act="a-att-overwrite">כן, לדרוס ולשמור</button><button class="btn secondary" data-act="close-modal">ביטול</button></div>');
+      } else applyAttendance(vals);
+      break;
+    case "a-att-overwrite": applyAttendance(A.pendingAtt); break;
+    case "a-corr": openCorrDecision(id, b.getAttribute("data-v")); break;
+    case "a-pr-open": openPracticumReview(id); break;
+    case "a-out": M.meetingsToday[i].outcome = b.getAttribute("data-v"); render(); toast("התוצאה נרשמה: " + esc(b.getAttribute("data-v")) + "."); break;
+    case "a-resync":
+      b.disabled = true; b.textContent = "מסנכרן…";
+      setTimeout(function () { var m = M.meetingsToday[i]; m.sync = "ok"; M.deliveryFailures = M.deliveryFailures.filter(function (d) { if (d.channel === "Google Calendar" && d.target.indexOf(m.student) > -1) { bumpKpi("failures", -1); return false; } return true; }); render(); toast("הפגישה סונכרנה ליומן Google."); }, 1000); break;
+    case "a-assign-me":
+      var rq = M.requestQueue.filter(function (x) { return x.id === id; })[0]; rq.owner = M.staffUser.name; if (rq.status === "new") rq.status = "in_progress"; bumpKpi("unassigned", -1); render(); toast("הפנייה שויכה אלייך."); break;
+    case "a-access": toast("בקשת הגישה נשלחה לאחראית הצוות הייעודי."); break;
+  }
+});
+function onAdminFilter(e) {
+  var f = e.target.form; if (!f) return;
+  if (f.id === "stuFilters") { A.stu = { q: f.elements.sf_q.value.trim(), cohort: f.elements.sf_cohort.value, track: f.elements.sf_track.value, account: f.elements.sf_account.value }; fillStudents(); }
+  if (f.id === "rqFilters") { A.rq = { q: f.elements.rf_q.value.trim(), status: f.elements.rf_status.value, type: f.elements.rf_type.value, owner: f.elements.rf_owner.value }; fillRequests(); }
+}
+document.addEventListener("change", onAdminFilter);
+document.addEventListener("input", function (e) { if (e.target.type === "search" && e.target.form && e.target.form.id !== "searchForm") onAdminFilter(e); });
+document.addEventListener("submit", function (e) {
+  var f = e.target, v;
+  switch (f.id) {
+    case "aAddForm":
+      clearErrs(f); var okA = true, sid = f.elements.as_id.value.trim();
+      if (f.elements.as_name.value.trim().length < 2) { setErr(f, "as_name", "יש להזין שם מלא"); okA = false; }
+      if (!/^\d{3}-\d{2}-\d{4}$/.test(sid)) { setErr(f, "as_id", "פורמט לא תקין (000-00-0000)"); okA = false; }
+      else if (findStudent(sid)) { setErr(f, "as_id", "ת״ז זו כבר קיימת במערכת"); okA = false; }
+      if (!/^\S+@\S+\.\S+$/.test(f.elements.as_email.value.trim())) { setErr(f, "as_email", "כתובת דוא״ל לא תקינה"); okA = false; }
+      if (!okA) return focusFirstError(f);
+      M.students.push({ id: sid, name: f.elements.as_name.value.trim(), email: f.elements.as_email.value.trim(), cohort: f.elements.as_cohort.value, track: f.elements.as_track.value, account: "הוזמנה", obligations: 0, attendance: null });
+      closeModal(); render(); toast("התלמידה נוספה ונשלחה אליה הזמנה."); break;
+    case "aInviteForm":
+      var picked = $all('input[name="inv"]:checked', f).map(function (c) { return c.value; });
+      if (!picked.length) { setErr(f, "inv", "יש לבחור לפחות תלמידה אחת"); return; }
+      picked.forEach(function (id) { findStudent(id).account = "הוזמנה"; });
+      closeModal(); render(); toast("נשלחו " + picked.length + " הזמנות בדוא״ל."); break;
+    case "aCorrForm":
+      clearErrs(f);
+      if (f.elements.cd_reason.value.trim().length < 3) { setErr(f, "cd_reason", "יש לנמק את ההחלטה"); return focusFirstError(f); }
+      var cid = f.getAttribute("data-id"), approve = f.getAttribute("data-v") === "approve";
+      var c = M.corrections.filter(function (x) { return x.id === cid; })[0];
+      M.corrections = M.corrections.filter(function (x) { return x.id !== cid; });
+      M.attendance.rows.forEach(function (r) {
+        if (r.correction && r.correction.indexOf(cid) > -1) {
+          if (approve) { for (var k in M.attendanceStatus) if (M.attendanceStatus[k] === c.requested) r.status = k; }
+          else r.status = "absent";
+          r.correction = "בקשת תיקון #" + cid + " — " + (approve ? "אושרה" : "נדחתה") + ": " + f.elements.cd_reason.value.trim();
+        }
+      });
+      closeModal(); render(); toast("בקשה " + cid + (approve ? " אושרה." : " נדחתה.") + " התלמידה עודכנה."); break;
+    case "aPrForm":
+      v = e.submitter ? e.submitter.value : "approved"; clearErrs(f);
+      var fb = f.elements.pv_fb.value.trim();
+      if (v !== "approved" && fb.length < 5) { setErr(f, "pv_fb", "במצב " + M.reportStatus[v] + " חובה לכתוב משוב לתלמידה"); return focusFirstError(f); }
+      var pid = f.getAttribute("data-id"), item = M.practicumQueue.filter(function (x) { return x.id === pid; })[0];
+      M.practicumQueue = M.practicumQueue.filter(function (x) { return x.id !== pid; }); bumpKpi("practicum", -1);
+      var mine = M.practicum.reports.filter(function (x) { return x.id === pid; })[0];
+      if (mine) {
+        var P = M.practicum; P.pending -= mine.hours;
+        if (v === "approved") P.approved += mine.hours;
+        if (v === "rejected") P.reported -= mine.hours;
+        mine.status = v; if (v === "returned") mine.feedback = fb;
+      }
+      closeModal(); render(); toast("דיווח " + pid + " (" + esc(item.student) + "): " + M.reportStatus[v] + "."); break;
+    case "aAvailForm":
+      clearErrs(f); var okV = true, val = function (n) { return f.elements[n].value; };
+      ["av_type", "av_date", "av_from", "av_to"].forEach(function (n) { if (!val(n)) { setErr(f, n, "שדה חובה"); okV = false; } });
+      if (val("av_date") && val("av_date") < M.today) { setErr(f, "av_date", "לא ניתן לפתוח זמינות בתאריך שעבר"); okV = false; }
+      if (val("av_from") && val("av_to") && toMin(val("av_to")) <= toMin(val("av_from"))) { setErr(f, "av_to", "שעת הסיום חייבת להיות אחרי שעת ההתחלה"); okV = false; }
+      var dur = +val("av_dur"), gap = +val("av_gap") || 0, cap = +val("av_cap");
+      if (!(dur >= 10)) { setErr(f, "av_dur", "משך מינימלי 10 דקות"); okV = false; }
+      if (gap < 0) { setErr(f, "av_gap", "ערך לא תקין"); okV = false; }
+      if (!(cap >= 1)) { setErr(f, "av_cap", "קיבולת מינימלית 1"); okV = false; }
+      var slots = [];
+      if (okV) {
+        for (var t = toMin(val("av_from")); t + dur <= toMin(val("av_to")); t += dur + gap) slots.push(("0" + Math.floor(t / 60)).slice(-2) + ":" + ("0" + t % 60).slice(-2));
+        if (!slots.length) { setErr(f, "av_dur", "טווח השעות קצר ממשך פגישה אחת"); okV = false; }
+      }
+      if (!okV) return focusFirstError(f);
+      var typ = M.appointmentTypes.filter(function (x) { return x.id === val("av_type"); })[0];
+      A.avail.unshift({ date: isoToDM(val("av_date")), type: typ.name, slots: slots, cap: cap });
+      render(); toast("נפתחו " + slots.length + " משבצות ב-" + isoToDM(val("av_date")) + "."); break;
+    case "aReqMeta":
+      var r = M.requestQueue.filter(function (x) { return x.id === f.getAttribute("data-id"); })[0], hadOwner = !!r.owner;
+      r.owner = f.elements.rm_owner.value || null; r.priority = f.elements.rm_prio.value; r.status = f.elements.rm_status.value; r.updated = "עכשיו";
+      if (hadOwner !== !!r.owner) bumpKpi("unassigned", r.owner ? -1 : 1);
+      var sr = M.requests.filter(function (x) { return x.id === r.id; })[0]; if (sr) { sr.status = r.status; sr.owner = r.owner || "טרם שויכה"; }
+      render(); toast("פרטי הפנייה נשמרו."); break;
+    case "aReplyForm":
+      clearErrs(f);
+      if (f.elements.ar_text.value.trim().length < 2) { setErr(f, "ar_text", "יש לכתוב תשובה"); return focusFirstError(f); }
+      var rr = M.requestQueue.filter(function (x) { return x.id === f.getAttribute("data-id"); })[0];
+      adminThread(rr).push({ me: false, who: M.staffUser.name, at: fmtDM(TODAY) + " " + nowHM(), text: f.elements.ar_text.value.trim() });
+      rr.status = f.elements.ar_wait.checked ? "waiting_student" : "in_progress"; rr.updated = "עכשיו";
+      var sr2 = M.requests.filter(function (x) { return x.id === rr.id; })[0]; if (sr2) { sr2.status = rr.status; sr2.lastMsg = f.elements.ar_text.value.trim(); }
+      render(); toast("התשובה נשלחה לתלמידה."); break;
+    case "aNoteForm":
+      clearErrs(f);
+      if (f.elements.an_text.value.trim().length < 2) { setErr(f, "an_text", "יש לכתוב הערה"); return focusFirstError(f); }
+      var nid = f.getAttribute("data-id"); (A.notes[nid] = A.notes[nid] || []).push({ who: M.staffUser.name, at: fmtDM(TODAY) + " " + nowHM(), text: f.elements.an_text.value.trim() });
+      render(); toast("ההערה הפנימית נשמרה (לא מוצגת לתלמידה)."); break;
+  }
+});
+
+
+/* ===================== Init ===================== */
+render();
+})();
+</script>
+</body>
+</html>
